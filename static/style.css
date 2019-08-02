@@ -1,0 +1,7 @@
+h1 {
+    color: greenyellow;
+}
+
+p:first-of-type {
+    color: brown;
+}
