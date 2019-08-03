@@ -1,0 +1,6 @@
+{
+    "devDependencies": {
+        "ts": "^0.2.2",
+        "typescript": "^3.5.3"
+    }
+}

@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "lib": [
+      "es2015",
+      "dom"
+    ],
+    "newLine": "lf",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "outDir": "",
+    "strict": true,
+    "target": "es5"
+  },
+  "include": [
+    "typings\\**\\*.d.ts",
+    "node_modules\\@*\\types-*\\*.d.ts",
+    "src\\*.ts"
+  ]
+}

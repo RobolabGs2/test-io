@@ -5,3 +5,7 @@ h1 {
 p:first-of-type {
     color: brown;
 }
+
+canvas {
+    border: 5px solid rebeccapurple;
+}
