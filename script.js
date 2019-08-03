@@ -12,6 +12,14 @@ var Color = /** @class */ (function () {
     };
     return Color;
 }());
+var duck = new Image();
+var duck_image;
+duck.onload = function () {
+    // Cut out two sprites from the sprite sheet
+    createImageBitmap(duck).then(function (bitmap) { return duck_image = bitmap; });
+};
+// Load the sprite sheet from an image file
+duck.src = 'duck16x16.png';
 var User = /** @class */ (function () {
     function User(x, y) {
         this.x = x;
@@ -19,7 +27,11 @@ var User = /** @class */ (function () {
         this.nick = "John";
         this.color = new Color(128, 255, 128, 128);
         this.id = "wadwad";
+        this.navigation = "right";
     }
+    User.prototype.draw = function (context) {
+        context.drawImage(duck_image, this.x, this.y, 32, 32);
+    };
     User.prototype.clone = function () {
         return new User(this.x, this.y);
     };
@@ -51,8 +63,9 @@ setInterval(function () {
     context.fillRect(0, 0, 512, 512);
     //    context.clearRect(0, 0, 512, 512);
     for (var i = 0; i < users.length; ++i) {
-        context.strokeStyle = users[i].color.to_string();
-        context.strokeRect(users[i].x, users[i].y, 5, 5);
+        //context.strokeStyle = users[i].color.to_string();
+        //context.strokeRect(users[i].x, users[i].y, 5, 5);
+        users[i].draw(context);
     }
 }, 40);
 var Keyboard = /** @class */ (function () {
@@ -63,64 +76,65 @@ var Keyboard = /** @class */ (function () {
         this.right = false;
         this.clone = false;
     }
+    Keyboard.prototype.set = function (code, state) {
+        switch (code) {
+            case 'KeyW':
+                keys.up = state;
+                break;
+            case 'KeyS':
+                keys.down = state;
+                break;
+            case 'KeyA':
+                keys.left = state;
+                break;
+            case 'KeyD':
+                keys.right = state;
+                break;
+            case 'Space':
+                keys.clone = state;
+                break;
+        }
+    };
     return Keyboard;
 }());
 var keys = new Keyboard();
 var pressed = false;
-var speed = 3;
+var speed = 48; //px/second
+var speed_input = document.getElementById("speed");
+speed_input.addEventListener("input", function (ev) {
+    speed = speed_input.value;
+});
 var hitbox = 2 * speed + 10;
-setInterval(function () {
+var prev_time = 0;
+var tick = function (time) {
+    //setInterval(() => {
+    console.log(time - prev_time);
+    var step = speed * (time - prev_time) / 1000;
+    prev_time = time;
     if (keys.down) {
-        user.y += speed;
+        user.y += step;
     }
     if (keys.up) {
-        user.y -= speed;
+        user.y -= step;
     }
     if (keys.right) {
-        user.x += speed;
+        user.x += step;
     }
     if (keys.left) {
-        user.x -= speed;
+        user.x -= step;
     }
     if (keys.clone) {
         users.push(user.clone());
+        console.log(users.length);
+        keys.clone = false;
     }
-}, 10);
+    requestAnimationFrame(tick);
+    //}, 10);
+};
+tick(0);
 window.addEventListener("keydown", function (ev) {
-    switch (ev.key) {
-        case 'w':
-            keys.up = true;
-            break;
-        case 's':
-            keys.down = true;
-            break;
-        case 'a':
-            keys.left = true;
-            break;
-        case 'd':
-            keys.right = true;
-            break;
-        case 'e':
-            keys.clone = true;
-            break;
-    }
+    keys.set(ev.code, true);
 });
 window.addEventListener("keyup", function (ev) {
-    switch (ev.key) {
-        case 'w':
-            keys.up = false;
-            break;
-        case 's':
-            keys.down = false;
-            break;
-        case 'a':
-            keys.left = false;
-            break;
-        case 'd':
-            keys.right = false;
-            break;
-        case 'e':
-            keys.clone = false;
-            break;
-    }
+    keys.set(ev.code, false);
 });

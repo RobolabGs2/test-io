@@ -5,6 +5,10 @@ interface Point {
     y: number;
 }
 
+interface Drowable {
+    draw(context: CanvasRenderingContext2D): void;
+}
+
 class Color {
     R: number;
     G: number;
@@ -23,12 +27,27 @@ class Color {
     }
 }
 
-class User implements Point{
+let duck = new Image();
+var duck_image: ImageBitmap;
+duck.onload = () => {
+        // Cut out two sprites from the sprite sheet
+    createImageBitmap(duck).then(bitmap => duck_image = bitmap);
+}
+
+// Load the sprite sheet from an image file
+duck.src = 'duck16x16.png';
+
+
+class User implements Point, Drowable{
+    draw(context: CanvasRenderingContext2D): void {
+        context.drawImage(duck_image, this.x, this.y, 32, 32);
+    }
     id: string;
     nick: string;
     color: Color;
     x: number;
     y: number;
+    navigation: NavigationReason;
 
     constructor(x: number, y:number) {
         this.x = x;
@@ -36,11 +55,14 @@ class User implements Point{
         this.nick = "John";
         this.color = new Color(128, 255, 128, 128);
         this.id = "wadwad"
+        this.navigation = "right";
     }
 
     clone(): User {
         return new User(this.x, this.y);
     }
+
+
 }
 
 //let id = localStorage.getItem("id");
@@ -72,8 +94,9 @@ setInterval(() => {
     context.fillRect(0, 0, 512, 512);
 //    context.clearRect(0, 0, 512, 512);
     for(let i=0; i<users.length; ++i) {
-        context.strokeStyle = users[i].color.to_string();
-        context.strokeRect(users[i].x, users[i].y, 5, 5);
+        //context.strokeStyle = users[i].color.to_string();
+        //context.strokeRect(users[i].x, users[i].y, 5, 5);
+        users[i].draw(context);
     }
 }, 40)
 
@@ -83,67 +106,70 @@ class Keyboard {
     left: boolean = false;
     right: boolean = false;
     clone: boolean = false;
+
+    set(code: string, state: boolean) {
+        switch (code) {
+            case 'KeyW':
+               keys.up = state;
+               break;
+            case 'KeyS':
+                keys.down = state;
+                break;
+            case 'KeyA':
+                keys.left = state;
+                break;
+            case 'KeyD':
+                keys.right = state;
+                break;
+            case 'Space':
+                keys.clone = state;
+                break;
+        }
+    }
 }
 
 let keys = new Keyboard();
 let pressed = false;
 
-let speed = 3;
+let speed = 48; //px/second
+let speed_input = document.getElementById("speed") as HTMLInputElement;
+speed_input.addEventListener("input", (ev) => {
+    speed = speed_input.value as unknown as number
+})
 let hitbox = 2 * speed + 10;
-setInterval(() => {
-    if(keys.down) {
-        user.y += speed;
-    }
-    if(keys.up) {
-        user.y -= speed;
-    }
-    if(keys.right) {
-        user.x += speed;
-    }
-    if(keys.left) {
-        user.x -= speed;
-    }
-    if(keys.clone) {
-        users.push(user.clone())
-    }
-}, 10);
+
+let prev_time = 0;
+let tick = (time: number) => {
+    //setInterval(() => {
+        console.log(time-prev_time)
+        let step = speed*(time-prev_time)/1000;
+        prev_time = time;
+        if(keys.down) {
+            user.y += step;
+        }
+        if(keys.up) {
+            user.y -= step;
+        }
+        if(keys.right) {
+            user.x += step;
+        }
+        if(keys.left) {
+            user.x -= step;
+        }
+        if(keys.clone) {
+            users.push(user.clone())
+            console.log(users.length);
+            keys.clone = false
+        }
+        requestAnimationFrame(tick);
+    //}, 10);
+    };
+tick(0);
 
 window.addEventListener("keydown", (ev:KeyboardEvent)=>{
-   switch (ev.key) {
-       case 'w':
-          keys.up = true;
-          break;
-       case 's':
-           keys.down = true;
-           break;
-       case 'a':
-           keys.left = true;
-           break;
-       case 'd':
-           keys.right = true;
-           break;
-       case 'e':
-           keys.clone = true;
-           break;
-   }
+    keys.set(ev.code, true);
 });
 
 window.addEventListener("keyup", (ev:KeyboardEvent)=>{
-    switch (ev.key) {
-        case 'w':
-            keys.up = false;
-            break;
-        case 's':
-            keys.down = false;
-            break;
-        case 'a':
-            keys.left = false;
-            break;
-        case 'd':
-            keys.right = false;
-            break;
-        case 'e':
-           keys.clone = false;
-           break;
-    }
+    keys.set(ev.code, false);
 });

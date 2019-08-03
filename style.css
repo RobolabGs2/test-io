@@ -8,4 +8,5 @@ p:first-of-type {
 
 canvas {
     border: 5px solid rebeccapurple;
+    height: 100%;
 }
