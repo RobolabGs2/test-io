@@ -6,12 +6,21 @@
         <title>Duck paint</title></head>
         <script src="keyboard.js"></script>
         <script src="world.js"></script>
+        <script src="avatar.js"></script>
+        <script src="json.js"></script>
     <body>
-        <h1>Duck paint!</h1>
-        <p>Just test github.io</p>
-        <p>WASD and Space</p>
-        <span>Speed:<input type="number" id="speed" value="48"/></span>
+        <div>
+            <h1>Duck paint!</h1>
+            <p>Just test github.io</p>
+            <p>WASD and Space</p>
+            <span>
+                Speed:<input type="number" id="speed" value="48"/>
+                <button id="save">Save</button>
+                <button id="load">Load</button>
+                <input type="number" id="saveNum" value="1"/>
+            </span>
+        </div>
         <canvas id="main" height="512px" width="512px"></canvas>
     </body>
-    <script src="script.js"></script>
+    <script src="main.js"></script>
 </html>
