@@ -1,49 +1,54 @@
 "use strict";
-var Color = /** @class */ (function () {
-    function Color(r, g, b, a) {
-        this.A = a;
-        this.R = r;
-        this.G = g;
-        this.B = b;
-    }
-    //todo
-    Color.prototype.to_string = function () {
-        return "#008000";
-    };
-    return Color;
-}());
-var User = /** @class */ (function () {
-    function User(x, y, bitmap) {
+class Point {
+    constructor({ x = 0, y = 0 }) {
         this.x = x;
         this.y = y;
-        this.nick = "John";
-        this.color = new Color(128, 255, 128, 128);
-        this.id = "wadwad";
-        this.navigation = "right";
-        if (bitmap)
-            this.bitmap = bitmap;
     }
-    User.prototype.draw = function (context) {
-        context.drawImage(this.bitmap, this.x, this.y, 32, 32);
-    };
-    User.prototype.clone = function () {
-        return new User(this.x, this.y, this.bitmap);
-    };
-    return User;
-}());
-var World = /** @class */ (function () {
-    function World(user) {
+}
+class Hitbox {
+    constructor(position, w, h) {
+        this.position = position;
+        this.height = h;
+        this.width = w;
+    }
+}
+class Entity {
+    constructor(hitbox, avatar) {
+        this.drawHitbox = (hitbox) => { };
+        this.hitbox = hitbox;
+        this.avatar = avatar;
+    }
+    setContext(context) {
+        this.drawHitbox = this.avatar.bindContext(context);
+        return this;
+    }
+    draw() {
+        this.drawHitbox(this.hitbox);
+    }
+}
+class World {
+    setContext(context) {
+        this.context = context;
+        this.mobs.forEach(mob => mob.setContext(context));
+        this.user.setContext(context);
+        return this;
+    }
+    draw() {
+        this.context.fillStyle = "#000";
+        this.context.fillRect(0, 0, 512, 512);
+        //context.clearRect(0, 0, 512, 512);
+        this.mobs.forEach(mob => {
+            this.context.fillStyle = "#000";
+            this.context.strokeStyle = "#FFF";
+            mob.draw();
+        });
+        this.user.draw();
+    }
+    constructor(user) {
         this.user = user;
         this.mobs = new Array();
     }
-    World.prototype.draw = function (context) {
-        context.fillStyle = "#000";
-        context.fillRect(0, 0, 512, 512);
-        //context.clearRect(0, 0, 512, 512);
-        this.mobs.forEach(function (mob) {
-            mob.draw(context);
-        });
-        this.user.draw(context);
-    };
-    return World;
-}());
+    pushDrawable(entity) {
+        this.mobs.push(entity.setContext(this.context));
+    }
+}

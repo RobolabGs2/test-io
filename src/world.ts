@@ -1,73 +1,77 @@
-interface Point {
+class Point {
     x: number;
     y: number;
+
+    constructor({x = 0, y = 0}) {
+        this.x = x;
+        this.y = y;
+    }
 }
 
 interface Drawable {
-    draw(context: CanvasRenderingContext2D): void;
+    draw(): void;
+    setContext(context: CanvasRenderingContext2D): Drawable;
 }
 
-class Color {
-    R: number;
-    G: number;
-    B: number;
-    A: number;
+class Hitbox {
+    position!: Point;
+    width!: number;
+    height!: number;
 
-    constructor(r:number, g:number, b:number, a: number) {
-        this.A = a;
-        this.R = r;
-        this.G = g;
-        this.B = b;
-    }
-    //todo
-    to_string(): string {
-        return "#008000";
+    constructor(position: Point, w: number, h: number) {
+        this.position = position;
+        this.height = h;
+        this.width = w;
     }
 }
 
-class User implements Point, Drawable{
-    draw(context: CanvasRenderingContext2D): void {
-        context.drawImage(this.bitmap, this.x, this.y, 32, 32);
+class Entity implements Drawable{
+    setContext(context: CanvasRenderingContext2D): Drawable {
+        this.drawHitbox = this.avatar.bindContext(context);
+        return this;
     }
-    id: string;
-    nick: string;
-    color: Color;
-    x: number;
-    y: number;
-    navigation: NavigationReason;
-    bitmap!: ImageBitmap;
-
-    constructor(x: number, y:number, bitmap?: ImageBitmap) {
-        this.x = x;
-        this.y = y;
-        this.nick = "John";
-        this.color = new Color(128, 255, 128, 128);
-        this.id = "wadwad"
-        this.navigation = "right";
-        if(bitmap)
-            this.bitmap = bitmap;
+    draw(): void{
+        this.drawHitbox(this.hitbox)
     }
 
-    clone(): User {
-        return new User(this.x, this.y, this.bitmap);
+    avatar: Avatar;
+    hitbox: Hitbox;
+    drawHitbox = (hitbox: Hitbox) => {}
+
+    constructor(hitbox: Hitbox, avatar: Avatar) {
+        this.hitbox = hitbox;
+        this.avatar = avatar;
     }
 }
 
 class World implements Drawable{
-    draw(context: CanvasRenderingContext2D): void {
-        context.fillStyle = "#000"
-        context.fillRect(0, 0, 512, 512);
+    setContext(context: CanvasRenderingContext2D): Drawable {
+        this.context = context;
+        this.mobs.forEach(mob => mob.setContext(context))
+        this.user.setContext(context)
+        return this;
+    }
+    draw(): void {
+        this.context.fillStyle = "#000"
+        this.context.fillRect(0, 0, 512, 512);
         //context.clearRect(0, 0, 512, 512);
         this.mobs.forEach(mob => {
-        mob.draw(context);
+            this.context.fillStyle = "#000"
+            this.context.strokeStyle = "#FFF"
+            mob.draw();
         });
-        this.user.draw(context);
+        this.user.draw();
     }
-    user: User;
+    user: Entity;
     mobs: Array<Drawable>;
-    
-    constructor(user: User) {
+    private context!: CanvasRenderingContext2D;
+
+    constructor(user: Entity) {
         this.user = user;
         this.mobs = new Array<Drawable>();
+    }
+
+    pushDrawable(entity: Drawable) {
+        this.mobs.push(entity.setContext(this.context));
     }
 }

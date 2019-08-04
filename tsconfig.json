@@ -10,7 +10,7 @@
     "moduleResolution": "node",
     "outDir": "",
     "strict": true,
-    "target": "es5"
+    "target": "es2018"
   },
   "include": [
     "typings\\**\\*.d.ts",

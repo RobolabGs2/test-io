@@ -1,13 +1,13 @@
 "use strict";
-var Keyboard = /** @class */ (function () {
-    function Keyboard() {
+class Keyboard {
+    constructor() {
         this.up = false;
         this.down = false;
         this.left = false;
         this.right = false;
         this.clone = false;
     }
-    Keyboard.prototype.set = function (code, state) {
+    set(code, state) {
         switch (code) {
             case 'KeyW':
                 keys.up = state;
@@ -25,6 +25,5 @@ var Keyboard = /** @class */ (function () {
                 keys.clone = state;
                 break;
         }
-    };
-    return Keyboard;
-}());
+    }
+}
