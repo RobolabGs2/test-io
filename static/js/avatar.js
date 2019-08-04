@@ -22,7 +22,7 @@ class ImageAvatar extends Typeable {
         img.onload = () => {
             createImageBitmap(img).then(bitmap => this.bitmap = bitmap);
         };
-        img.src = filename;
+        img.src = "./static/img/" + filename;
     }
     bindContext(context) {
         return (hitbox) => {

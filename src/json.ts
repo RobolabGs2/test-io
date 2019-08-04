@@ -27,7 +27,7 @@ function parseWorld(json: string) {
 
 function loadWorld(filename: string, start: (world: World) => void) {
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', filename, false);
+    xhr.open('GET', "./static/worlds/"+filename, false);
     xhr.onreadystatechange = function () {
         console.log(this.responseText)
         if (this.readyState === 4 && this.status !== 404) {
