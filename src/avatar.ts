@@ -2,13 +2,14 @@ interface Avatar {
     bindContext(context: CanvasRenderingContext2D): (hitbox: Hitbox) =>void
 }
 
-class Color {
+class Color extends Typeable {
     R: number;
     G: number;
     B: number;
     A: number;
 
     constructor(r:number, g:number, b:number, a = 255) {
+        super("Color");
         this.A = a;
         this.R = r;
         this.G = g;
@@ -17,26 +18,32 @@ class Color {
     to_string(): string {
         return `rgba(${this.R},${this.G},${this.B},${this.A})`;
     }
+
+    static unpack({R, G, B, A}:{R:number, G:number, B:number, A:number}) {
+        return new Color(R, G, B, A);
+    }
 }
 
-class ImageAvatar implements Avatar {
+class ImageAvatar extends Typeable implements Avatar {
     bitmap!: ImageBitmap;
     bindContext(context: CanvasRenderingContext2D): (hitbox: Hitbox) => void {
         return (hitbox: Hitbox) => {
         context.drawImage(this.bitmap, hitbox.position.x, hitbox.position.y, hitbox.width, hitbox.height);
         };
     }
-
-    constructor(filename: string) {
+    constructor(private filename: string) {
+        super("ImageAvatar");
         let img = new Image();
         img.onload = () => {
             createImageBitmap(img).then(bitmap => this.bitmap = bitmap);
         }
         img.src = filename;
     }
+
+
 }
 
-class RectangleAvatar implements Avatar {
+class RectangleAvatar extends Typeable implements Avatar {
     bindContext(context: CanvasRenderingContext2D): (hitbox: Hitbox) => void {
         return (hitbox: Hitbox) => {
             context.fillStyle = this.color.to_string();
@@ -46,11 +53,12 @@ class RectangleAvatar implements Avatar {
     color: Color;
 
     constructor(color: Color) {
+        super("RectangleAvatar");
         this.color = color;
     }
 }
 
-class StrokeRectangleAvatar implements Avatar {
+class StrokeRectangleAvatar extends Typeable implements Avatar {
     bindContext(context: CanvasRenderingContext2D): (hitbox: Hitbox) => void {
         return (hitbox: Hitbox) => {
             context.strokeStyle = this.color.to_string();
@@ -60,6 +68,7 @@ class StrokeRectangleAvatar implements Avatar {
     color: Color;
 
     constructor(color: Color) {
+        super("StrokeRectangleAvatar");
         this.color = color;
     }
 }

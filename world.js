@@ -1,22 +1,33 @@
 "use strict";
-class Point {
+class Typeable {
+    constructor(type) {
+        this._type = type;
+    }
+}
+class Point extends Typeable {
     constructor({ x = 0, y = 0 }) {
+        super("Point");
         this.x = x;
         this.y = y;
     }
 }
-class Hitbox {
-    constructor(position, w, h) {
+class Hitbox extends Typeable {
+    constructor(position, width, height) {
+        super("Hitbox");
         this.position = position;
-        this.height = h;
-        this.width = w;
+        this.width = width;
+        this.height = height;
+    }
+    static unpack({ position, width, height }) {
+        return new Hitbox(position, width, height);
     }
 }
-class Entity {
+class Entity extends Typeable {
     constructor(hitbox, avatar) {
-        this.drawHitbox = (hitbox) => { };
+        super("Entity");
         this.hitbox = hitbox;
         this.avatar = avatar;
+        this.drawHitbox = (hitbox) => { };
     }
     setContext(context) {
         this.drawHitbox = this.avatar.bindContext(context);
@@ -25,8 +36,11 @@ class Entity {
     draw() {
         this.drawHitbox(this.hitbox);
     }
+    static unpack({ hitbox, avatar }) {
+        return new Entity(hitbox, avatar);
+    }
 }
-class World {
+class World extends Typeable {
     setContext(context) {
         this.context = context;
         this.mobs.forEach(mob => mob.setContext(context));
@@ -45,10 +59,16 @@ class World {
         this.user.draw();
     }
     constructor(user) {
+        super("World");
         this.user = user;
         this.mobs = new Array();
     }
     pushDrawable(entity) {
         this.mobs.push(entity.setContext(this.context));
+    }
+    static unpack({ user, mobs }) {
+        let w = new World(user);
+        w.mobs = mobs;
+        return w;
     }
 }

@@ -1,6 +1,7 @@
 "use strict";
-class Color {
+class Color extends Typeable {
     constructor(r, g, b, a = 255) {
+        super("Color");
         this.A = a;
         this.R = r;
         this.G = g;
@@ -9,22 +10,27 @@ class Color {
     to_string() {
         return `rgba(${this.R},${this.G},${this.B},${this.A})`;
     }
-}
-class ImageAvatar {
-    bindContext(context) {
-        return (hitbox) => {
-            context.drawImage(this.bitmap, hitbox.position.x, hitbox.position.y, hitbox.width, hitbox.height);
-        };
+    static unpack({ R, G, B, A }) {
+        return new Color(R, G, B, A);
     }
+}
+class ImageAvatar extends Typeable {
     constructor(filename) {
+        super("ImageAvatar");
+        this.filename = filename;
         let img = new Image();
         img.onload = () => {
             createImageBitmap(img).then(bitmap => this.bitmap = bitmap);
         };
         img.src = filename;
     }
+    bindContext(context) {
+        return (hitbox) => {
+            context.drawImage(this.bitmap, hitbox.position.x, hitbox.position.y, hitbox.width, hitbox.height);
+        };
+    }
 }
-class RectangleAvatar {
+class RectangleAvatar extends Typeable {
     bindContext(context) {
         return (hitbox) => {
             context.fillStyle = this.color.to_string();
@@ -32,10 +38,11 @@ class RectangleAvatar {
         };
     }
     constructor(color) {
+        super("RectangleAvatar");
         this.color = color;
     }
 }
-class StrokeRectangleAvatar {
+class StrokeRectangleAvatar extends Typeable {
     bindContext(context) {
         return (hitbox) => {
             context.strokeStyle = this.color.to_string();
@@ -43,6 +50,7 @@ class StrokeRectangleAvatar {
         };
     }
     constructor(color) {
+        super("StrokeRectangleAvatar");
         this.color = color;
     }
 }
