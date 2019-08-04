@@ -15,9 +15,20 @@ window.addEventListener("keyup", (ev:KeyboardEvent)=>{
 
 let canvas = document.getElementById('main') as HTMLCanvasElement;
 let context = canvas.getContext('2d') as CanvasRenderingContext2D;
-loadWorld("test-world.json", (world: World) => {
+
+let timerTick: number;
+let timerDraw: number;
+let currentWorld: World;
+function start(world: World) {
+    try {
+        clearInterval(timerDraw)
+        clearInterval(timerTick)
+    } catch(e) {
+        console.log(e);
+    }
+    currentWorld = world;
     world.setContext(context);
-    setInterval(world.draw.bind(world), 40);
+    timerDraw = setInterval(world.draw.bind(world), 40);
     let user = world.user;
     let prev_time = Date.now();
     let tick = (dt: number) => {
@@ -40,9 +51,29 @@ loadWorld("test-world.json", (world: World) => {
         }
     };
     
-    setInterval(() => {
+    timerTick = setInterval(() => {
         let time = Date.now();
         tick(time - prev_time);
         prev_time = time;
     })
-})
+}
+
+
+loadWorld("test-world.json", start)
+
+let sb = document.getElementById("save") as HTMLButtonElement;
+let lb = document.getElementById("load") as HTMLButtonElement;
+
+let saveInput = document.getElementById("saveNum") as HTMLInputElement;
+sb.onclick = () => {
+    if(currentWorld)
+        saveLocal(saveInput.value, currentWorld)
+    sb.blur()
+    canvas.focus()
+}
+
+lb.onclick = () => {
+    start(loadLocal(saveInput.value))
+    lb.blur()
+    canvas.focus()
+}

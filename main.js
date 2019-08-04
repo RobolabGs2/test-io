@@ -14,9 +14,20 @@ window.addEventListener("keyup", (ev) => {
 });
 let canvas = document.getElementById('main');
 let context = canvas.getContext('2d');
-loadWorld("test-world.json", (world) => {
+let timerTick;
+let timerDraw;
+let currentWorld;
+function start(world) {
+    try {
+        clearInterval(timerDraw);
+        clearInterval(timerTick);
+    }
+    catch (e) {
+        console.log(e);
+    }
+    currentWorld = world;
     world.setContext(context);
-    setInterval(world.draw.bind(world), 40);
+    timerDraw = setInterval(world.draw.bind(world), 40);
     let user = world.user;
     let prev_time = Date.now();
     let tick = (dt) => {
@@ -38,9 +49,24 @@ loadWorld("test-world.json", (world) => {
             keys.clone = false;
         }
     };
-    setInterval(() => {
+    timerTick = setInterval(() => {
         let time = Date.now();
         tick(time - prev_time);
         prev_time = time;
     });
-});
+}
+loadWorld("test-world.json", start);
+let sb = document.getElementById("save");
+let lb = document.getElementById("load");
+let saveInput = document.getElementById("saveNum");
+sb.onclick = () => {
+    if (currentWorld)
+        saveLocal(saveInput.value, currentWorld);
+    sb.blur();
+    canvas.focus();
+};
+lb.onclick = () => {
+    start(loadLocal(saveInput.value));
+    lb.blur();
+    canvas.focus();
+};
