@@ -44,6 +44,12 @@ class Entity extends Typeable implements Drawable{
         super("Entity");
     }
 
+    move(dv: Point) {
+        this.hitbox.position.x+=dv.x
+        this.hitbox.position.y+=dv.y
+        this.avatar.play(dv.x/15)
+    }
+
     static unpack({hitbox, avatar}: {hitbox: Hitbox, avatar: Avatar}) {
         return new Entity(hitbox, avatar);
     }

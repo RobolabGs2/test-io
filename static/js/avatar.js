@@ -1,4 +1,8 @@
 "use strict";
+class Avatar extends Typeable {
+    play(dt) { }
+    ;
+}
 class Color extends Typeable {
     constructor(r, g, b, a = 255) {
         super("Color");
@@ -14,7 +18,7 @@ class Color extends Typeable {
         return new Color(R, G, B, A);
     }
 }
-class ImageAvatar extends Typeable {
+class ImageAvatar extends Avatar {
     constructor(filename) {
         super("ImageAvatar");
         this.filename = filename;
@@ -30,7 +34,7 @@ class ImageAvatar extends Typeable {
         };
     }
 }
-class RectangleAvatar extends Typeable {
+class RectangleAvatar extends Avatar {
     bindContext(context) {
         return (hitbox) => {
             context.fillStyle = this.color.to_string();
@@ -42,7 +46,7 @@ class RectangleAvatar extends Typeable {
         this.color = color;
     }
 }
-class StrokeRectangleAvatar extends Typeable {
+class StrokeRectangleAvatar extends Avatar {
     bindContext(context) {
         return (hitbox) => {
             context.strokeStyle = this.color.to_string();
@@ -52,5 +56,60 @@ class StrokeRectangleAvatar extends Typeable {
     constructor(color) {
         super("StrokeRectangleAvatar");
         this.color = color;
+    }
+}
+class ImageSource extends Typeable {
+    constructor(filename) {
+        super("ImageSource");
+        this.filename = filename;
+        let img = new Image();
+        img.onload = () => {
+            createImageBitmap(img).then(bitmap => {
+                this.bitmap = bitmap;
+                this.onload(bitmap);
+            });
+        };
+        img.src = "./static/img/" + filename;
+    }
+    onload(bitmap) { }
+}
+class AnimationSource extends ImageSource {
+    constructor(filename) {
+        super(filename);
+        this._type = "AnimationSource";
+    }
+    onload(bitmap) {
+    }
+}
+class AnimatedAvatar extends Typeable {
+    constructor(filename) {
+        super("AnimatedAvatar");
+        this.filename = filename;
+        this.tick = 0;
+        let img = new Image();
+        img.onload = () => {
+            createImageBitmap(img).then(bitmap => { this.bitmap = bitmap; });
+        };
+        img.src = "./static/img/" + filename;
+    }
+    bindContext(context) {
+        return (hitbox) => {
+            if (this.bitmap) {
+                const frameSize = this.bitmap.height;
+                const frameCount = this.bitmap.width / frameSize;
+                let dt = Math.floor(frameCount * this.tick);
+                console.log(`${dt} ${frameCount} ${this.tick}`);
+                context.transform;
+                context.drawImage(this.bitmap, (frameSize + 1) * dt, 0, frameSize, frameSize, hitbox.position.x, hitbox.position.y, hitbox.width, hitbox.height);
+            }
+            ;
+        };
+    }
+    play(dt) {
+        this.tick += dt;
+        if (this.tick > 1)
+            this.tick -= 1;
+        if (this.tick < 0)
+            this.tick += 1;
     }
 }

@@ -16,6 +16,8 @@ function parseWorld(json) {
                     return Color.unpack(value);
                 case "ImageAvatar":
                     return new ImageAvatar(value.filename);
+                case "AnimatedAvatar":
+                    return new AnimatedAvatar(value.filename);
                 case "RectangleAvatar":
                     return new RectangleAvatar(value.color);
                 case "StrokeRectangleAvatar":
