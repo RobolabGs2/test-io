@@ -10,6 +10,15 @@ class Point extends Typeable {
         this.x = x;
         this.y = y;
     }
+    Revers() {
+        return new Point({ x: this.y, y: this.x });
+    }
+    Sum(point) {
+        return new Point({ x: this.x + point.x, y: this.y + point.y });
+    }
+    Neg() {
+        return new Point({ x: -this.x, y: -this.y });
+    }
 }
 class Hitbox extends Typeable {
     constructor(position, width, height) {
@@ -18,6 +27,10 @@ class Hitbox extends Typeable {
         this.width = width;
         this.height = height;
     }
+    get x1() { return this.position.x; }
+    get x2() { return this.position.x + this.width; }
+    get y1() { return this.position.y; }
+    get y2() { return this.position.y + this.height; }
     static unpack({ position, width, height }) {
         return new Hitbox(position, width, height);
     }
@@ -28,6 +41,7 @@ class Entity extends Typeable {
         this.hitbox = hitbox;
         this.avatar = avatar;
         this.drawHitbox = (hitbox) => { };
+        this.velocity = new Point({ x: 1, y: 2 });
     }
     setContext(context) {
         this.drawHitbox = this.avatar.bindContext(context);
@@ -35,6 +49,13 @@ class Entity extends Typeable {
     }
     draw() {
         this.drawHitbox(this.hitbox);
+    }
+    tick(dt) {
+        this.hitbox.position.x += dt * this.velocity.x;
+        this.hitbox.position.y += dt * this.velocity.y;
+    }
+    Acceleration() {
+        return new Point({});
     }
     static unpack({ hitbox, avatar }) {
         return new Entity(hitbox, avatar);
@@ -62,6 +83,17 @@ class World extends Typeable {
         super("World");
         this.user = user;
         this.mobs = new Array();
+    }
+    tick(dt) {
+        for (let i = 0; i < this.mobs.length; ++i)
+            if (i % 5 == 3)
+                this.mobs[i].velocity.x = 3;
+        //console.log(this.mobs[2].hitbox.x1 - this.mobs[3].hitbox.x1, this.mobs[2].hitbox.y1 - this.mobs[3].hitbox.y1);
+        //console.log(Collision.EntityesTime(this.mobs[2], this.mobs[3]));
+        Collision.EntityesTime(this.mobs[2], this.mobs[3]);
+        this.mobs.forEach(function (mob) {
+            mob.tick(dt);
+        });
     }
     pushDrawable(entity) {
         this.mobs.push(entity.setContext(this.context));

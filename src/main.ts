@@ -49,6 +49,7 @@ function start(world: World) {
             world.pushDrawable(new Entity(new Hitbox(new Point(user.hitbox.position), 33, 33), new StrokeRectangleAvatar(new Color(255, 255, 255, 12))))
             keys.clone = false
         }
+        world.tick(dt/1000);
     };
     
     timerTick = setInterval(() => {
