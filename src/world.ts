@@ -190,7 +190,6 @@ class World extends Typeable implements Drawable{
 
     static unpack({user, mobs}: {user: Entity, mobs: Array<Entity>}) {
         let w = new World(user);                
-        mobs.forEach(mob => console.log(mob.collision.time));
         mobs.forEach(mob => w.add(mob));
         return w;
     }
