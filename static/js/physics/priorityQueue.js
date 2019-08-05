@@ -3,10 +3,10 @@ class PriorityQueue {
     constructor() {
         this.list = new Array();
     }
-    Add(entity) {
-        entity.tag = this.list.length;
-        this.list.push(entity);
-        this.Up(entity.tag);
+    Add(body) {
+        body.tag = this.list.length;
+        this.list.push(body);
+        this.Up(body.tag);
     }
     Up(i) {
         let prev = this.Prev(i);

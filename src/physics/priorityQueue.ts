@@ -1,16 +1,16 @@
 
 class PriorityQueue{
     
-    list: Array<Entity>;
+    list: Array<Body>;
 
     constructor(){
-        this.list = new Array<Entity>();
+        this.list = new Array<Body>();
     }
 
-    Add(entity: Entity){
-        entity.tag = this.list.length;
-        this.list.push(entity);
-        this.Up(entity.tag);
+    Add(body: Body){
+        body.tag = this.list.length;
+        this.list.push(body);
+        this.Up(body.tag);
     }
 
     private Up(i: number){

@@ -1,11 +1,11 @@
 class Collision{
     
-    static EntityesTime(e1: Entity, e2: Entity, time: number): number{
+    static BodyTime(b1: Body, b2: Body, time: number): number{
 
-        let sq1 = e1.hitbox;
-        let sq2 = e2.hitbox;
-        let dV = e2.velocity.Sum(e1.velocity.Neg());
-        let dg = e2.Acceleration().Sum(e1.Acceleration().Neg());
+        let sq1 = b1.hitbox;
+        let sq2 = b2.hitbox;
+        let dV = b2.velocity.Sum(b1.velocity.Neg());
+        let dg = b2.Acceleration().Sum(b1.Acceleration().Neg());
 
         time = this.LinesTime(sq1.x1, sq1.y1, sq1.y2, sq2.x1, sq2.y1, sq2.y2, dV, dg, time);
         time = this.LinesTime(sq1.x2, sq1.y1, sq1.y2, sq2.x1, sq2.y1, sq2.y2, dV, dg, time);

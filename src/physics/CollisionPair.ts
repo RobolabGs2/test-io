@@ -1,20 +1,20 @@
 class CollisionPair{
-    e1: Entity;
-    e2: Entity;
+    b1: Body;
+    b2: Body;
     public time: number;
     vector: Point;
 
-    constructor(e: Entity)
-    constructor(e1: Entity, e2: Entity, time: number, vector: Point)
-    constructor(e1: Entity, e2?: Entity, time?: number, vector?: Point){
-        if(e2 && time && vector){
-            this.e1 = e1;
-            this.e2 = e2;
+    constructor(b: Body)
+    constructor(b1: Body, b2: Body, time: number, vector: Point)
+    constructor(b1: Body, b2?: Body, time?: number, vector?: Point){
+        if(b2 && time && vector){
+            this.b1 = b1;
+            this.b2 = b2;
             this.time = time;
             this.vector = vector;
         }else{
-            this.e1 = e1;
-            this.e2 = e1;
+            this.b1 = b1;
+            this.b2 = b1;
             this.time = Infinity;
             this.vector = new Point({});
         }

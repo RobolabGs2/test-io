@@ -1,15 +1,15 @@
 "use strict";
 class CollisionPair {
-    constructor(e1, e2, time, vector) {
-        if (e2 && time && vector) {
-            this.e1 = e1;
-            this.e2 = e2;
+    constructor(b1, b2, time, vector) {
+        if (b2 && time && vector) {
+            this.b1 = b1;
+            this.b2 = b2;
             this.time = time;
             this.vector = vector;
         }
         else {
-            this.e1 = e1;
-            this.e2 = e1;
+            this.b1 = b1;
+            this.b2 = b1;
             this.time = Infinity;
             this.vector = new Point({});
         }
