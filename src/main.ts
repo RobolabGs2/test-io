@@ -50,21 +50,16 @@ function start(world: World) {
             keys.clone = false
         }
     };
-    let av = new AnimatedAvatar("yana_duck_animated.png");
-    let test = new Entity(new Hitbox(new Point({x:256, y:256}), 64, 64), 
-        av);
-    world.pushDrawable(test)
     let prev_time = Date.now();
     timerTick = setInterval(() => {
         let time = Date.now();
         tick(time - prev_time);
-        av.play(-(time-prev_time)/500)
         prev_time = time;
     })
 }
 
 
-loadWorld("test-world-anim.json", start)
+loadWorld("test-world.json", start)
 
 let sb = document.getElementById("save") as HTMLButtonElement;
 let lb = document.getElementById("load") as HTMLButtonElement;
