@@ -29,34 +29,40 @@ function start(world) {
     world.setContext(context);
     timerDraw = setInterval(world.draw.bind(world), 40);
     let user = world.user;
-    let prev_time = Date.now();
     let tick = (dt) => {
         let step = speed * (dt) / 1000;
+        let dv = new Point({});
         if (keys.down) {
-            user.hitbox.position.y += step;
+            dv.y += step;
         }
         if (keys.up) {
-            user.hitbox.position.y -= step;
+            dv.y -= step;
         }
         if (keys.right) {
-            user.hitbox.position.x += step;
+            dv.x += step;
         }
         if (keys.left) {
-            user.hitbox.position.x -= step;
+            dv.x -= step;
         }
+        user.move(dv);
         if (keys.clone) {
             world.pushDrawable(new Entity(new Hitbox(new Point(user.hitbox.position), 33, 33), new StrokeRectangleAvatar(new Color(255, 255, 255, 12))));
             keys.clone = false;
         }
         world.tick(dt / 1000);
     };
+    let av = new AnimatedAvatar("yana_duck_animated.png");
+    let test = new Entity(new Hitbox(new Point({ x: 256, y: 256 }), 64, 64), av);
+    world.pushDrawable(test);
+    let prev_time = Date.now();
     timerTick = setInterval(() => {
         let time = Date.now();
         tick(time - prev_time);
+        av.play(-(time - prev_time) / 500);
         prev_time = time;
     });
 }
-loadWorld("test-world.json", start);
+loadWorld("test-world-anim.json", start);
 let sb = document.getElementById("save");
 let lb = document.getElementById("load");
 let saveInput = document.getElementById("saveNum");

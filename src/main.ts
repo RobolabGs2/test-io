@@ -15,7 +15,6 @@ window.addEventListener("keyup", (ev:KeyboardEvent)=>{
 
 let canvas = document.getElementById('main') as HTMLCanvasElement;
 let context = canvas.getContext('2d') as CanvasRenderingContext2D;
-
 let timerTick: number;
 let timerDraw: number;
 let currentWorld: World;
@@ -30,28 +29,29 @@ function start(world: World) {
     world.setContext(context);
     timerDraw = setInterval(world.draw.bind(world), 40);
     let user = world.user;
-    let prev_time = Date.now();
     let tick = (dt: number) => {
         let step = speed*(dt)/1000;
+        let dv = new Point({});
         if(keys.down) {
-            user.hitbox.position.y += step;
+            dv.y += step;
         }
         if(keys.up) {
-            user.hitbox.position.y -= step;
+            dv.y -= step;
         }
         if(keys.right) {
-            user.hitbox.position.x += step;
+            dv.x += step;
         }
         if(keys.left) {
-            user.hitbox.position.x -= step;
+            dv.x -= step;
         }
+        user.move(dv)
         if(keys.clone) {
             world.pushDrawable(new Entity(new Hitbox(new Point(user.hitbox.position), 33, 33), new StrokeRectangleAvatar(new Color(255, 255, 255, 12))))
             keys.clone = false
         }
         world.tick(dt/1000);
     };
-    
+    let prev_time = Date.now();
     timerTick = setInterval(() => {
         let time = Date.now();
         tick(time - prev_time);
