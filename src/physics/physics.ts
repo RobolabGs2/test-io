@@ -87,4 +87,8 @@ class Physics implements IPhysics
             this.queue.Relocate(other.tag);
         }
     }
+    //либо можно возвращать, что нужно в конструкторе
+    toJSON() {
+        return {}
+    }
 }

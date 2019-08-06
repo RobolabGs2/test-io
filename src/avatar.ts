@@ -77,8 +77,8 @@ class ImageSource extends Typeable{
 
     protected onload(bitmap: ImageBitmap) {}
 
-    constructor(private filename: string) {
-        super("ImageSource");
+    constructor(private filename: string, type="ImageSource") {
+        super(type);
         let img = new Image();
         img.onload = () => {
             createImageBitmap(img).then(bitmap => {
@@ -91,9 +91,8 @@ class ImageSource extends Typeable{
 }
 
 class AnimationSource extends ImageSource {
-    constructor(filename: string) {
-        super(filename);
-        this._type = "AnimationSource"
+    constructor(filename: string, public frameSize: number, type = "AnimationSource") {
+        super(filename, type);
     }
     protected onload(bitmap: ImageBitmap) {
         

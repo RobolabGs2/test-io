@@ -59,8 +59,8 @@ class StrokeRectangleAvatar extends Avatar {
     }
 }
 class ImageSource extends Typeable {
-    constructor(filename) {
-        super("ImageSource");
+    constructor(filename, type = "ImageSource") {
+        super(type);
         this.filename = filename;
         let img = new Image();
         img.onload = () => {
@@ -74,9 +74,9 @@ class ImageSource extends Typeable {
     onload(bitmap) { }
 }
 class AnimationSource extends ImageSource {
-    constructor(filename) {
-        super(filename);
-        this._type = "AnimationSource";
+    constructor(filename, frameSize, type = "AnimationSource") {
+        super(filename, type);
+        this.frameSize = frameSize;
     }
     onload(bitmap) {
     }

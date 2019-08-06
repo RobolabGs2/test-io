@@ -42,6 +42,7 @@ class Entity extends Typeable {
     constructor(avatar, body) {
         super("Entity");
         this.avatar = avatar;
+        this.counter = 0;
         this.drawHitbox = (hitbox) => { };
         this.body = body;
     }
@@ -52,9 +53,18 @@ class Entity extends Typeable {
     draw() {
         this.drawHitbox(this.hitbox);
     }
+    tick(dt) {
+        this.avatar.play(this.body.velocity.x / 50 * dt);
+    }
     get hitbox() { return this.body.hitbox; }
     static unpack({ hitbox, avatar, movable = true }, physics) {
         return new Entity(avatar, physics.createBody(hitbox, new Point({}), movable));
+    }
+    //лучше было переопределить toJson в Body, чтоб он возвращал {movable, что-ещё нужно для создания}
+    //деструктурирующее присваивание позволяет парсить и более глубоко, так что можно было бы это отловить в 
+    //Entity.unpack, либо передать как объект в createBody
+    toJSON() {
+        return { hitbox: this.hitbox, avatar: this.avatar, movable: this.body.movable, _type: this._type };
     }
 }
 class World extends Typeable {
@@ -83,6 +93,7 @@ class World extends Typeable {
     }
     tick(dt) {
         this.physics.tick(dt);
+        this.user.tick(dt);
     }
     pushDrawable(entity) {
         this.mobs.push(entity);

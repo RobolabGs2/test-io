@@ -62,4 +62,8 @@ class Physics {
             this.queue.Relocate(other.tag);
         }
     }
+    //либо можно возвращать, что нужно в конструкторе
+    toJSON() {
+        return {};
+    }
 }

@@ -27,7 +27,7 @@ function start(world) {
     }
     currentWorld = world;
     world.setContext(context);
-    timerDraw = setInterval(world.draw.bind(world), 40);
+    timerDraw = setInterval(world.draw.bind(world), 15);
     let user = world.user;
     let tick = (dt) => {
         let step = 100;
