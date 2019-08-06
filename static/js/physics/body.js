@@ -27,4 +27,12 @@ class Body {
         this.acceleration = acceleration;
         this.phisics.Update(this);
     }
+    setVelocity(velocity) {
+        this.velocity = velocity;
+        this.phisics.Update(this);
+    }
+    addVelocity(velocity) {
+        this.velocity = this.velocity.Sum(velocity);
+        this.phisics.Update(this);
+    }
 }

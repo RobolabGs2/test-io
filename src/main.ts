@@ -33,10 +33,11 @@ function start(world: World) {
         let step = 100;
         let dv = new Point({});
         if(keys.down) {
-            dv.y += step;
+            //dv.y += step;
         }
         if(keys.up) {
-            dv.y -= step;
+            if(Math.abs(user.body.velocity.y) < 1)
+                user.body.setVelocity(new Point({x: user.body.velocity.x, y: -130}));
         }
         if(keys.right) {
             dv.x += step;

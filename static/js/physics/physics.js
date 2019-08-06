@@ -3,7 +3,7 @@ class Physics {
     constructor() {
         this.objects = new Array();
         this.queue = new PriorityQueue();
-        this.gravity = new Point({ x: 0, y: 9.8 });
+        this.gravity = new Point({ x: 0, y: 9.8 * 10 });
     }
     tick(dt) {
         if (dt > 0.1)

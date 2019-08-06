@@ -5,6 +5,8 @@ interface IBody{
     movable: boolean;
 
     setAcceleration(acceleration: Point): void;
+    setVelocity(velocity: Point): void;
+    addVelocity(velocity: Point): void;
 }
 
 class Body implements IBody{
@@ -44,6 +46,16 @@ class Body implements IBody{
 
     setAcceleration(acceleration: Point){
         this.acceleration = acceleration;
+        this.phisics.Update(this);
+    }
+
+    setVelocity(velocity: Point){
+        this.velocity = velocity;
+        this.phisics.Update(this);
+    }
+
+    addVelocity(velocity: Point){
+        this.velocity = this.velocity.Sum(velocity);
         this.phisics.Update(this);
     }
 }
