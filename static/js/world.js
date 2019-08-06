@@ -93,6 +93,7 @@ class World extends Typeable {
     }
     tick(dt) {
         this.physics.tick(dt);
+        this.mobs.forEach(m => m.tick(dt));
         this.user.tick(dt);
     }
     pushDrawable(entity) {

@@ -121,7 +121,8 @@ class World extends Typeable implements Drawable{
 
     tick(dt: number){
         this.physics.tick(dt);
-        this.user.tick(dt)
+        this.mobs.forEach(m => m.tick(dt));
+        this.user.tick(dt);
     }
 
     pushDrawable(entity: Entity) {

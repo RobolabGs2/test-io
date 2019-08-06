@@ -29,6 +29,13 @@ function start(world: World) {
     world.setContext(context);
     timerDraw = setInterval(world.draw.bind(world), 15);
     let user = world.user;
+    let textures = [
+        user.avatar.texture,
+        new FillRectangleTexture(new Color(255, 255, 255, 12)),
+        new AnimatedFillRectangleTexture(new Color(255, 255, 255, 12)),
+        new StrokeRectangleTexture(new Color(126, 63, 32)),
+        new ImageTexture("duck16x16.png")
+    ];
     let tick = (dt: number) => {
         let step = 100;
         let dv = new Point({});
@@ -47,7 +54,7 @@ function start(world: World) {
         user.body.setAcceleration(dv)
         if(keys.clone) {
             world.pushDrawable(new Entity(
-                new StrokeRectangleAvatar(new Color(255, 255, 255, 12)), 
+                new Avatar(textures[getRandomInt(0, textures.length-1)]), 
                 world.physics.createBody(new Hitbox(user.hitbox.position.Sum(new Point({x: 50, y: 0})), 33, 33), new Point({}), true)));
             keys.clone = false
         }
@@ -62,7 +69,7 @@ function start(world: World) {
 }
 
 
-loadWorld("test-physics-world.json", start)
+loadWorld("test-world-anim.json", start)
 
 let sb = document.getElementById("save") as HTMLButtonElement;
 let lb = document.getElementById("load") as HTMLButtonElement;

@@ -13,8 +13,9 @@
 			"height": 32
 		},
 		"avatar": {
-			"_type": "AnimatedAvatar",
-			"filename": "yana_duck_animated.png"
+			"_type": "AnimatedImageTexture",
+			"filename": "yana_duck_animated.png",
+			"frameSize": 64
 		}
 	},
 	"mobs": [
@@ -31,7 +32,7 @@
 				"height": 32
 			},
 			"avatar": {
-				"_type": "RectangleAvatar",
+				"_type": "FillRectangleTexture",
 				"color": {
 					"_type": "Color",
 					"A": 255,
@@ -54,7 +55,7 @@
 				"height": 32
 			},
 			"avatar": {
-				"_type": "RectangleAvatar",
+				"_type": "FillRectangleTexture",
 				"color": {
 					"_type": "Color",
 					"A": 255,
@@ -77,7 +78,7 @@
 				"height": 32
 			},
 			"avatar": {
-				"_type": "StrokeRectangleAvatar",
+				"_type": "StrokeRectangleTexture",
 				"color": {
 					"_type": "Color",
 					"A": 255,
@@ -100,7 +101,7 @@
 				"height": 32
 			},
 			"avatar": {
-				"_type": "StrokeRectangleAvatar",
+				"_type": "StrokeRectangleTexture",
 				"color": {
 					"_type": "Color",
 					"A": 255,
@@ -123,7 +124,7 @@
 				"height": 10
 			},
 			"avatar": {
-				"_type": "RectangleAvatar",
+				"_type": "FillRectangleTexture",
 				"color": {
 					"_type": "Color",
 					"A": 255,
@@ -131,7 +132,8 @@
 					"G": 128,
 					"B": 128
 				}
-			}
+			},
+			"movable": false
 		}
 	]
 }

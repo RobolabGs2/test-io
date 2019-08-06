@@ -64,6 +64,6 @@ class Physics {
     }
     //либо можно возвращать, что нужно в конструкторе
     toJSON() {
-        return {};
+        return undefined;
     }
 }
