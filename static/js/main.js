@@ -58,7 +58,7 @@ function start(world) {
         prev_time = time;
     });
 }
-loadWorld("test-world-anim.json", start);
+loadWorld("test-physics-world.json", start);
 let sb = document.getElementById("save");
 let lb = document.getElementById("load");
 let saveInput = document.getElementById("saveNum");

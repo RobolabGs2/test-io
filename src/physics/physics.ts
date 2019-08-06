@@ -8,13 +8,9 @@ class Physics
         this.queue = new PriorityQueue();
     }
 
-    Contact(pair: CollisionPair){
-        let buf = pair.b1.velocity;
-        pair.b1.velocity = pair.b2.velocity;
-        pair.b2.velocity = buf;
-    }
-
     tick(dt: number){
+        if(dt > 0.1)
+            dt = 0.01;
         do
         {
             let pair = this.queue.Better().collision;
@@ -31,14 +27,13 @@ class Physics
             let delta = pair.time - 1e-9;
             this.objects.forEach(obj => obj.tick(delta))
 
-            this.Contact(pair);
+            impact.hit(pair.b1, pair.b2, pair.vector);
 
             this.Update(pair.b1);
             this.Update(pair.b2);
         } while (dt > 0);
 
         console.log(this.queue.list.length, this.queue.Better().collision.time);
-
     }
 
     add(body: Body){
@@ -51,25 +46,28 @@ class Physics
     {
         let time = Infinity; 
         let other = body;
+        let vector = new Point({});
         for (let i = 0; i < this.objects.length; ++i){
             let current = this.objects[i];
             if (current != body)
             {
-                let currentTime = Collision.BodyTime(body, current, time);
+                let collision = Collision.BodyTime(body, current, time)
+                let currentTime = collision.time;
                 if (currentTime < time && currentTime < current.collision.time)
                 {
                     other = current;
                     time = currentTime;
+                    vector = collision.vector;
                 }
             }
         }
 
-        let pair1 = new CollisionPair(body, other, time, new Point({}));
+        let pair1 = new CollisionPair(body, other, time, vector);
         body.collision = pair1;
         this.queue.Relocate(body.tag);
         if(body != other)
         {
-            let pair2 = new CollisionPair(body, other, time, new Point({}));
+            let pair2 = new CollisionPair(body, other, time, vector);
             other.collision = pair2;
             this.queue.Relocate(other.tag);
         }

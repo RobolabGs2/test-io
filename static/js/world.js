@@ -19,6 +19,9 @@ class Point extends Typeable {
     Neg() {
         return new Point({ x: -this.x, y: -this.y });
     }
+    length() {
+        return Math.sqrt(this.x * this.x + this.y * this.y);
+    }
 }
 class Hitbox extends Typeable {
     constructor(position, width, height) {
@@ -36,12 +39,15 @@ class Hitbox extends Typeable {
     }
 }
 class Entity extends Typeable {
-    constructor(hitbox, avatar) {
+    constructor(hitbox, avatar, movable = true) {
         super("Entity");
         this.hitbox = hitbox;
         this.avatar = avatar;
         this.drawHitbox = (hitbox) => { };
-        this.body = new Body(hitbox, new Point({ x: Math.random() * 5, y: Math.random() * 5 }));
+        if (movable)
+            this.body = new Body(hitbox, new Point({ x: Math.random() * 5, y: Math.random() * 5 }), movable);
+        else
+            this.body = new Body(hitbox, new Point({ x: 0, y: 0 }), movable);
     }
     setContext(context) {
         this.drawHitbox = this.avatar.bindContext(context);
@@ -55,8 +61,8 @@ class Entity extends Typeable {
         this.hitbox.position.y += dv.y;
         this.avatar.play(dv.x / 15);
     }
-    static unpack({ hitbox, avatar }) {
-        return new Entity(hitbox, avatar);
+    static unpack({ hitbox, avatar, movable = true }) {
+        return new Entity(hitbox, avatar, movable);
     }
 }
 class World extends Typeable {

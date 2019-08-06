@@ -26,6 +26,10 @@ class Point extends Typeable {
     Neg(): Point{
         return new Point({x: -this.x, y: -this.y});
     }
+
+    length(): number{
+        return Math.sqrt(this.x * this.x + this.y * this.y);
+    }
 }
 
 interface Drawable {
@@ -62,10 +66,15 @@ class Entity extends Typeable implements Drawable{
 
     body: Body; 
 
-    constructor(public hitbox: Hitbox, public avatar: Avatar) {
+    constructor(public hitbox: Hitbox, public avatar: Avatar, movable: boolean = true) {
         super("Entity");
+
+        if(movable)
         this.body = new Body(hitbox, 
-            new Point({x:Math.random() * 5, y:Math.random() * 5}));
+            new Point({x:Math.random() * 5, y:Math.random() * 5}), movable);
+        else
+        this.body = new Body(hitbox, 
+            new Point({x: 0, y: 0}), movable);
     }
 
     move(dv: Point) {
@@ -74,8 +83,8 @@ class Entity extends Typeable implements Drawable{
         this.avatar.play(dv.x/15)
     }
 
-    static unpack({hitbox, avatar}: {hitbox: Hitbox, avatar: Avatar}) {
-        return new Entity(hitbox, avatar);
+    static unpack({hitbox, avatar, movable = true}: {hitbox: Hitbox, avatar: Avatar, movable: boolean}) {
+        return new Entity(hitbox, avatar, movable);
     }
 }
 

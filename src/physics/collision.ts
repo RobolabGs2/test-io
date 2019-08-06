@@ -1,6 +1,6 @@
 class Collision{
     
-    static BodyTime(b1: Body, b2: Body, time: number): number{
+    static BodyTime(b1: Body, b2: Body, time: number): {time: number, vector: Point}{
 
         let sq1 = b1.hitbox;
         let sq2 = b2.hitbox;
@@ -11,6 +11,7 @@ class Collision{
         time = this.LinesTime(sq1.x2, sq1.y1, sq1.y2, sq2.x1, sq2.y1, sq2.y2, dV, dg, time);
         time = this.LinesTime(sq1.x1, sq1.y1, sq1.y2, sq2.x2, sq2.y1, sq2.y2, dV, dg, time);
         time = this.LinesTime(sq1.x2, sq1.y1, sq1.y2, sq2.x2, sq2.y1, sq2.y2, dV, dg, time);
+        let prTime = time;
         dV = dV.Revers();
         dg = dg.Revers();
         time = this.LinesTime(sq1.y1, sq1.x1, sq1.x2, sq2.y1, sq2.x1, sq2.x2, dV, dg, time);
@@ -18,7 +19,10 @@ class Collision{
         time = this.LinesTime(sq1.y1, sq1.x1, sq1.x2, sq2.y2, sq2.x1, sq2.x2, dV, dg, time);
         time = this.LinesTime(sq1.y2, sq1.x1, sq1.x2, sq2.y2, sq2.x1, sq2.x2, dV, dg, time);
 
-        return time;
+        if(time == prTime)
+            return {time: time, vector: new Point({x: 1, y: 0})};
+        else
+            return {time: time, vector: new Point({x: 0, y: 1})};
     }
 
     private static LinesTime(x: number, y1: number, y2: number, a: number, b1: number, b2: number, dV: Point, dg: Point, time: number): number{

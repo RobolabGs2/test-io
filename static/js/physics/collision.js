@@ -9,13 +9,17 @@ class Collision {
         time = this.LinesTime(sq1.x2, sq1.y1, sq1.y2, sq2.x1, sq2.y1, sq2.y2, dV, dg, time);
         time = this.LinesTime(sq1.x1, sq1.y1, sq1.y2, sq2.x2, sq2.y1, sq2.y2, dV, dg, time);
         time = this.LinesTime(sq1.x2, sq1.y1, sq1.y2, sq2.x2, sq2.y1, sq2.y2, dV, dg, time);
+        let prTime = time;
         dV = dV.Revers();
         dg = dg.Revers();
         time = this.LinesTime(sq1.y1, sq1.x1, sq1.x2, sq2.y1, sq2.x1, sq2.x2, dV, dg, time);
         time = this.LinesTime(sq1.y2, sq1.x1, sq1.x2, sq2.y1, sq2.x1, sq2.x2, dV, dg, time);
         time = this.LinesTime(sq1.y1, sq1.x1, sq1.x2, sq2.y2, sq2.x1, sq2.x2, dV, dg, time);
         time = this.LinesTime(sq1.y2, sq1.x1, sq1.x2, sq2.y2, sq2.x1, sq2.x2, dV, dg, time);
-        return time;
+        if (time == prTime)
+            return { time: time, vector: new Point({ x: 1, y: 0 }) };
+        else
+            return { time: time, vector: new Point({ x: 0, y: 1 }) };
     }
     static LinesTime(x, y1, y2, a, b1, b2, dV, dg, time) {
         let dx = a - x;

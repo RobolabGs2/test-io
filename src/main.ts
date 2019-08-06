@@ -60,7 +60,7 @@ function start(world: World) {
 }
 
 
-loadWorld("test-world-anim.json", start)
+loadWorld("test-physics-world.json", start)
 
 let sb = document.getElementById("save") as HTMLButtonElement;
 let lb = document.getElementById("load") as HTMLButtonElement;
