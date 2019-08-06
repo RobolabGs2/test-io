@@ -1,19 +1,31 @@
-class Body{
+interface IBody{
+    readonly hitbox: Hitbox;
+    readonly velocity: Point;
+    readonly mass: number;
+    movable: boolean;
+
+    setAcceleration(acceleration: Point): void;
+}
+
+class Body implements IBody{
     hitbox: Hitbox;
     velocity: Point;
     movable: boolean;
     tag: number;
     collision: CollisionPair;
-    private gravity: Point;
+    phisics: Physics;
+    acceleration: Point;
+
     get mass() {return this.hitbox.height * this.hitbox.width};
 
-    constructor(hitbox: Hitbox, velocity: Point, movable: boolean = true){
+    constructor(hitbox: Hitbox, velocity: Point, physics: Physics, movable: boolean = true){
         this.hitbox = hitbox;
         this.velocity = velocity;
         this.movable = movable;
         this.tag = 0;
         this.collision = new CollisionPair(this);
-        this.gravity = new Point({x: 0, y: 9.8});
+        this.phisics = physics;
+        this.acceleration = new Point({});
     }
 
     tick(dt: number){
@@ -26,7 +38,12 @@ class Body{
 
     Acceleration(): Point{
         if(this.movable)
-            return this.gravity;
+            return this.phisics.gravity.Sum(this.acceleration);
         return new Point({});
+    }
+
+    setAcceleration(acceleration: Point){
+        this.acceleration = acceleration;
+        this.phisics.Update(this);
     }
 }

@@ -23,7 +23,7 @@ class impact {
     static bounce(v, u, m1, m2, mov1, mov2) {
         let k = 0.9;
         let u1 = u - v;
-        let p = 10 * Math.min(m1 * m1, m2 * m2);
+        let p = 20 * Math.min(m1 * m1, m2 * m2);
         let root = 1 - k + p * (m1 + m2) / (m1 * m1 * m2 * u1 * u1);
         let mult = Math.sqrt(root);
         if (mov1 && mov2) {

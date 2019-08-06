@@ -2,13 +2,14 @@
 class Body {
     get mass() { return this.hitbox.height * this.hitbox.width; }
     ;
-    constructor(hitbox, velocity, movable = true) {
+    constructor(hitbox, velocity, physics, movable = true) {
         this.hitbox = hitbox;
         this.velocity = velocity;
         this.movable = movable;
         this.tag = 0;
         this.collision = new CollisionPair(this);
-        this.gravity = new Point({ x: 0, y: 9.8 });
+        this.phisics = physics;
+        this.acceleration = new Point({});
     }
     tick(dt) {
         this.hitbox.position.x += dt * this.velocity.x + dt * dt * this.Acceleration().x / 2;
@@ -19,7 +20,11 @@ class Body {
     }
     Acceleration() {
         if (this.movable)
-            return this.gravity;
+            return this.phisics.gravity.Sum(this.acceleration);
         return new Point({});
+    }
+    setAcceleration(acceleration) {
+        this.acceleration = acceleration;
+        this.phisics.Update(this);
     }
 }

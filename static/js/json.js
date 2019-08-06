@@ -1,5 +1,6 @@
 "use strict";
 function parseWorld(json) {
+    let physics = new Physics();
     return JSON.parse(json, (key, value) => {
         let _type = value["_type"];
         if (typeof _type === "string") {
@@ -9,9 +10,9 @@ function parseWorld(json) {
                 case "Hitbox":
                     return Hitbox.unpack(value);
                 case "Entity":
-                    return Entity.unpack(value);
+                    return Entity.unpack(value, physics);
                 case "World":
-                    return World.unpack(value);
+                    return World.unpack(value, physics);
                 case "Color":
                     return Color.unpack(value);
                 case "ImageAvatar":

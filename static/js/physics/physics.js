@@ -3,10 +3,12 @@ class Physics {
     constructor() {
         this.objects = new Array();
         this.queue = new PriorityQueue();
+        this.gravity = new Point({ x: 0, y: 9.8 });
     }
     tick(dt) {
         if (dt > 0.1)
             dt = 0.01;
+        let count = 0;
         do {
             let pair = this.queue.Better().collision;
             let contact = pair.time <= dt;
@@ -21,8 +23,14 @@ class Physics {
             impact.hit(pair.b1, pair.b2, pair.vector);
             this.Update(pair.b1);
             this.Update(pair.b2);
+            ++count;
         } while (dt > 0);
-        console.log(this.queue.list.length, this.queue.Better().collision.time);
+        //console.log(this.queue.list.length, count, this.queue.Better().collision.time);
+    }
+    createBody(hitbox, velocity, movable = true) {
+        let body = new Body(hitbox, velocity, this, movable);
+        this.add(body);
+        return body;
     }
     add(body) {
         this.objects.push(body);

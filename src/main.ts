@@ -30,7 +30,7 @@ function start(world: World) {
     timerDraw = setInterval(world.draw.bind(world), 40);
     let user = world.user;
     let tick = (dt: number) => {
-        let step = speed*(dt)/1000;
+        let step = 100;
         let dv = new Point({});
         if(keys.down) {
             dv.y += step;
@@ -44,9 +44,11 @@ function start(world: World) {
         if(keys.left) {
             dv.x -= step;
         }
-        user.move(dv)
+        user.body.setAcceleration(dv)
         if(keys.clone) {
-            world.pushDrawable(new Entity(new Hitbox(new Point(user.hitbox.position), 33, 33), new StrokeRectangleAvatar(new Color(255, 255, 255, 12))))
+            world.pushDrawable(new Entity(
+                new StrokeRectangleAvatar(new Color(255, 255, 255, 12)), 
+                world.physics.createBody(new Hitbox(user.hitbox.position.Sum(new Point({x: 50, y: 0})), 33, 33), new Point({}), true)));
             keys.clone = false
         }
         world.tick(dt/1000);

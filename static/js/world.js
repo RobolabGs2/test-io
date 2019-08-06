@@ -39,15 +39,11 @@ class Hitbox extends Typeable {
     }
 }
 class Entity extends Typeable {
-    constructor(hitbox, avatar, movable = true) {
+    constructor(avatar, body) {
         super("Entity");
-        this.hitbox = hitbox;
         this.avatar = avatar;
         this.drawHitbox = (hitbox) => { };
-        if (movable)
-            this.body = new Body(hitbox, new Point({ x: Math.random() * 5, y: Math.random() * 5 }), movable);
-        else
-            this.body = new Body(hitbox, new Point({ x: 0, y: 0 }), movable);
+        this.body = body;
     }
     setContext(context) {
         this.drawHitbox = this.avatar.bindContext(context);
@@ -56,13 +52,9 @@ class Entity extends Typeable {
     draw() {
         this.drawHitbox(this.hitbox);
     }
-    move(dv) {
-        this.hitbox.position.x += dv.x;
-        this.hitbox.position.y += dv.y;
-        this.avatar.play(dv.x / 15);
-    }
-    static unpack({ hitbox, avatar, movable = true }) {
-        return new Entity(hitbox, avatar, movable);
+    get hitbox() { return this.body.hitbox; }
+    static unpack({ hitbox, avatar, movable = true }, physics) {
+        return new Entity(avatar, physics.createBody(hitbox, new Point({}), movable));
     }
 }
 class World extends Typeable {
@@ -83,25 +75,22 @@ class World extends Typeable {
         });
         this.user.draw();
     }
-    constructor(user) {
+    constructor(user, physics) {
         super("World");
         this.user = user;
         this.mobs = new Array();
-        this.physics = new Physics();
+        this.physics = physics;
     }
     tick(dt) {
         this.physics.tick(dt);
     }
-    add(entity) {
-        this.mobs.push(entity);
-        this.physics.add(entity.body);
-    }
     pushDrawable(entity) {
-        this.add(entity.setContext(this.context));
+        this.mobs.push(entity);
+        entity.setContext(this.context);
     }
-    static unpack({ user, mobs }) {
-        let w = new World(user);
-        mobs.forEach(mob => w.add(mob));
+    static unpack({ user, mobs }, physics) {
+        let w = new World(user, physics);
+        mobs.forEach(mob => w.pushDrawable(mob));
         return w;
     }
 }

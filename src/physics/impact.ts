@@ -24,7 +24,7 @@ class impact{
     private static bounce(v: number, u: number, m1: number, m2: number, mov1: boolean, mov2: boolean): {v: number, u: number}{
         let k = 0.9;
         let u1 = u - v;
-        let p = 10 * Math.min(m1 * m1, m2 * m2);
+        let p = 20 * Math.min(m1 * m1, m2 * m2);
         let root = 1 - k + p * (m1 + m2) / (m1 * m1 * m2 * u1 * u1);
         let mult = Math.sqrt(root);
 

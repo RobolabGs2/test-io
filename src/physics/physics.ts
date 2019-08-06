@@ -1,16 +1,24 @@
-class Physics
+interface IPhysics{
+    tick(dt: number): void;
+    createBody(hitbox: Hitbox, velocity: Point, movable: boolean): IBody;
+} 
+
+class Physics implements IPhysics
 {
-    objects: Array<Body>;
     private queue: PriorityQueue;
+    private objects: Array<Body>;
+    gravity: Point;
 
     constructor() {
         this.objects = new Array<Body>();
         this.queue = new PriorityQueue();
+        this.gravity = new Point({x: 0, y: 9.8});
     }
 
     tick(dt: number){
         if(dt > 0.1)
             dt = 0.01;
+        let count = 0;
         do
         {
             let pair = this.queue.Better().collision;
@@ -31,9 +39,16 @@ class Physics
 
             this.Update(pair.b1);
             this.Update(pair.b2);
+            ++count;
         } while (dt > 0);
 
-        console.log(this.queue.list.length, this.queue.Better().collision.time);
+        //console.log(this.queue.list.length, count, this.queue.Better().collision.time);
+    }
+
+    createBody(hitbox: Hitbox, velocity: Point, movable: boolean = true): IBody{
+        let body = new Body(hitbox, velocity, this, movable);
+        this.add(body);
+        return body;
     }
 
     add(body: Body){

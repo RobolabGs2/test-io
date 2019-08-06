@@ -5,6 +5,20 @@ class Collision {
         let sq2 = b2.hitbox;
         let dV = b2.velocity.Sum(b1.velocity.Neg());
         let dg = b2.Acceleration().Sum(b1.Acceleration().Neg());
+        {
+            let xCenter = (sq1.x1 + sq1.x2) / 2;
+            let aCenter = (sq2.x1 + sq2.x2) / 2;
+            let dx = Math.abs(xCenter - aCenter);
+            let maxLen = (sq1.width + sq2.width) / 2 + Math.abs(dV.x * time) + Math.abs(dg.x * time * time);
+            if (dx > maxLen)
+                return { time: time, vector: new Point({ x: 0, y: 0 }) };
+            let yCenter = (sq1.y1 + sq1.y2) / 2;
+            let bCenter = (sq2.y1 + sq2.y2) / 2;
+            dx = Math.abs(yCenter - bCenter);
+            maxLen = (sq1.height + sq2.height) / 2 + Math.abs(dV.y * time) + Math.abs(dg.y * time * time);
+            if (dx > maxLen)
+                return { time: time, vector: new Point({ x: 0, y: 0 }) };
+        }
         time = this.LinesTime(sq1.x1, sq1.y1, sq1.y2, sq2.x1, sq2.y1, sq2.y2, dV, dg, time);
         time = this.LinesTime(sq1.x2, sq1.y1, sq1.y2, sq2.x1, sq2.y1, sq2.y2, dV, dg, time);
         time = this.LinesTime(sq1.x1, sq1.y1, sq1.y2, sq2.x2, sq2.y1, sq2.y2, dV, dg, time);

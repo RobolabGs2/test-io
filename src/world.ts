@@ -63,28 +63,16 @@ class Entity extends Typeable implements Drawable{
     }
 
     private drawHitbox = (hitbox: Hitbox) => {}
+    body: IBody; 
+    get hitbox() {return this.body.hitbox}
 
-    body: Body; 
-
-    constructor(public hitbox: Hitbox, public avatar: Avatar, movable: boolean = true) {
+    constructor(public avatar: Avatar, body: IBody) {
         super("Entity");
-
-        if(movable)
-        this.body = new Body(hitbox, 
-            new Point({x:Math.random() * 5, y:Math.random() * 5}), movable);
-        else
-        this.body = new Body(hitbox, 
-            new Point({x: 0, y: 0}), movable);
+        this.body = body;
     }
-
-    move(dv: Point) {
-        this.hitbox.position.x+=dv.x
-        this.hitbox.position.y+=dv.y
-        this.avatar.play(dv.x/15)
-    }
-
-    static unpack({hitbox, avatar, movable = true}: {hitbox: Hitbox, avatar: Avatar, movable: boolean}) {
-        return new Entity(hitbox, avatar, movable);
+    
+    static unpack({hitbox, avatar, movable = true}: {hitbox: Hitbox, avatar: Avatar, movable: boolean}, physics: IPhysics) {
+        return new Entity(avatar, physics.createBody(hitbox, new Point({}), movable));
     }
 }
 
@@ -112,31 +100,27 @@ class World extends Typeable implements Drawable{
     user: Entity;
     mobs: Array<Entity>;
     private context!: CanvasRenderingContext2D;
-    physics: Physics;
+    physics: IPhysics;
 
-    constructor(user: Entity) {
+    constructor(user: Entity, physics: IPhysics) {
         super("World");
         this.user = user;
         this.mobs = new Array<Entity>();
-        this.physics = new Physics();
+        this.physics = physics;
     }
 
     tick(dt: number){
         this.physics.tick(dt);
     }
 
-    add(entity: Entity){
-        this.mobs.push(entity);
-        this.physics.add(entity.body);
-    }
-
     pushDrawable(entity: Entity) {
-        this.add(entity.setContext(this.context) as Entity);
+        this.mobs.push(entity);
+        entity.setContext(this.context);
     }
 
-    static unpack({user, mobs}: {user: Entity, mobs: Array<Entity>}) {
-        let w = new World(user);                
-        mobs.forEach(mob => w.add(mob));
+    static unpack({user, mobs}: {user: Entity, mobs: Array<Entity>}, physics: IPhysics) {
+        let w = new World(user, physics);                
+        mobs.forEach(mob => w.pushDrawable(mob));
         return w;
     }
 }
