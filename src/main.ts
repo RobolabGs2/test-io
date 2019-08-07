@@ -15,6 +15,7 @@ window.addEventListener("keyup", (ev:KeyboardEvent)=>{
 
 let canvas = document.getElementById('main') as HTMLCanvasElement;
 let context = canvas.getContext('2d') as CanvasRenderingContext2D;
+let camera = new Camera(context, new Hitbox(new Point({x:1, y:1}), canvas.width, canvas.height))
 let timerTick: number;
 let timerDraw: number;
 let currentWorld: World;
@@ -26,8 +27,7 @@ function start(world: World) {
         console.log(e);
     }
     currentWorld = world;
-    world.setContext(context);
-    timerDraw = setInterval(world.draw.bind(world), 15);
+    world.setCamera(camera);
     let user = world.user;
     let textures = [
         user.avatar.texture,
@@ -66,6 +66,7 @@ function start(world: World) {
         tick(time - prev_time);
         prev_time = time;
     })
+    timerDraw = setInterval(world.draw.bind(world), 15);
 }
 
 

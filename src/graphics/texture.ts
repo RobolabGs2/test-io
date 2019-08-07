@@ -1,5 +1,10 @@
+interface Sizeable {
+    width: number;
+    height: number;
+}
+
 abstract class AnimatedTexture extends Typeable {
-    abstract draw(context: CanvasRenderingContext2D, hitbox: Hitbox, progress: number): boolean;
+    abstract draw(context: CanvasRenderingContext2D, hitbox: Sizeable, progress: number): boolean;
 }
 
 class Color extends Typeable {
@@ -29,8 +34,8 @@ abstract class ColoredTexture extends AnimatedTexture {
         super(type);
     }
 
-    protected abstract drawing(context: CanvasRenderingContext2D, hitbox: Hitbox, progress: number): void;
-    draw(context: CanvasRenderingContext2D, hitbox: Hitbox, progress: number): boolean {
+    protected abstract drawing(context: CanvasRenderingContext2D, hitbox: Sizeable, progress: number): void;
+    draw(context: CanvasRenderingContext2D, hitbox: Sizeable, progress: number): boolean {
         this.play(progress);
         if (this.colorFill != undefined)
             context.fillStyle = this.colorFill.to_string();
@@ -43,8 +48,8 @@ abstract class ColoredTexture extends AnimatedTexture {
 }
 
 class FillRectangleTexture extends ColoredTexture {
-    protected drawing(context: CanvasRenderingContext2D, hitbox: Hitbox, progress: number): void {
-        context.fillRect(hitbox.position.x, hitbox.position.y, hitbox.width, hitbox.height);
+    protected drawing(context: CanvasRenderingContext2D, hitbox: Sizeable, progress: number): void {
+        context.fillRect(0, 0, hitbox.width, hitbox.height);
     }
 
     constructor(color: Color) {
@@ -60,8 +65,8 @@ class AnimatedFillRectangleTexture extends FillRectangleTexture {
 }
 
 class StrokeRectangleTexture extends ColoredTexture {
-    protected drawing(context: CanvasRenderingContext2D, hitbox: Hitbox, progress: number): void {
-        context.strokeRect(hitbox.position.x, hitbox.position.y, hitbox.width, hitbox.height);
+    protected drawing(context: CanvasRenderingContext2D, hitbox: Sizeable, progress: number): void {
+        context.strokeRect(0, 0, hitbox.width, hitbox.height);
     }
 
     constructor(color: Color) {
@@ -76,8 +81,8 @@ class ImageTexture extends AnimatedTexture {
         return this.bitmap != null;
     }
 
-    protected drawing(context: CanvasRenderingContext2D, hitbox: Hitbox, progress: number) {
-        context.drawImage(this.bitmap, hitbox.position.x, hitbox.position.y, hitbox.width, hitbox.height);
+    protected drawing(context: CanvasRenderingContext2D, hitbox: Sizeable, progress: number) {
+        context.drawImage(this.bitmap, 0, 0, hitbox.width, hitbox.height);
     }
 
     draw(context: CanvasRenderingContext2D, hitbox: Hitbox, progress: number): boolean {
@@ -107,12 +112,12 @@ class AnimatedImageTexture extends ImageTexture {
         super(filename, type);
     }
 
-    protected drawing(context: CanvasRenderingContext2D, hitbox: Hitbox, progress: number) {
+    protected drawing(context: CanvasRenderingContext2D, hitbox: Sizeable, progress: number) {
         const frameCount = this.bitmap.width / this.frameSize;
         let dt = Math.floor(frameCount * progress)
         context.drawImage(
             this.bitmap, (this.frameSize + 1) * dt, 0, this.frameSize, this.frameSize,
-            hitbox.position.x, hitbox.position.y, hitbox.width, hitbox.height
+            0, 0, hitbox.width, hitbox.height
         );
     }
 }

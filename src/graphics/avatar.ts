@@ -1,14 +1,50 @@
+class Camera {
+    constructor(public context: CanvasRenderingContext2D, public hitbox = new Hitbox(new Point({}), 512, 512), public offset = new Point({})) {
+        let center = hitbox.center()
+        context.translate(center.x, center.y)
+    }
+
+    setPosition(position: Point, offset = new Point({})) {
+        this.hitbox.position = position;
+        this.offset = offset;
+    }
+
+    get position() {
+        return new Point(this.hitbox.position.Sum(this.offset));
+    }
+
+    toJSON() {
+        return undefined;
+    }
+
+    clear() {
+        this.context.fillStyle = "#000"
+        this.context.fillRect(-this.hitbox.width/2, -this.hitbox.height/2, this.hitbox.width, this.hitbox.height);
+        //this.context.clearRect(0, 0, 256, 256);
+        /*
+        this.context.lineWidth = 5
+        this.context.beginPath()
+        this.context.moveTo(-this.hitbox.width/2, -this.hitbox.height/2)
+        this.context.lineTo(this.hitbox.width, this.hitbox.height)
+        this.context.moveTo(-this.hitbox.width/2, this.hitbox.height/2)
+        this.context.lineTo(this.hitbox.width, -this.hitbox.height)
+        this.context.stroke()*/
+    }
+}
+
 class Avatar {
     private tick = 0;
 
-    protected modification(context: CanvasRenderingContext2D): CanvasRenderingContext2D {
+    protected modification(context: CanvasRenderingContext2D, hitbox: Hitbox): CanvasRenderingContext2D {
         return context;
     }
 
-    bindContext(context: CanvasRenderingContext2D): (hitbox: Hitbox) => boolean {
+    bindContext(camera: Camera): (hitbox: Hitbox) => boolean {
         return hitbox => {
+            const context = camera.context;
             context.save();
-            let b = this.texture.draw(this.modification(context), hitbox, this.tick);
+            context.translate(- camera.position.x + hitbox.position.x, - camera.position.y + hitbox.position.y)
+            let b = this.texture.draw(this.modification(context, hitbox), hitbox, this.tick);
             context.restore();
             return b;
         };
@@ -29,11 +65,10 @@ class Avatar {
     }
 }
 
-//todo учитывать хитбокс и нормально отражать, а не всё целиком
 class ReflectedAvatar extends Avatar {
-    protected modification(context: CanvasRenderingContext2D): CanvasRenderingContext2D {
+    protected modification(context: CanvasRenderingContext2D, hitbox: Hitbox): CanvasRenderingContext2D {
+        context.translate(hitbox.width, 0)
         context.scale(-1, 1);
-        context.translate(-512, 0)
         return context;
     }
 }
