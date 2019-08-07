@@ -9,6 +9,17 @@ class Camera {
         this.offset = offset;
     }
 
+    _scale = 1;
+
+    scale(delta: number) {
+        let new_scale = (this._scale+delta)
+        const newLocal = this._scale / new_scale;
+        if(new_scale<=0.0001)
+            return
+        this.context.scale(newLocal, newLocal);
+        this._scale = new_scale
+    }
+
     get position() {
         return new Point(this.hitbox.position.Sum(this.offset));
     }
@@ -19,7 +30,7 @@ class Camera {
 
     clear() {
         this.context.fillStyle = "#000"
-        this.context.fillRect(-this.hitbox.width/2, -this.hitbox.height/2, this.hitbox.width, this.hitbox.height);
+        this.context.fillRect(-this.hitbox.width/2*this._scale, -this.hitbox.height/2*this._scale, this.hitbox.width*this._scale, this.hitbox.height*this._scale);
         //this.context.clearRect(0, 0, 256, 256);
         /*
         this.context.lineWidth = 5

@@ -1,20 +1,15 @@
 console.log("Start!")
 
-let keys = new Keyboard(); 
 let speed = 48; //px/second todo move to user or physics?
 let speed_input = document.getElementById("speed") as HTMLInputElement;
 speed_input.addEventListener("input", (ev) => {
     speed = speed_input.value as unknown as number
 })
-window.addEventListener("keydown", (ev:KeyboardEvent)=>{
-    keys.set(ev.code, true);
-});
-window.addEventListener("keyup", (ev:KeyboardEvent)=>{
-    keys.set(ev.code, false);
-});
 
 let canvas = document.getElementById('main') as HTMLCanvasElement;
 let context = canvas.getContext('2d') as CanvasRenderingContext2D;
+let keys = new Keyboard(); 
+let mouse = new Mouse(canvas)
 let camera = new Camera(context, new Hitbox(new Point({x:1, y:1}), canvas.width, canvas.height))
 let timerTick: number;
 let timerDraw: number;
@@ -51,6 +46,7 @@ function start(world: World) {
         if(keys.left) {
             dv.x -= step;
         }
+        camera.scale(mouse.whell/1551)
         user.body.setAcceleration(dv)
         if(keys.clone) {
             world.pushDrawable(new Entity(
