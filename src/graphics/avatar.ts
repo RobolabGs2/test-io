@@ -43,9 +43,24 @@ class Camera {
     }
 }
 
-class Avatar {
-    private tick = 0;
+abstract class Avatar {
+    protected tick = 0;
+    play(dt: number): void {
+        this.tick += dt;
+        if (this.tick > 1)
+            this.tick -= 1;
+        if (this.tick < 0)
+            this.tick += 1
+        }
+    constructor(public texture: AnimatedTexture) {
+    }
+    toJSON() {
+        return this.texture;
+    }
+    abstract bindContext(camera: Camera): (hitbox: Hitbox) => boolean;
+}
 
+class SimpleAvatar extends Avatar {
     protected modification(context: CanvasRenderingContext2D, hitbox: Hitbox): CanvasRenderingContext2D {
         return context;
     }
@@ -60,23 +75,9 @@ class Avatar {
             return b;
         };
     }
-
-    play(dt: number): void {
-        this.tick += dt;
-        if (this.tick > 1)
-            this.tick -= 1;
-        if (this.tick < 0)
-            this.tick += 1
-    }
-
-    constructor(public texture: AnimatedTexture) { }
-
-    toJSON() {
-        return this.texture;
-    }
 }
 
-class ReflectedAvatar extends Avatar {
+class ReflectedAvatar extends SimpleAvatar {
     protected modification(context: CanvasRenderingContext2D, hitbox: Hitbox): CanvasRenderingContext2D {
         context.translate(hitbox.width, 0)
         context.scale(-1, 1);
@@ -84,6 +85,34 @@ class ReflectedAvatar extends Avatar {
     }
 }
 
+class CompositeAvatar extends Avatar {
+    
+    bindContext(camera: Camera): (hitbox: Hitbox) => boolean {
+        let normal = this.normal.bindContext(camera);
+        let reverse = this.reflect.bindContext(camera)
+        return (hitbox: Hitbox) => {
+            if(this.left)
+                return normal(hitbox)
+            return reverse(hitbox)
+        }
+    }
+
+    left=true
+
+    play(dt: number): void {
+        this.left = dt>=0;
+        this.normal.play(dt)
+        this.reflect.play(-dt)
+    }
+
+    normal: SimpleAvatar;
+    reflect: ReflectedAvatar;
+    constructor(texture: AnimatedTexture) {
+        super(texture)
+        this.normal = new SimpleAvatar(texture)
+        this.reflect = new ReflectedAvatar(texture)
+    }
+}
 
 interface Factory<E> {
     make(type: string, src: any): E | false;
@@ -94,8 +123,7 @@ class AvatarFactory implements Factory<Avatar>{
     make(type: string, src: any): Avatar|false {
         let t = this.textureFactory.make(type, src);
         if(t != false)
-            return new Avatar(t as AnimatedTexture)
+            return new CompositeAvatar(t as AnimatedTexture)
         return t;
     }
-
 }

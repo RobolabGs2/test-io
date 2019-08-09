@@ -3,24 +3,23 @@ interface Sizeable {
     height: number;
 }
 
-abstract class AnimatedTexture extends Typeable {
-    abstract draw(context: CanvasRenderingContext2D, hitbox: Sizeable, progress: number): boolean;
+interface AnimatedTexture {
+    draw(context: CanvasRenderingContext2D, hitbox: Sizeable, progress: number): boolean;
+}
+
+interface Progressable<E> {
+    progress(progress: number): E;
+}
+
+abstract class AnimatedTexture extends Typeable implements AnimatedTexture{
 }
 
 class Color extends Typeable {
-    R: number;
-    G: number;
-    B: number;
-    A: number;
-
-    constructor(r: number, g: number, b: number, a = 255) {
-        super("Color");
-        this.A = a;
-        this.R = r;
-        this.G = g;
-        this.B = b;
+    constructor(public R: number, public G: number, public B: number, public A = 255, _type = "Color") {
+        super(_type);
     }
-    to_string(): string {
+    
+    toString(): string {
         return `rgba(${this.R},${this.G},${this.B},${this.A})`;
     }
 
@@ -29,18 +28,46 @@ class Color extends Typeable {
     }
 }
 
+interface AnimatedColor extends Progressable<Color> {
+    progress(progress: number): Color;
+}
+
+class RedToGreen extends Typeable implements AnimatedColor {
+    progress(progress: number): Color  {
+        if(progress < 0)
+            progress = 1 + progress;
+        progress = progress - 0.5
+        return new Color(255*Math.abs(2*progress), 255-255*Math.abs(2*progress), 0);
+    }
+
+    constructor() {
+        super("RedToGreen");
+    }
+}
+
+class Gradient implements AnimatedColor {
+    dC: Color;
+
+    progress(progress: number): Color {
+        return new Color(this.from.R+progress*this.dC.R, this.from.G+progress*this.dC.G, this.from.B+progress*this.dC.B)
+    }
+    constructor(private from: Color, private to: Color) {
+        this.dC = new Color(to.R - from.R, to.G - from.G, to.B - from.B);
+    }
+}
+
 abstract class ColoredTexture extends AnimatedTexture {
-    constructor(type: string, protected colorStroke?: Color, protected colorFill?: Color) {
+    constructor(type: string, protected color: Color) {
         super(type);
     }
 
     protected abstract drawing(context: CanvasRenderingContext2D, hitbox: Sizeable, progress: number): void;
     draw(context: CanvasRenderingContext2D, hitbox: Sizeable, progress: number): boolean {
         this.play(progress);
-        if (this.colorFill != undefined)
-            context.fillStyle = this.colorFill.to_string();
-        if (this.colorStroke != undefined)
-            context.strokeStyle = this.colorStroke.to_string();
+        if (this.color != undefined) {
+            context.fillStyle = this.color.toString();
+            context.strokeStyle = this.color.toString();
+        }
         this.drawing(context, hitbox, progress);
         return true;
     }
@@ -51,16 +78,19 @@ class FillRectangleTexture extends ColoredTexture {
     protected drawing(context: CanvasRenderingContext2D, hitbox: Sizeable, progress: number): void {
         context.fillRect(0, 0, hitbox.width, hitbox.height);
     }
-
+    protected play(progress: number) {
+    }
     constructor(color: Color) {
-        super("FillRectangleTexture", undefined, color);
+        super("FillRectangleTexture", color);
     }
 }
 
 class AnimatedFillRectangleTexture extends FillRectangleTexture {
     protected play(progress: number) {
-        (this.colorFill as Color).R = 128+128*progress;
-        (this.colorFill as Color).B = 128-128*progress;
+        progress = progress*2;
+        if(progress>1)
+            progress=2-progress
+        this.color = new Gradient(new Color(255, 128, 0), new Color(0, 128, 255)).progress(progress)
     }
 }
 
@@ -70,7 +100,7 @@ class StrokeRectangleTexture extends ColoredTexture {
     }
 
     constructor(color: Color) {
-        super("StrokeRectangleTexture", color, undefined);
+        super("StrokeRectangleTexture", color);
     }
 }
 

@@ -50,7 +50,7 @@ function start(world: World) {
         user.body.setAcceleration(dv)
         if(keys.clone) {
             world.pushDrawable(new Entity(
-                new Avatar(textures[getRandomInt(0, textures.length-1)]), 
+                new CompositeAvatar(textures[getRandomInt(0, textures.length-1)]), 
                 world.physics.createBody(new Hitbox(user.hitbox.position.Sum(new Point({x: 50, y: 0})), 33, 33), new Point({}), true)));
             keys.clone = false
         }
