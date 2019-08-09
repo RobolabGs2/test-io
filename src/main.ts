@@ -1,7 +1,7 @@
 console.log("Start!")
 
 let keys = new Keyboard(); 
-let speed = 48; //px/second todo move to user or physics?
+let speed = 150; //px/second todo move to user or physics?
 let speed_input = document.getElementById("speed") as HTMLInputElement;
 speed_input.addEventListener("input", (ev) => {
     speed = speed_input.value as unknown as number
@@ -30,8 +30,8 @@ function start(world: World) {
     timerDraw = setInterval(world.draw.bind(world), 15);
     let user = world.user;
     let tick = (dt: number) => {
-        let step = 100;
-        let dv = new Point({});
+
+        let run = 0;
         if(keys.down) {
             //dv.y += step;
         }
@@ -40,12 +40,12 @@ function start(world: World) {
                 user.body.setVelocity(new Point({x: user.body.velocity.x, y: -130}));
         }
         if(keys.right) {
-            dv.x += step;
+            run += speed;
         }
         if(keys.left) {
-            dv.x -= step;
+            run -= speed;
         }
-        user.body.setAcceleration(dv)
+        user.body.runSpeed = run;
         if(keys.clone) {
             world.pushDrawable(new Entity(
                 new StrokeRectangleAvatar(new Color(255, 255, 255, 12)), 

@@ -98,7 +98,7 @@ class AnimatedAvatar extends Typeable {
                 const frameSize = this.bitmap.height;
                 const frameCount = this.bitmap.width / frameSize;
                 let dt = Math.floor(frameCount * this.tick);
-                console.log(`${dt} ${frameCount} ${this.tick}`);
+                //console.log(`${dt} ${frameCount} ${this.tick}`)
                 context.transform;
                 context.drawImage(this.bitmap, (frameSize + 1) * dt, 0, frameSize, frameSize, hitbox.position.x, hitbox.position.y, hitbox.width, hitbox.height);
             }
