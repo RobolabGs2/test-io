@@ -14,8 +14,9 @@ class impact{
         }else{
             let vel = this.bounce(body1.velocity.y, body2.velocity.y, m1, m2, body1.movable, body2.movable);
             body1.velocity.y = vel.v;
-            body2.velocity.y = vel.u;    
-            let fric = this.friction(body1.velocity.x, body2.velocity.x, m1, m2, body1.movable, body2.movable);
+            body2.velocity.y = vel.u;   
+            
+            let fric = this.run(body1.velocity.x, body2.velocity.x, m1, m2, body1.movable, body2.movable, body2.runSpeed - body1.runSpeed);
             body1.velocity.x = fric.v;
             body2.velocity.x = fric.u;    
         }
@@ -70,6 +71,39 @@ class impact{
         if (mov2){
             let u2 = -u1 * mult;
             u = v + u2;
+        }
+        return {v: v, u: u};
+    }
+
+    private static run(v: number, u: number, m1: number, m2: number, mov1: boolean, mov2: boolean, S: number): {v: number, u: number}{
+        
+        let k = 0.3;            
+        let u1 = u - v;
+
+        let root = 1 - k;
+        let mult = Math.sqrt(root);
+
+        if (mov1 && mov2)
+        {
+            let u2 = (u1 * (m2 + m1 * mult) + m1 * S * (1 - mult)) / (m2 + m1);
+            let v2 = m2 * (u1 - S) * (1 - mult) / (m2 + m1);
+
+            u = v + u2;
+            v = v + v2;
+        }else
+        if (mov1){
+            let u2 = u1;
+            let v2 = (u1 - S) * (1 - mult);
+
+            u = v + u2;
+            v = v + v2;
+        }else
+        if (mov2){
+            let u2 = u1 * mult + S * (1 - mult);
+            let v2 = 0;
+
+            u = v + u2;
+            v = v + v2;
         }
         return {v: v, u: u};
     }

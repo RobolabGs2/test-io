@@ -1,7 +1,8 @@
 console.log("Start!")
 
-let speed = 48; //px/second todo move to user or physics?
+let speed = 150; //px/second todo move to user or physics?
 let speed_input = document.getElementById("speed") as HTMLInputElement;
+speed_input.valueAsNumber = speed;
 speed_input.addEventListener("input", (ev) => {
     speed = speed_input.value as unknown as number
 })
@@ -37,8 +38,8 @@ function start(world: World) {
         new ImageTexture("duck16x16.png")
     ];
     let tick = (dt: number) => {
-        let step = 100;
-        let dv = new Point({});
+
+        let run = 0;
         if(keys.down) {
             //dv.y += step;
         }
@@ -47,17 +48,17 @@ function start(world: World) {
                 user.body.setVelocity(new Point({x: user.body.velocity.x, y: -130}));
         }
         if(keys.right) {
-            dv.x += step;
+            run += speed;
         }
         if(keys.left) {
-            dv.x -= step;
+            run -= speed;
         }
         camera.scale(mouse.whell/1551)
-        user.body.setAcceleration(dv)
+        user.body.runSpeed = run;
         if(keys.clone) {
             world.pushDrawable(new Entity(
                 new CompositeAvatar(textures[getRandomInt(0, textures.length-1)]), 
-                world.physics.createBody(new Hitbox(user.hitbox.position.Sum(new Point({x: 50, y: 0})), 33, 33), new Point({}), true)));
+                world.physics.createBody(new Hitbox(user.hitbox.position.Sum(new Point({x: 50, y: 0})), 32, 32), new Point({}), true)));
             keys.clone = false
         }
         world.tick(dt/1000);
