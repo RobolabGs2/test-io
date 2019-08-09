@@ -46,16 +46,26 @@ class Body implements IBody{
 
     setAcceleration(acceleration: Point){
         this.acceleration = acceleration;
-        this.phisics.Update(this);
+        this.update();
     }
 
     setVelocity(velocity: Point){
         this.velocity = velocity;
-        this.phisics.Update(this);
+        this.update();
     }
 
     addVelocity(velocity: Point){
         this.velocity = this.velocity.Sum(velocity);
-        this.phisics.Update(this);
+        this.update();
+    }
+
+    update(){
+        if(this.collision.time < Infinity)
+        {
+            let col = this.collision;
+            this.phisics.Update(col.b1);
+            this.phisics.Update(col.b2);
+        }else
+            this.phisics.Update(this);
     }
 }
