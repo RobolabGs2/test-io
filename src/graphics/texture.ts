@@ -146,7 +146,7 @@ class AnimatedImageTexture extends ImageTexture {
         const frameCount = this.bitmap.width / this.frameSize;
         let dt = Math.floor(frameCount * progress)
         context.drawImage(
-            this.bitmap, (this.frameSize + 1) * dt, 0, this.frameSize, this.frameSize,
+            this.bitmap, (this.frameSize) * dt, 0, this.frameSize, this.frameSize,
             0, 0, hitbox.width, hitbox.height
         );
     }
