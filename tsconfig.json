@@ -10,7 +10,8 @@
     "moduleResolution": "node",
     "outDir": "static/js/",
     "strict": true,
-    "target": "es2018"
+    "target": "es2018",
+    "inlineSourceMap": true
   },
   "include": [
     "typings\\**\\*.d.ts",

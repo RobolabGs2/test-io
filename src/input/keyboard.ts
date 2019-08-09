@@ -24,4 +24,13 @@ class Keyboard {
                 break;
         }
     }
+
+    constructor() {
+        window.addEventListener("keydown", (ev:KeyboardEvent)=>{
+            keys.set(ev.code, true);
+        });
+        window.addEventListener("keyup", (ev:KeyboardEvent)=>{
+            keys.set(ev.code, false);
+        });
+    }
 }

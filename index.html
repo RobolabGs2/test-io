@@ -10,23 +10,24 @@
         <script src="./static/js/physics/body.js"></script>
         <script src="./static/js/physics/physics.js"></script>
         <script src="./static/js/physics/impact.js"></script>
-        <script src="./static/js/keyboard.js"></script>
+        <script src="./static/js/input/keyboard.js"></script>
+        <script src="./static/js/input/mouse.js"></script>
         <script src="./static/js/world.js"></script>
-        <script src="./static/js/avatar.js"></script>
         <script src="./static/js/json.js"></script>
+        <script src="./static/js/utils.js"></script>
+        <script src="./static/js/graphics/texture.js"></script>
+        <script src="./static/js/graphics/avatar.js"></script>
     <body>
-        <div>
-            <h1>Duck paint!</h1>
-            <p>Just test github.io</p>
-            <p>WASD and Space</p>
+        <header>
             <span>
-                Speed:<input type="number" id="speed" value="150"/>
+                Speed:<input type="number" id="speed"/>
                 <button id="save">Save</button>
                 <button id="load">Load</button>
                 <input type="number" id="saveNum" value="1"/>
+                WASD and Space
             </span>
-        </div>
-        <canvas id="main" height="512px" width="512px"></canvas>
+        </header>
+        <canvas id="main"></canvas>
     </body>
     <script src="./static/js/main.js"></script>
 </html>

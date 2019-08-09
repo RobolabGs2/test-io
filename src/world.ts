@@ -34,7 +34,7 @@ class Point extends Typeable {
 
 interface Drawable {
     draw(): void;
-    setContext(context: CanvasRenderingContext2D): Drawable;
+    setCamera(camera: Camera): Drawable;
 }
 
 class Hitbox extends Typeable  {
@@ -46,6 +46,7 @@ class Hitbox extends Typeable  {
     get x2() {return this.position.x + this.width}
     get y1() {return this.position.y}
     get y2() {return this.position.y + this.height}
+    center() {return new Point({x:(this.position.x + this.width/2), y:(this.position.y + this.height/2)})}
 
     static unpack({position, width, height}: {position: Point, width: number, height: number}) {
         return new Hitbox(position, width, height);
@@ -53,8 +54,8 @@ class Hitbox extends Typeable  {
 }
 
 class Entity extends Typeable implements Drawable{
-    setContext(context: CanvasRenderingContext2D): Drawable {
-        this.drawHitbox = this.avatar.bindContext(context);
+    setCamera(camera: Camera): Drawable {
+        this.drawHitbox = this.avatar.bindContext(camera);
         return this;
     }
     
@@ -88,20 +89,17 @@ class Entity extends Typeable implements Drawable{
 
 class World extends Typeable implements Drawable{
 
-    setContext(context: CanvasRenderingContext2D): Drawable {
-        this.context = context;
-        this.mobs.forEach(mob => mob.setContext(context))
-        this.user.setContext(context)
+    setCamera(camera: Camera): Drawable {
+        this.camera = camera
+        this.mobs.forEach(mob => mob.setCamera(camera))
+        this.user.setCamera(camera)
+        this.camera.setPosition(this.user.hitbox.position, new Point({x:this.user.hitbox.width/2, y:this.user.hitbox.height/2}));
         return this;
     }
 
     draw(): void {
-        this.context.fillStyle = "#000"
-        this.context.fillRect(0, 0, 512, 512);
-        //context.clearRect(0, 0, 512, 512);
+        this.camera.clear()
         this.mobs.forEach(mob => {
-            this.context.fillStyle = "#000"
-            this.context.strokeStyle = "#FFF"
             mob.draw();
         });
         this.user.draw();
@@ -109,7 +107,7 @@ class World extends Typeable implements Drawable{
 
     user: Entity;
     mobs: Array<Entity>;
-    private context!: CanvasRenderingContext2D;
+    private camera!: Camera;
     physics: IPhysics;
 
     constructor(user: Entity, physics: IPhysics) {
@@ -121,12 +119,13 @@ class World extends Typeable implements Drawable{
 
     tick(dt: number){
         this.physics.tick(dt);
-        this.user.tick(dt)
+        this.mobs.forEach(m => m.tick(dt));
+        this.user.tick(dt);
     }
 
     pushDrawable(entity: Entity) {
         this.mobs.push(entity);
-        entity.setContext(this.context);
+        entity.setCamera(this.camera);
     }
 
     static unpack({user, mobs}: {user: Entity, mobs: Array<Entity>}, physics: IPhysics) {

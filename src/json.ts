@@ -1,9 +1,12 @@
 function parseWorld(json: string) {
     let physics: IPhysics = new Physics();
-
+    let avatarFactory = new AvatarFactory();
     return JSON.parse(json, (key: string, value: any) => {
         let _type = value["_type"];
         if (typeof _type === "string") {
+            if(key === "avatar") {
+                return avatarFactory.make(_type, value);
+            }
             switch (_type as string) {
                 case "Point":
                     return new Point(value);
@@ -15,14 +18,6 @@ function parseWorld(json: string) {
                     return World.unpack(value, physics);
                 case "Color":
                     return Color.unpack(value);
-                case "ImageAvatar":
-                    return new ImageAvatar(value.filename);
-                case "AnimatedAvatar":
-                    return new AnimatedAvatar(value.filename);
-                case "RectangleAvatar":
-                    return new RectangleAvatar(value.color);
-                case "StrokeRectangleAvatar":
-                    return new StrokeRectangleAvatar(value.color);
             }
         }
         return value;

@@ -89,6 +89,6 @@ class Physics implements IPhysics
     }
     //либо можно возвращать, что нужно в конструкторе
     toJSON() {
-        return {}
+        return undefined
     }
 }
