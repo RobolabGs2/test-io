@@ -1,7 +1,15 @@
 class Camera {
-    constructor(public context: CanvasRenderingContext2D, public hitbox = new Hitbox(new Point({}), 512, 512), public offset = new Point({})) {
-        let center = hitbox.center()
-        context.translate(center.x, center.y)
+    private hitbox: Hitbox;
+    private offset = new Point({})
+    public readonly context: CanvasRenderingContext2D
+    constructor(public mainCanvas: HTMLCanvasElement, width: number, height: number) {
+        console.log(`Camera width: ${width}, height: ${height}`)
+        this.mainCanvas.width = width;
+        this.mainCanvas.height = height;
+        this.context = this.mainCanvas.getContext("2d") as CanvasRenderingContext2D;
+        this.hitbox =  new Hitbox(new Point({}), width, height);
+        let center = this.hitbox.center();
+        this.context.translate(center.x, center.y)
     }
 
     setPosition(position: Point, offset = new Point({})) {
@@ -60,7 +68,7 @@ abstract class Avatar {
     abstract bindContext(camera: Camera): (hitbox: Hitbox) => boolean;
 }
 
-class SimpleAvatar extends Avatar {
+class BaseAvatar extends Avatar {
     protected modification(context: CanvasRenderingContext2D, hitbox: Hitbox): CanvasRenderingContext2D {
         return context;
     }
@@ -77,7 +85,7 @@ class SimpleAvatar extends Avatar {
     }
 }
 
-class ReflectedAvatar extends SimpleAvatar {
+class ReflectedAvatar extends BaseAvatar {
     protected modification(context: CanvasRenderingContext2D, hitbox: Hitbox): CanvasRenderingContext2D {
         context.translate(hitbox.width, 0)
         context.scale(-1, 1);
@@ -105,11 +113,11 @@ class CompositeAvatar extends Avatar {
         this.reflect.play(-dt)
     }
 
-    normal: SimpleAvatar;
+    normal: BaseAvatar;
     reflect: ReflectedAvatar;
     constructor(texture: AnimatedTexture) {
         super(texture)
-        this.normal = new SimpleAvatar(texture)
+        this.normal = new BaseAvatar(texture)
         this.reflect = new ReflectedAvatar(texture)
     }
 }

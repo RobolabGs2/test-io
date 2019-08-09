@@ -6,11 +6,16 @@ speed_input.addEventListener("input", (ev) => {
     speed = speed_input.value as unknown as number
 })
 
+const header = (document.querySelector("header") as HTMLElement);
+let headerHeight = header.clientHeight;
+console.debug(headerHeight)
 let canvas = document.getElementById('main') as HTMLCanvasElement;
-let context = canvas.getContext('2d') as CanvasRenderingContext2D;
 let keys = new Keyboard(); 
-let mouse = new Mouse(canvas)
-let camera = new Camera(context, new Hitbox(new Point({x:1, y:1}), canvas.width, canvas.height))
+let mouse = new Mouse(canvas);
+let camera = new Camera(
+    canvas, 
+    window.innerWidth, 
+    document.body.clientHeight - headerHeight);
 let timerTick: number;
 let timerDraw: number;
 let currentWorld: World;

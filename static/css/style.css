@@ -1,12 +1,22 @@
-h1 {
-    color: blue;
+* {
+    margin: 0;
+    padding: 0;
 }
 
-p:first-of-type {
-    color: brown;
+header {
+    background-color: black;
+    height: 32px;
+}
+
+span {
+    margin-top: 5px;
+    color: white;
 }
 
 canvas {
-    border: 5px solid rebeccapurple;
-    height: 100%;
+    border-top: 2px solid whitesmoke;
+}
+
+body {
+    height: 99vh;
 }
