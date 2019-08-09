@@ -11,6 +11,7 @@ class Body {
         this.phisics = physics;
         this.acceleration = new Point({});
         this.runSpeed = 0;
+        this.jumpSpeed = 0;
     }
     tick(dt) {
         this.hitbox.position.x += dt * this.velocity.x + dt * dt * this.Acceleration().x / 2;

@@ -34,10 +34,10 @@ function start(world) {
         if (keys.down) {
             //dv.y += step;
         }
-        if (keys.up) {
-            if (Math.abs(user.body.velocity.y) < 1)
-                user.body.setVelocity(new Point({ x: user.body.velocity.x, y: -130 }));
-        }
+        if (keys.up)
+            user.body.jumpSpeed = -70;
+        else
+            user.body.jumpSpeed = 0;
         if (keys.right) {
             run += speed;
         }

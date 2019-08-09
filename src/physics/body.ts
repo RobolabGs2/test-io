@@ -3,6 +3,7 @@ interface IBody{
     readonly velocity: Point;
     readonly mass: number;
     runSpeed: number;
+    jumpSpeed: number;
     movable: boolean;
 
     setAcceleration(acceleration: Point): void;
@@ -19,6 +20,7 @@ class Body implements IBody{
     phisics: Physics;
     acceleration: Point;
     runSpeed: number;
+    jumpSpeed: number;
 
     get mass() {return this.hitbox.height * this.hitbox.width};
 
@@ -31,6 +33,7 @@ class Body implements IBody{
         this.phisics = physics;
         this.acceleration = new Point({});
         this.runSpeed = 0;
+        this.jumpSpeed = 0;
     }
 
     tick(dt: number){
