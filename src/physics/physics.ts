@@ -12,7 +12,7 @@ class Physics implements IPhysics
     constructor() {
         this.objects = new Array<Body>();
         this.queue = new PriorityQueue();
-        this.gravity = new Point({x: 0, y: 9.8});
+        this.gravity = new Point({x: 0, y: 9.8 * 10});
     }
 
     tick(dt: number){
