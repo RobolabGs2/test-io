@@ -86,7 +86,6 @@ class impact {
             u = v + u2;
             v = v + v2;
         }
-        console.log(v, u);
         return { v: v, u: u };
     }
 }
