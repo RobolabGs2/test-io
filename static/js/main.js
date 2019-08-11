@@ -1,83 +1,81 @@
 "use strict";
 console.log("Start!");
-let speed = 150; //px/second todo move to user or physics?
-let speed_input = document.getElementById("speed");
-speed_input.valueAsNumber = speed;
-speed_input.addEventListener("input", (ev) => {
-    speed = speed_input.value;
-});
-const header = document.querySelector("header");
-let headerHeight = header.clientHeight;
-console.debug(headerHeight);
-let canvas = document.getElementById('main');
-let keys = new Keyboard();
-let mouse = new Mouse(canvas);
-let camera = new Camera(canvas, window.innerWidth, document.body.clientHeight - headerHeight);
-let timerTick;
-let timerDraw;
-let currentWorld;
-function start(world) {
-    try {
-        clearInterval(timerDraw);
-        clearInterval(timerTick);
-    }
-    catch (e) {
-        console.log(e);
-    }
-    currentWorld = world;
-    world.setCamera(camera);
-    let user = world.user;
-    let textures = [
-        user.avatar.texture,
-        new FillRectangleTexture(new Color(255, 255, 255, 12)),
-        new AnimatedFillRectangleTexture(new Color(255, 255, 255, 12)),
-        new StrokeRectangleTexture(new Color(126, 63, 32)),
-        new ImageTexture("duck16x16.png")
-    ];
-    let tick = (dt) => {
-        let run = 0;
-        if (keys.down) {
-            //dv.y += step;
-        }
-        if (keys.up) {
-            if (Math.abs(user.body.velocity.y) < 1)
-                user.body.setVelocity(new Point({ x: user.body.velocity.x, y: -130 }));
-        }
-        if (keys.right) {
-            run += speed;
-        }
-        if (keys.left) {
-            run -= speed;
-        }
-        camera.scale(mouse.whell / 1551);
-        user.body.runSpeed = run;
-        if (keys.clone) {
-            world.pushDrawable(new Entity(new CompositeAvatar(textures[getRandomInt(0, textures.length - 1)]), world.physics.createBody(new Hitbox(user.hitbox.position.Sum(new Point({ x: 50, y: 0 })), 32, 32), new Point({}), true)));
-            keys.clone = false;
-        }
-        world.tick(dt / 1000);
-    };
-    let prev_time = Date.now();
-    timerTick = setInterval(() => {
-        let time = Date.now();
-        tick(time - prev_time);
-        prev_time = time;
+{
+    let speed = 150; //px/second todo move to user or physics?
+    let speed_input = document.getElementById("speed");
+    speed_input.valueAsNumber = speed;
+    speed_input.addEventListener("input", (ev) => {
+        speed = speed_input.valueAsNumber;
     });
-    timerDraw = setInterval(world.draw.bind(world), 15);
+    let canvas = document.getElementById('main');
+    let keys = new Keyboard();
+    let mouse = new Mouse(canvas);
+    let camera = new Camera(canvas);
+    let timerTick;
+    let timerDraw;
+    let currentWorld;
+    function start(world) {
+        try {
+            clearInterval(timerDraw);
+            clearInterval(timerTick);
+        }
+        catch (e) {
+            console.log(e);
+        }
+        currentWorld = world;
+        world.setCamera(camera);
+        let user = world.user;
+        let textures = [
+            user.avatar.texture,
+            new FillRectangleTexture(new Color(255, 255, 255, 12)),
+            new AnimatedFillRectangleTexture(new Color(255, 255, 255, 12)),
+            new StrokeRectangleTexture(new Color(126, 63, 32)),
+            new ImageTexture("duck16x16.png")
+        ];
+        let tick = (dt) => {
+            let run = 0;
+            if (keys.down) {
+                //dv.y += step;
+            }
+            if (keys.up) {
+                if (Math.abs(user.body.velocity.y) < 1)
+                    user.body.setVelocity(new Point({ x: user.body.velocity.x, y: -130 }));
+            }
+            if (keys.right) {
+                run += speed;
+            }
+            if (keys.left) {
+                run -= speed;
+            }
+            camera.scale(mouse.whell / 1551);
+            user.body.runSpeed = run;
+            if (keys.clone) {
+                world.pushDrawable(new Entity(new CompositeAvatar(textures[getRandomInt(0, textures.length - 1)]), world.physics.createBody(new Hitbox(user.hitbox.position.Sum(new Point({ x: 50, y: 0 })), 32, 32), new Point({}), true)));
+                keys.clone = false;
+            }
+            world.tick(dt / 1000);
+        };
+        let prev_time = Date.now();
+        timerTick = setInterval(() => {
+            let time = Date.now();
+            tick(time - prev_time);
+            prev_time = time;
+        });
+        timerDraw = setInterval(world.draw.bind(world), 15);
+    }
+    loadWorld("test-world-anim.json", start);
+    let sb = document.getElementById("save");
+    let lb = document.getElementById("load");
+    let saveInput = document.getElementById("saveNum");
+    sb.onclick = () => {
+        if (currentWorld)
+            saveLocal(saveInput.value, currentWorld);
+        sb.blur();
+        canvas.focus();
+    };
+    lb.onclick = () => {
+        start(loadLocal(saveInput.value));
+        lb.blur();
+        canvas.focus();
+    };
 }
-loadWorld("test-world-anim.json", start);
-let sb = document.getElementById("save");
-let lb = document.getElementById("load");
-let saveInput = document.getElementById("saveNum");
-sb.onclick = () => {
-    if (currentWorld)
-        saveLocal(saveInput.value, currentWorld);
-    sb.blur();
-    canvas.focus();
-};
-lb.onclick = () => {
-    start(loadLocal(saveInput.value));
-    lb.blur();
-    canvas.focus();
-};
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoibWFpbi5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uL3NyYy9tYWluLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7QUFBQSxPQUFPLENBQUMsR0FBRyxDQUFDLFFBQVEsQ0FBQyxDQUFBO0FBRXJCLElBQUksS0FBSyxHQUFHLEdBQUcsQ0FBQyxDQUFDLHlDQUF5QztBQUMxRCxJQUFJLFdBQVcsR0FBRyxRQUFRLENBQUMsY0FBYyxDQUFDLE9BQU8sQ0FBcUIsQ0FBQztBQUN2RSxXQUFXLENBQUMsYUFBYSxHQUFHLEtBQUssQ0FBQztBQUNsQyxXQUFXLENBQUMsZ0JBQWdCLENBQUMsT0FBTyxFQUFFLENBQUMsRUFBRSxFQUFFLEVBQUU7SUFDekMsS0FBSyxHQUFHLFdBQVcsQ0FBQyxLQUEwQixDQUFBO0FBQ2xELENBQUMsQ0FBQyxDQUFBO0FBRUYsTUFBTSxNQUFNLEdBQUksUUFBUSxDQUFDLGFBQWEsQ0FBQyxRQUFRLENBQWlCLENBQUM7QUFDakUsSUFBSSxZQUFZLEdBQUcsTUFBTSxDQUFDLFlBQVksQ0FBQztBQUN2QyxPQUFPLENBQUMsS0FBSyxDQUFDLFlBQVksQ0FBQyxDQUFBO0FBQzNCLElBQUksTUFBTSxHQUFHLFFBQVEsQ0FBQyxjQUFjLENBQUMsTUFBTSxDQUFzQixDQUFDO0FBQ2xFLElBQUksSUFBSSxHQUFHLElBQUksUUFBUSxFQUFFLENBQUM7QUFDMUIsSUFBSSxLQUFLLEdBQUcsSUFBSSxLQUFLLENBQUMsTUFBTSxDQUFDLENBQUM7QUFDOUIsSUFBSSxNQUFNLEdBQUcsSUFBSSxNQUFNLENBQ25CLE1BQU0sRUFDTixNQUFNLENBQUMsVUFBVSxFQUNqQixRQUFRLENBQUMsSUFBSSxDQUFDLFlBQVksR0FBRyxZQUFZLENBQUMsQ0FBQztBQUMvQyxJQUFJLFNBQWlCLENBQUM7QUFDdEIsSUFBSSxTQUFpQixDQUFDO0FBQ3RCLElBQUksWUFBbUIsQ0FBQztBQUN4QixTQUFTLEtBQUssQ0FBQyxLQUFZO0lBQ3ZCLElBQUk7UUFD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

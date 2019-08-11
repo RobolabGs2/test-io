@@ -1,6 +1,23 @@
 {
     "devDependencies": {
         "ts": "^0.2.2",
-        "typescript": "^3.5.3"
+        "typescript": "^3.5.3",
+        "npm-watch": "^0.6.0",
+        "concat": "^1.0.3"
+    },
+    "private": true,
+    "scripts": {
+        "watch": "npm-watch",
+        "concat": "node tools/concat.js ./compile ./static/js"
+    },
+    "watch": {
+        "concat": {
+            "patterns": [
+                "compile\\**\\*.js"
+            ],
+            "quiet": true,
+            "inherit": true,
+            "clearBuffer": true
+        }
     }
 }

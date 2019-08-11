@@ -4,5 +4,8 @@
 
 NodeJs v10.16.1 и npm: https://nodejs.org/en/download/
 
-После установки в директории проекта `npm install`, после чего в Terminal/Run Task... заработают задачи `tsc:watch` и `tsc:build`. Первая будет отслеживать сохранения ts файликов и компилировать их в js, вторая просто компилировать все файлы.
+После установки в директории проекта `npm install`, после чего в Terminal/Run Task... заработают задачи:
+
+ - `tsc:watch` и `tsc:build` - компилировать все файлы из `src/` в `compile/`.
+ - `concat:watch` и `concat:build` - откомпилированные файлы из `compile/` конкатинирует в `static/js/`
 

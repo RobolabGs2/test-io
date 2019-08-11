@@ -1,3 +1,10 @@
+abstract class Typeable {
+    _type: string;
+    constructor(type: string) {
+        this._type = type;
+    }
+}
+
 function parseWorld(json: string) {
     let physics: IPhysics = new Physics();
     let avatarFactory = new AvatarFactory();

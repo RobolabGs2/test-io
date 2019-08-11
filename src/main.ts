@@ -1,22 +1,16 @@
 console.log("Start!")
-
+{
 let speed = 150; //px/second todo move to user or physics?
 let speed_input = document.getElementById("speed") as HTMLInputElement;
 speed_input.valueAsNumber = speed;
 speed_input.addEventListener("input", (ev) => {
-    speed = speed_input.value as unknown as number
+    speed = speed_input.valueAsNumber
 })
 
-const header = (document.querySelector("header") as HTMLElement);
-let headerHeight = header.clientHeight;
-console.debug(headerHeight)
 let canvas = document.getElementById('main') as HTMLCanvasElement;
 let keys = new Keyboard(); 
 let mouse = new Mouse(canvas);
-let camera = new Camera(
-    canvas, 
-    window.innerWidth, 
-    document.body.clientHeight - headerHeight);
+let camera = new Camera(canvas);
 let timerTick: number;
 let timerDraw: number;
 let currentWorld: World;
@@ -90,4 +84,5 @@ lb.onclick = () => {
     start(loadLocal(saveInput.value))
     lb.blur()
     canvas.focus()
+}
 }

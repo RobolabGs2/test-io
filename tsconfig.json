@@ -6,17 +6,15 @@
       "dom"
     ],
     "newLine": "lf",
-    "module": "commonjs",
     "moduleResolution": "node",
-    "outDir": "static/js/",
+    "outDir": "compile/",
     "strict": true,
     "target": "es2018",
-    "inlineSourceMap": true
+    "module": "commonjs"
   },
   "include": [
     "typings\\**\\*.d.ts",
     "node_modules\\@*\\types-*\\*.d.ts",
-    "src\\*.ts",
     "src\\**\\*.ts"
   ]
 }

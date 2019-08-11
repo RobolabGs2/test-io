@@ -8,29 +8,29 @@ class Keyboard {
     set(code: string, state: boolean) { 
         switch (code) {
             case 'KeyW':
-               keys.up = state;
+               this.up = state;
                break;
             case 'KeyS':
-                keys.down = state;
+                this.down = state;
                 break;
             case 'KeyA':
-                keys.left = state;
+                this.left = state;
                 break;
             case 'KeyD':
-                keys.right = state;
+                this.right = state;
                 break;
             case 'Space':
-                keys.clone = state;
+                this.clone = state;
                 break;
         }
     }
 
     constructor() {
         window.addEventListener("keydown", (ev:KeyboardEvent)=>{
-            keys.set(ev.code, true);
+            this.set(ev.code, true);
         });
         window.addEventListener("keyup", (ev:KeyboardEvent)=>{
-            keys.set(ev.code, false);
+            this.set(ev.code, false);
         });
     }
 }
