@@ -44,7 +44,7 @@ function start(world: World) {
             //dv.y += step;
         }
         if(keys.up) 
-            user.body.jumpSpeed = -70;
+            user.body.jumpSpeed = 150;
         else
             user.body.jumpSpeed = 0;
         if(keys.right) {
