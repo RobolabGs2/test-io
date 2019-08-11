@@ -1,28 +1,21 @@
-class Keyboard {
-    up: boolean = false;
-    down: boolean = false;
-    left: boolean = false;
-    right: boolean = false;
-    clone: boolean = false;
+function b2i(b: boolean) {
+    return b ? 1:0;
+}
 
+function i2b(i: number) {
+    return i!=0;
+}
+
+class Keyboard {
+    keys = new Map<string, boolean>()
+    buffer = new Array<Buffer<string>>(new Buffer<string>(), new Buffer<string>());
     set(code: string, state: boolean) { 
-        switch (code) {
-            case 'KeyW':
-               this.up = state;
-               break;
-            case 'KeyS':
-                this.down = state;
-                break;
-            case 'KeyA':
-                this.left = state;
-                break;
-            case 'KeyD':
-                this.right = state;
-                break;
-            case 'Space':
-                this.clone = state;
-                break;
-        }
+        this.keys.set(code, state)
+        this.buffer[b2i(state)].push(code);
+    }
+
+    getBuferOfKeys(press: boolean) {
+        return this.buffer[b2i(press)].flush();
     }
 
     constructor() {

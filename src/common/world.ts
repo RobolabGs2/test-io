@@ -1,23 +1,21 @@
 interface Drawable {
-    draw(): void;
-    setCamera(camera: Camera): Drawable;
+    draw(camera: Camera): void;
 }
 
-class Entity extends Typeable implements Drawable{
-    setCamera(camera: Camera): Drawable {
-        this.drawHitbox = this.avatar.bindContext(camera);
-        return this;
+interface DrawableMaker {
+    makeDrawable(): Drawable;
+}
+
+class Entity extends Typeable implements DrawableMaker{
+    makeDrawable(): Drawable {
+        return {draw: this.avatar.bindContext(this.hitbox)};
     }
-    
-    draw(): void{
-        this.drawHitbox(this.hitbox)
-    }
+
     counter = 0
     tick(dt: number) {
         this.avatar.play(this.body.velocity.x/50*dt)
     }
 
-    private drawHitbox = (hitbox: Hitbox) => {}
     body: IBody; 
     get hitbox() {return this.body.hitbox}
 
@@ -37,32 +35,31 @@ class Entity extends Typeable implements Drawable{
     }
 }
 
-class World extends Typeable implements Drawable{
-
-    setCamera(camera: Camera): Drawable {
+class World extends Typeable {
+    setCamera(camera: Camera) {
         this.camera = camera
-        this.mobs.forEach(mob => mob.setCamera(camera))
-        this.user.setCamera(camera)
         this.camera.setPosition(this.user.hitbox.position, new Point({x:this.user.hitbox.width/2, y:this.user.hitbox.height/2}));
-        return this;
     }
 
     draw(): void {
         this.camera.clear()
-        this.mobs.forEach(mob => {
-            mob.draw();
+        this.drawables.forEach(mob => {
+            mob.draw(this.camera);
         });
-        this.user.draw();
+        this.drawableUser.draw(this.camera);
     }
 
     user: Entity;
     mobs: Array<Entity>;
+    drawables = new Array<Drawable>();
+    drawableUser: Drawable;
     private camera!: Camera;
     physics: IPhysics;
 
     constructor(user: Entity, physics: IPhysics) {
         super("World");
         this.user = user;
+        this.drawableUser = user.makeDrawable();
         this.mobs = new Array<Entity>();
         this.physics = physics;
     }
@@ -73,14 +70,24 @@ class World extends Typeable implements Drawable{
         this.user.tick(dt);
     }
 
-    pushDrawable(entity: Entity) {
+    private pushEntity(entity: Entity) {
         this.mobs.push(entity);
-        entity.setCamera(this.camera);
+        this.pushDrawable(entity);
+    }
+
+    pushRawEntity(avatar: Avatar, hitbox: Hitbox) {
+        this.pushEntity(new Entity(avatar, this.physics.createBody(hitbox, new Point({}), true)));
+    }
+
+    pushDrawable(drawable: Drawable|DrawableMaker) {
+        if(!("draw" in drawable))
+            drawable = drawable.makeDrawable();
+        this.drawables.push(drawable);
     }
 
     static unpack({user, mobs}: {user: Entity, mobs: Array<Entity>}, physics: IPhysics) {
-        let w = new World(user, physics);                
-        mobs.forEach(mob => w.pushDrawable(mob));
+        let w = new World(user, physics);            
+        mobs.forEach(mob => w.pushEntity(mob));
         return w;
     }
 }

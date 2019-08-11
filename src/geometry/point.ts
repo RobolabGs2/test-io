@@ -20,6 +20,10 @@ class Point extends Typeable {
         return new Point({x: -this.x, y: -this.y});
     }
 
+    SMult(a: number) {
+        return new Point({x: this.x*a, y:this.y*a});
+    }
+
     length(): number{
         return Math.sqrt(this.x * this.x + this.y * this.y);
     }

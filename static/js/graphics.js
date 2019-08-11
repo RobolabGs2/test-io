@@ -19,11 +19,12 @@ class BaseAvatar extends Avatar {
     modification(context, hitbox) {
         return context;
     }
-    bindContext(camera) {
-        return hitbox => {
+    bindContext(hitbox) {
+        return camera => {
             const context = camera.context;
             context.save();
-            context.translate(-camera.position.x + hitbox.position.x, -camera.position.y + hitbox.position.y);
+            let uv = camera.xy2uv(hitbox.position);
+            context.translate(uv.x, uv.y);
             let b = this.texture.draw(this.modification(context, hitbox), hitbox, this.tick);
             context.restore();
             return b;
@@ -44,13 +45,13 @@ class CompositeAvatar extends Avatar {
         this.normal = new BaseAvatar(texture);
         this.reflect = new ReflectedAvatar(texture);
     }
-    bindContext(camera) {
-        let normal = this.normal.bindContext(camera);
-        let reverse = this.reflect.bindContext(camera);
-        return (hitbox) => {
+    bindContext(hitbox) {
+        let normal = this.normal.bindContext(hitbox);
+        let reverse = this.reflect.bindContext(hitbox);
+        return (camera) => {
             if (this.left)
-                return normal(hitbox);
-            return reverse(hitbox);
+                return normal(camera);
+            return reverse(camera);
         };
     }
     play(dt) {
@@ -77,19 +78,16 @@ class Camera {
         this.mainCanvas = mainCanvas;
         this.offset = new Point({});
         this._scale = 1;
-        if (!size) {
-            size = { width: mainCanvas.clientWidth, height: mainCanvas.clientHeight };
-        }
-        console.log(`Camera width: ${size.width}, height: ${size.height}`);
-        this.mainCanvas.width = size.width;
-        this.mainCanvas.height = size.height;
+        this.size = size ? size : { width: mainCanvas.clientWidth, height: mainCanvas.clientHeight };
+        console.log(`Camera width: ${this.size.width}, height: ${this.size.height}`);
+        this.mainCanvas.width = this.size.width;
+        this.mainCanvas.height = this.size.height;
         this.context = this.mainCanvas.getContext("2d");
-        this.hitbox = new Hitbox(new Point({}), size.width, size.height);
-        let center = this.hitbox.center();
-        this.context.translate(center.x, center.y);
+        this._position = new Point({});
+        this.context.translate(this.position.x + this.size.width / 2, this.position.y + this.size.height / 2);
     }
     setPosition(position, offset = new Point({})) {
-        this.hitbox.position = position;
+        this._position = position;
         this.offset = offset;
     }
     scale(delta) {
@@ -101,14 +99,33 @@ class Camera {
         this._scale = new_scale;
     }
     get position() {
-        return new Point(this.hitbox.position.Sum(this.offset));
+        return new Point(this._position.Sum(this.offset));
+    }
+    xy2uv(xy) {
+        return xy.Sum(this.position.Neg());
+    }
+    uv2xy(uv) {
+        return uv.Sum(this.position);
+    }
+    canvas2xy(canvas) {
+        let xy = canvas.Sum(new Point({ x: -this.size.width / 2, y: -this.size.height / 2 }));
+        xy.x *= this._scale;
+        xy.y *= this._scale;
+        let position = this.position;
+        xy.x += position.x;
+        xy.y += position.y;
+        return xy;
+    }
+    screen2uv(screen) {
+        return screen
+            .SMult(this._scale);
     }
     toJSON() {
         return undefined;
     }
     clear() {
         this.context.fillStyle = "#000";
-        this.context.fillRect(-this.hitbox.width / 2 * this._scale, -this.hitbox.height / 2 * this._scale, this.hitbox.width * this._scale, this.hitbox.height * this._scale);
+        this.context.fillRect(-this.size.width / 2 * this._scale, -this.size.height / 2 * this._scale, this.size.width * this._scale, this.size.height * this._scale);
         //this.context.clearRect(0, 0, 256, 256);
         /*
         this.context.lineWidth = 5

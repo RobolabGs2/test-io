@@ -8,9 +8,9 @@ console.log("Start!");
         speed = speed_input.valueAsNumber;
     });
     let canvas = document.getElementById('main');
-    let keys = new Keyboard();
-    let mouse = new Mouse(canvas);
     let camera = new Camera(canvas);
+    let input = new InputDevices(camera);
+    let cursore = input.mouseCursore;
     let timerTick;
     let timerDraw;
     let currentWorld;
@@ -24,6 +24,7 @@ console.log("Start!");
         }
         currentWorld = world;
         world.setCamera(camera);
+        world.pushDrawable(cursore);
         let user = world.user;
         let textures = [
             user.avatar.texture,
@@ -32,26 +33,34 @@ console.log("Start!");
             new StrokeRectangleTexture(new Color(126, 63, 32)),
             new ImageTexture("duck16x16.png")
         ];
+        let run = 0;
+        input.addPressingAction(Actions.left, (dt) => {
+            run -= speed;
+            return true;
+        }).addPressingAction(Actions.right, (dt) => {
+            run += speed;
+            return true;
+        }).addPressingAction(Actions.jump, (dt) => {
+            if (Math.abs(user.body.velocity.y) < 1)
+                user.body.setVelocity(new Point({ x: user.body.velocity.x, y: -130 }));
+            return true;
+        }).addPressAction(false, Actions.clone, () => {
+            world.pushRawEntity(new CompositeAvatar(textures[getRandomInt(0, textures.length - 1)]), new Hitbox(user.hitbox.position.Sum(new Point({ x: 50, y: 0 })), 32, 32));
+        }).addPressAction(true, Actions.unzoom, () => {
+            camera.scale(-100 / 1551);
+        }).addPressAction(true, Actions.zoom, () => {
+            camera.scale(100 / 1551);
+        });
         let tick = (dt) => {
-            let run = 0;
-            if (keys.down) {
-                //dv.y += step;
-            }
-            if (keys.up) {
-                if (Math.abs(user.body.velocity.y) < 1)
-                    user.body.setVelocity(new Point({ x: user.body.velocity.x, y: -130 }));
-            }
-            if (keys.right) {
-                run += speed;
-            }
-            if (keys.left) {
-                run -= speed;
-            }
-            camera.scale(mouse.whell / 1551);
+            run = 0;
+            input.tick(dt);
             user.body.runSpeed = run;
-            if (keys.clone) {
-                world.pushDrawable(new Entity(new CompositeAvatar(textures[getRandomInt(0, textures.length - 1)]), world.physics.createBody(new Hitbox(user.hitbox.position.Sum(new Point({ x: 50, y: 0 })), 32, 32), new Point({}), true)));
-                keys.clone = false;
+            if (!input.mouse.clicks[0].empty) {
+                input.mouse.clicks[0].flush().forEach(position => {
+                    let t = textures[getRandomInt(0, textures.length - 1)];
+                    world.pushRawEntity(new CompositeAvatar(t), new Hitbox(position, 32, 32));
+                    cursore.texture = t;
+                });
             }
             world.tick(dt / 1000);
         };

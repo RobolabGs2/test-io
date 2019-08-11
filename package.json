@@ -17,7 +17,8 @@
             ],
             "quiet": true,
             "inherit": true,
-            "clearBuffer": true
+            "clearBuffer": true,
+            "delay": 1000
         }
     }
 }

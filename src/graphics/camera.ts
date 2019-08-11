@@ -1,23 +1,20 @@
 class Camera {
-    private hitbox: Hitbox;
+    private _position: Point;
+    private size: Sizeable;
     private offset = new Point({})
     public readonly context: CanvasRenderingContext2D
     constructor(public mainCanvas: HTMLCanvasElement, size?: Sizeable) {
-        if(!size)
-        {
-            size = {width: mainCanvas.clientWidth, height: mainCanvas.clientHeight}
-        }
-        console.log(`Camera width: ${size.width}, height: ${size.height}`)
-        this.mainCanvas.width = size.width;
-        this.mainCanvas.height = size.height;
+        this.size = size ? size : {width: mainCanvas.clientWidth, height: mainCanvas.clientHeight};
+        console.log(`Camera width: ${this.size.width}, height: ${this.size.height}`);
+        this.mainCanvas.width = this.size.width;
+        this.mainCanvas.height = this.size.height;
         this.context = this.mainCanvas.getContext("2d") as CanvasRenderingContext2D;
-        this.hitbox =  new Hitbox(new Point({}), size.width, size.height);
-        let center = this.hitbox.center();
-        this.context.translate(center.x, center.y)
+        this._position =  new Point({});
+        this.context.translate(this.position.x + this.size.width/2, this.position.y + this.size.height/2)
     }
 
     setPosition(position: Point, offset = new Point({})) {
-        this.hitbox.position = position;
+        this._position = position;
         this.offset = offset;
     }
 
@@ -33,7 +30,30 @@ class Camera {
     }
 
     get position() {
-        return new Point(this.hitbox.position.Sum(this.offset));
+        return new Point(this._position.Sum(this.offset));
+    }
+
+    xy2uv(xy: Point) {
+        return xy.Sum(this.position.Neg())
+    }
+
+    uv2xy(uv: Point) {
+        return uv.Sum(this.position)
+    }
+
+    canvas2xy(canvas: Point) {
+        let xy = canvas.Sum(new Point({x: -this.size.width/2, y: -this.size.height/2}));
+        xy.x*= this._scale;
+        xy.y*= this._scale;
+        let position = this.position
+        xy.x+=position.x
+        xy.y+=position.y
+        return xy;
+    }
+
+    screen2uv(screen: Point) {
+        return screen
+            .SMult(this._scale)
     }
 
     toJSON() {
@@ -42,7 +62,9 @@ class Camera {
 
     clear() {
         this.context.fillStyle = "#000"
-        this.context.fillRect(-this.hitbox.width/2*this._scale, -this.hitbox.height/2*this._scale, this.hitbox.width*this._scale, this.hitbox.height*this._scale);
+        this.context.fillRect(
+            -this.size.width/2*this._scale, -this.size.height/2*this._scale, 
+            this.size.width*this._scale, this.size.height*this._scale);
         //this.context.clearRect(0, 0, 256, 256);
         /*
         this.context.lineWidth = 5

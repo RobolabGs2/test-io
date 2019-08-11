@@ -1,4 +1,25 @@
 "use strict";
+class Buffer {
+    constructor() {
+        this.buf = new Array();
+    }
+    push(elem) {
+        this.buf.push(elem);
+    }
+    get size() {
+        return this.buf.length;
+    }
+    get empty() {
+        return this.buf.length == 0;
+    }
+    flush() {
+        let b = this.buf;
+        this.buf = new Array();
+        return b;
+    }
+}
+
+"use strict";
 class Typeable {
     constructor(type) {
         this._type = type;
@@ -50,6 +71,40 @@ function loadLocal(save) {
 }
 
 "use strict";
+class Queue {
+    constructor() {
+        this.first = 1;
+        this.last = 1;
+        this.elems = new Array();
+        this.capacity = Number.MAX_SAFE_INTEGER;
+        this._size = 0;
+    }
+    get size() {
+        return this._size;
+    }
+    inc(a, d = 1) {
+        return (a + d) % this.capacity;
+    }
+    enqueue(data) {
+        this.elems[this.last] = data;
+        this.last = this.inc(this.last);
+        this._size++;
+        if (this._size > this.capacity)
+            throw new Error("Queue overflow");
+    }
+    dequeue() {
+        let deletedData;
+        if (this._size > 0) {
+            deletedData = this.elems[this.first];
+            delete this.elems[this.first];
+            this.first = (this.first + 1) % this.capacity;
+            this._size--;
+        }
+        return deletedData;
+    }
+}
+
+"use strict";
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
@@ -63,15 +118,10 @@ class Entity extends Typeable {
         super("Entity");
         this.avatar = avatar;
         this.counter = 0;
-        this.drawHitbox = (hitbox) => { };
         this.body = body;
     }
-    setCamera(camera) {
-        this.drawHitbox = this.avatar.bindContext(camera);
-        return this;
-    }
-    draw() {
-        this.drawHitbox(this.hitbox);
+    makeDrawable() {
+        return { draw: this.avatar.bindContext(this.hitbox) };
     }
     tick(dt) {
         this.avatar.play(this.body.velocity.x / 50 * dt);
@@ -88,38 +138,45 @@ class Entity extends Typeable {
     }
 }
 class World extends Typeable {
+    constructor(user, physics) {
+        super("World");
+        this.drawables = new Array();
+        this.user = user;
+        this.drawableUser = user.makeDrawable();
+        this.mobs = new Array();
+        this.physics = physics;
+    }
     setCamera(camera) {
         this.camera = camera;
-        this.mobs.forEach(mob => mob.setCamera(camera));
-        this.user.setCamera(camera);
         this.camera.setPosition(this.user.hitbox.position, new Point({ x: this.user.hitbox.width / 2, y: this.user.hitbox.height / 2 }));
-        return this;
     }
     draw() {
         this.camera.clear();
-        this.mobs.forEach(mob => {
-            mob.draw();
+        this.drawables.forEach(mob => {
+            mob.draw(this.camera);
         });
-        this.user.draw();
-    }
-    constructor(user, physics) {
-        super("World");
-        this.user = user;
-        this.mobs = new Array();
-        this.physics = physics;
+        this.drawableUser.draw(this.camera);
     }
     tick(dt) {
         this.physics.tick(dt);
         this.mobs.forEach(m => m.tick(dt));
         this.user.tick(dt);
     }
-    pushDrawable(entity) {
+    pushEntity(entity) {
         this.mobs.push(entity);
-        entity.setCamera(this.camera);
+        this.pushDrawable(entity);
+    }
+    pushRawEntity(avatar, hitbox) {
+        this.pushEntity(new Entity(avatar, this.physics.createBody(hitbox, new Point({}), true)));
+    }
+    pushDrawable(drawable) {
+        if (!("draw" in drawable))
+            drawable = drawable.makeDrawable();
+        this.drawables.push(drawable);
     }
     static unpack({ user, mobs }, physics) {
         let w = new World(user, physics);
-        mobs.forEach(mob => w.pushDrawable(mob));
+        mobs.forEach(mob => w.pushEntity(mob));
         return w;
     }
 }

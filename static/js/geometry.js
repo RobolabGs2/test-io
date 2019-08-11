@@ -32,6 +32,9 @@ class Point extends Typeable {
     Neg() {
         return new Point({ x: -this.x, y: -this.y });
     }
+    SMult(a) {
+        return new Point({ x: this.x * a, y: this.y * a });
+    }
     length() {
         return Math.sqrt(this.x * this.x + this.y * this.y);
     }

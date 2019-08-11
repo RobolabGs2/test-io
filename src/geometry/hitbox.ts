@@ -1,6 +1,5 @@
-
 class Hitbox extends Typeable  {
-    constructor(public position: Point, public width: number, public height: number) {
+    constructor(public readonly position: Point, public width: number, public height: number) {
         super("Hitbox");
     }
 
