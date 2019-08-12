@@ -114,7 +114,7 @@ class ImageTexture extends AnimatedTexture {
     protected drawing(context: CanvasRenderingContext2D, hitbox: Sizeable, progress: number) {
         context.drawImage(this.bitmap, 0, 0, hitbox.width, hitbox.height);
     }
-
+ 
     draw(context: CanvasRenderingContext2D, hitbox: Hitbox, progress: number): boolean {
         if (this.loaded()) {
             this.drawing(context, hitbox, progress);

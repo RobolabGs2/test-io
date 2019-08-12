@@ -4,28 +4,24 @@
         <link rel="stylesheet" type="text/css" href="./static/css/style.css" media="screen" />
         <meta charset="UTF-8">
         <title>Duck paint</title></head>
-        <script src="./static/js/physics/collision.js"></script>
-        <script src="./static/js/physics/CollisionPair.js"></script>
-        <script src="./static/js/physics/priorityQueue.js"></script>
-        <script src="./static/js/physics/body.js"></script>
-        <script src="./static/js/physics/physics.js"></script>
-        <script src="./static/js/physics/impact.js"></script>
-        <script src="./static/js/input/keyboard.js"></script>
-        <script src="./static/js/input/mouse.js"></script>
-        <script src="./static/js/world.js"></script>
-        <script src="./static/js/json.js"></script>
-        <script src="./static/js/utils.js"></script>
-        <script src="./static/js/graphics/texture.js"></script>
-        <script src="./static/js/graphics/avatar.js"></script>
+        <script src="./static/js/common.js"></script>
+        <script src="./static/js/geometry.js"></script>
+        <script src="./static/js/physics.js"></script>
+        <script src="./static/js/input.js"></script>
+        <script src="./static/js/graphics.js"></script>
     <body>
         <header>
-            <span>
+            <section>
                 Speed:<input type="number" id="speed"/>
+            </section>
+            <section>
                 <button id="save">Save</button>
                 <button id="load">Load</button>
                 <input type="number" id="saveNum" value="1"/>
-                WASD and Space
-            </span>
+            </section>
+            <section>
+                WASD and Space, F, Mouse Wheel, LBM
+            </section>
         </header>
         <canvas id="main"></canvas>
     </body>

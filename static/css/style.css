@@ -4,19 +4,23 @@
 }
 
 header {
-    background-color: black;
-    height: 32px;
+    background-color: rgba(120, 220, 120, 0.45);
+    position: absolute;
+    border: 2px solid whitesmoke;
 }
 
-span {
-    margin-top: 5px;
+section {
+    margin: 5px;
     color: white;
 }
 
 canvas {
-    border-top: 2px solid whitesmoke;
+    width: 100%;
+    height: 100%;
+    display: block;
 }
 
 body {
-    height: 99vh;
+    height: 100vh;
+    border: 0;
 }

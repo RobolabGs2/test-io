@@ -9,7 +9,50 @@
             "option": "watch",
             "problemMatcher": [
                 "$tsc-watch"
-            ]
+            ],
+            "presentation": {
+                "focus": false,
+                "group": "compile"
+            }
+        },
+        {
+            "type": "npm",
+            "label": "concat:watch",
+            "script": "watch",
+            "presentation": {
+                "focus": false,
+                "group": "compile"
+            } 
+        },
+        {
+            "type": "npm",
+            "label": "concat:build",
+            "script": "concat",
+            "presentation": {
+                "focus": false,
+                "group": "compile"
+            } 
+        },
+        {
+            "label": "ts:build",
+            "type": "typescript",
+            "tsconfig": "tsconfig.json",
+            "problemMatcher": [
+                "$tsc"
+            ],
+            "presentation": {
+                "focus": false,
+                "group": "compile"
+            } ,
+        },
+        {
+            "type": "npm",
+            "label": "build",
+            "script": "build",
+            "presentation": {
+                "focus": false,
+                "group": "compile"
+            }
         }
     ]
 }

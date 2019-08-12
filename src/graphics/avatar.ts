@@ -1,56 +1,3 @@
-class Camera {
-    private hitbox: Hitbox;
-    private offset = new Point({})
-    public readonly context: CanvasRenderingContext2D
-    constructor(public mainCanvas: HTMLCanvasElement, width: number, height: number) {
-        console.log(`Camera width: ${width}, height: ${height}`)
-        this.mainCanvas.width = width;
-        this.mainCanvas.height = height;
-        this.context = this.mainCanvas.getContext("2d") as CanvasRenderingContext2D;
-        this.hitbox =  new Hitbox(new Point({}), width, height);
-        let center = this.hitbox.center();
-        this.context.translate(center.x, center.y)
-    }
-
-    setPosition(position: Point, offset = new Point({})) {
-        this.hitbox.position = position;
-        this.offset = offset;
-    }
-
-    _scale = 1;
-
-    scale(delta: number) {
-        let new_scale = (this._scale+delta)
-        const newLocal = this._scale / new_scale;
-        if(new_scale<=0.0001)
-            return
-        this.context.scale(newLocal, newLocal);
-        this._scale = new_scale
-    }
-
-    get position() {
-        return new Point(this.hitbox.position.Sum(this.offset));
-    }
-
-    toJSON() {
-        return undefined;
-    }
-
-    clear() {
-        this.context.fillStyle = "#000"
-        this.context.fillRect(-this.hitbox.width/2*this._scale, -this.hitbox.height/2*this._scale, this.hitbox.width*this._scale, this.hitbox.height*this._scale);
-        //this.context.clearRect(0, 0, 256, 256);
-        /*
-        this.context.lineWidth = 5
-        this.context.beginPath()
-        this.context.moveTo(-this.hitbox.width/2, -this.hitbox.height/2)
-        this.context.lineTo(this.hitbox.width, this.hitbox.height)
-        this.context.moveTo(-this.hitbox.width/2, this.hitbox.height/2)
-        this.context.lineTo(this.hitbox.width, -this.hitbox.height)
-        this.context.stroke()*/
-    }
-}
-
 abstract class Avatar {
     protected tick = 0;
     play(dt: number): void {
@@ -65,7 +12,7 @@ abstract class Avatar {
     toJSON() {
         return this.texture;
     }
-    abstract bindContext(camera: Camera): (hitbox: Hitbox) => boolean;
+    abstract bindContext(hitbox: Hitbox): (camera: Camera) => boolean;
 }
 
 class BaseAvatar extends Avatar {
@@ -73,11 +20,12 @@ class BaseAvatar extends Avatar {
         return context;
     }
 
-    bindContext(camera: Camera): (hitbox: Hitbox) => boolean {
-        return hitbox => {
+    bindContext(hitbox: Hitbox): (camera: Camera) => boolean {
+        return camera => {
             const context = camera.context;
             context.save();
-            context.translate(- camera.position.x + hitbox.position.x, - camera.position.y + hitbox.position.y)
+            let uv = camera.xy2uv(hitbox.position)
+            context.translate(uv.x, uv.y)
             let b = this.texture.draw(this.modification(context, hitbox), hitbox, this.tick);
             context.restore();
             return b;
@@ -95,13 +43,13 @@ class ReflectedAvatar extends BaseAvatar {
 
 class CompositeAvatar extends Avatar {
     
-    bindContext(camera: Camera): (hitbox: Hitbox) => boolean {
-        let normal = this.normal.bindContext(camera);
-        let reverse = this.reflect.bindContext(camera)
-        return (hitbox: Hitbox) => {
+    bindContext(hitbox: Hitbox): (camera: Camera) => boolean {
+        let normal = this.normal.bindContext(hitbox);
+        let reverse = this.reflect.bindContext(hitbox)
+        return (camera: Camera) => {
             if(this.left)
-                return normal(hitbox)
-            return reverse(hitbox)
+                return normal(camera)
+            return reverse(camera)
         }
     }
 
