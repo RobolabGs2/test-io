@@ -9,8 +9,9 @@
     "scripts": {
         "watch": "npm-watch",
         "concat": "node tools/concat.js ./compile ./static/js",
-        "clear": "node tools/rmdir.js ./compile",
-        "build": "npm run clear && tsc -build && npm run concat"
+        "clearCompileJs": "node tools/rmdir.js ./compile",
+        "clearStaticJs": "node tools/rmdir.js ./static/js",
+        "build": "npm run clearCompileJs && tsc -build && npm run clearStaticJs && npm run concat"
     },
     "watch": {
         "concat": {
