@@ -82,9 +82,15 @@ class Physics implements IPhysics
         this.queue.Relocate(body.tag);
         if(body != other)
         {
+            let otherPair = other.collision;
             let pair2 = new CollisionPair(body, other, time, vector);
             other.collision = pair2;
             this.queue.Relocate(other.tag);
+            if(otherPair.b1 != other && otherPair.b1 != body)
+                this.Update(otherPair.b1);
+            else 
+            if(otherPair.b2 != other && otherPair.b2 != body)
+                this.Update(otherPair.b2);
         }
     }
     //либо можно возвращать, что нужно в конструкторе
