@@ -1,16 +1,9 @@
 const fs = require('fs');
 const concat = require('concat');
+const fsHelper = require('./fs-helper.js')
 
 function addFile(path, result = []) {
-    if(fs.lstatSync(path).isFile()) {
-        result.push(path)
-        return result;
-    }
-
-    let items = fs.readdirSync(path);
-    for (let i = 0; i<items.length; ++i) {
-        addFile(`${path}/${items[i]}`, result);
-    }    
+    fsHelper.dfs(path, result.push.bind(result), ()=>{})
     return result;
 }
 
@@ -31,7 +24,7 @@ const src = process.argv[2];
 const to = process.argv[3];
 let items = fs.readdirSync(src);
 let main = []
-console.clear()
+//console.clear()
 const now = new Date()
 console.info(`[\x1b[35m${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}\x1b[37m]`)
 console.group()

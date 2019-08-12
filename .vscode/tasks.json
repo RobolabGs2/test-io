@@ -13,7 +13,7 @@
             "presentation": {
                 "focus": false,
                 "group": "compile"
-            } 
+            }
         },
         {
             "type": "npm",
@@ -32,6 +32,27 @@
                 "focus": false,
                 "group": "compile"
             } 
+        },
+        {
+            "label": "ts:build",
+            "type": "typescript",
+            "tsconfig": "tsconfig.json",
+            "problemMatcher": [
+                "$tsc"
+            ],
+            "presentation": {
+                "focus": false,
+                "group": "compile"
+            } ,
+        },
+        {
+            "type": "npm",
+            "label": "build",
+            "script": "build",
+            "presentation": {
+                "focus": false,
+                "group": "compile"
+            }
         }
     ]
 }

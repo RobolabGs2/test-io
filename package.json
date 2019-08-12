@@ -8,7 +8,9 @@
     "private": true,
     "scripts": {
         "watch": "npm-watch",
-        "concat": "node tools/concat.js ./compile ./static/js"
+        "concat": "node tools/concat.js ./compile ./static/js",
+        "clear": "node tools/rmdir.js ./compile",
+        "build": "npm run clear && tsc -build && npm run concat"
     },
     "watch": {
         "concat": {
