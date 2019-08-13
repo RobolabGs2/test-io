@@ -27,8 +27,9 @@ class Typeable {
 }
 function parseWorld(json) {
     let physics = new Physics();
+    let world = new World(physics);
     let avatarFactory = new AvatarFactory();
-    return JSON.parse(json, (key, value) => {
+    JSON.parse(json, (key, value) => {
         let _type = value["_type"];
         if (typeof _type === "string") {
             if (key === "avatar") {
@@ -40,15 +41,14 @@ function parseWorld(json) {
                 case "Hitbox":
                     return Hitbox.unpack(value);
                 case "Entity":
-                    return Entity.unpack(value, physics);
-                case "World":
-                    return World.unpack(value, physics);
+                    return world.createEntity(value);
                 case "Color":
                     return Color.unpack(value);
             }
         }
         return value;
     });
+    return world;
 }
 function loadWorld(filename, start) {
     var xhr = new XMLHttpRequest();
@@ -127,9 +127,6 @@ class Entity extends Typeable {
         this.avatar.play(this.body.velocity.x / 50 * dt);
     }
     get hitbox() { return this.body.hitbox; }
-    static unpack({ hitbox, avatar, movable = true }, physics) {
-        return new Entity(avatar, physics.createBody(hitbox, new Point({}), movable));
-    }
     //лучше было переопределить toJson в Body, чтоб он возвращал {movable, что-ещё нужно для создания}
     //деструктурирующее присваивание позволяет парсить и более глубоко, так что можно было бы это отловить в 
     //Entity.unpack, либо передать как объект в createBody
@@ -138,45 +135,44 @@ class Entity extends Typeable {
     }
 }
 class World extends Typeable {
-    constructor(user, physics) {
+    constructor(physics) {
         super("World");
         this.drawables = new Array();
-        this.user = user;
-        this.drawableUser = user.makeDrawable();
         this.mobs = new Array();
         this.physics = physics;
+        this.materials = new Map();
+        this.controller = new Controller(this);
+        this.materials.set("duck", new physicalMaterial(0.9, 0.05, 30));
+        this.materials.set("stone", new physicalMaterial(0.9, 0.05, 170));
     }
-    setCamera(camera) {
+    setCamera(camera, user) {
         this.camera = camera;
-        this.camera.setPosition(this.user.hitbox.position, new Point({ x: this.user.hitbox.width / 2, y: this.user.hitbox.height / 2 }));
+        this.camera.setPosition(user.hitbox.position, new Point({ x: user.hitbox.width / 2, y: user.hitbox.height / 2 }));
     }
     draw() {
         this.camera.clear();
         this.drawables.forEach(mob => {
             mob.draw(this.camera);
         });
-        this.drawableUser.draw(this.camera);
     }
     tick(dt) {
         this.physics.tick(dt);
+        this.controller.tikc(dt);
         this.mobs.forEach(m => m.tick(dt));
-        this.user.tick(dt);
     }
     pushEntity(entity) {
         this.mobs.push(entity);
         this.pushDrawable(entity);
     }
-    pushRawEntity(avatar, hitbox) {
-        this.pushEntity(new Entity(avatar, this.physics.createBody(hitbox, new Point({}), true)));
+    createEntity({ hitbox, avatar, controllerType, material, movable = true }) {
+        let entity = new Entity(avatar, this.physics.createBody(hitbox, new Point({}), this.materials.get(material), movable));
+        this.controller.setControl(entity, controllerType);
+        this.pushEntity(entity);
+        return entity;
     }
     pushDrawable(drawable) {
         if (!("draw" in drawable))
             drawable = drawable.makeDrawable();
         this.drawables.push(drawable);
-    }
-    static unpack({ user, mobs }, physics) {
-        let w = new World(user, physics);
-        mobs.forEach(mob => w.pushEntity(mob));
-        return w;
     }
 }

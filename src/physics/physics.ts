@@ -1,6 +1,6 @@
 interface IPhysics{
     tick(dt: number): void;
-    createBody(hitbox: Hitbox, velocity: Point, movable: boolean): IBody;
+    createBody(hitbox: Hitbox, velocity: Point, material: physicalMaterial, movable: boolean): IBody;
 } 
 
 class Physics implements IPhysics
@@ -45,8 +45,8 @@ class Physics implements IPhysics
         //console.log(this.queue.list.length, count, this.queue.Better().collision.time);
     }
 
-    createBody(hitbox: Hitbox, velocity: Point, movable: boolean = true): IBody{
-        let body = new Body(hitbox, velocity, this, movable);
+    createBody(hitbox: Hitbox, velocity: Point, material: physicalMaterial, movable: boolean = true): IBody{
+        let body = new Body(hitbox, velocity, this, material, movable);
         this.add(body);
         return body;
     }

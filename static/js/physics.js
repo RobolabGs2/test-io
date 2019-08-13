@@ -1,8 +1,8 @@
 "use strict";
 class Body {
-    get mass() { return this.hitbox.height * this.hitbox.width; }
+    get mass() { return this.hitbox.height * this.hitbox.width * this.material.density; }
     ;
-    constructor(hitbox, velocity, physics, movable = true) {
+    constructor(hitbox, velocity, physics, material, movable = true) {
         this.hitbox = hitbox;
         this.velocity = velocity;
         this.movable = movable;
@@ -12,6 +12,7 @@ class Body {
         this.acceleration = new Point({});
         this.runSpeed = 0;
         this.jumpSpeed = 0;
+        this.material = material;
     }
     tick(dt) {
         this.hitbox.position.x += dt * this.velocity.x + dt * dt * this.Acceleration().x / 2;
@@ -262,6 +263,11 @@ class impact {
 
 "use strict";
 class physicalMaterial {
+    constructor(frictionСoefficient, elasticityCoefficient, density) {
+        this.frictionСoefficient = frictionСoefficient;
+        this.elasticityCoefficient = elasticityCoefficient;
+        this.density = density;
+    }
 }
 
 "use strict";
@@ -293,8 +299,8 @@ class Physics {
         } while (dt > 0);
         //console.log(this.queue.list.length, count, this.queue.Better().collision.time);
     }
-    createBody(hitbox, velocity, movable = true) {
-        let body = new Body(hitbox, velocity, this, movable);
+    createBody(hitbox, velocity, material, movable = true) {
+        let body = new Body(hitbox, velocity, this, material, movable);
         this.add(body);
         return body;
     }

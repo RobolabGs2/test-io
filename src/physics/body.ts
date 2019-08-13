@@ -5,6 +5,7 @@ interface IBody{
     runSpeed: number;
     jumpSpeed: number;
     movable: boolean;
+    material: physicalMaterial
 
     setAcceleration(acceleration: Point): void;
     setVelocity(velocity: Point): void;
@@ -21,10 +22,11 @@ class Body implements IBody{
     acceleration: Point;
     runSpeed: number;
     jumpSpeed: number;
+    material: physicalMaterial
 
-    get mass() {return this.hitbox.height * this.hitbox.width};
+    get mass() {return this.hitbox.height * this.hitbox.width * this.material.density};
 
-    constructor(hitbox: Hitbox, velocity: Point, physics: Physics, movable: boolean = true){
+    constructor(hitbox: Hitbox, velocity: Point, physics: Physics, material: physicalMaterial, movable: boolean = true){
         this.hitbox = hitbox;
         this.velocity = velocity;
         this.movable = movable;
@@ -34,6 +36,7 @@ class Body implements IBody{
         this.acceleration = new Point({});
         this.runSpeed = 0;
         this.jumpSpeed = 0;
+        this.material = material;
     }
 
     tick(dt: number){

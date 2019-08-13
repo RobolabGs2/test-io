@@ -7,8 +7,9 @@ abstract class Typeable {
 
 function parseWorld(json: string) {
     let physics: IPhysics = new Physics();
+    let world = new World(physics);
     let avatarFactory = new AvatarFactory();
-    return JSON.parse(json, (key: string, value: any) => {
+    JSON.parse(json, (key: string, value: any) => {
         let _type = value["_type"];
         if (typeof _type === "string") {
             if(key === "avatar") {
@@ -20,15 +21,14 @@ function parseWorld(json: string) {
                 case "Hitbox":
                     return Hitbox.unpack(value);
                 case "Entity":
-                    return Entity.unpack(value, physics);
-                case "World":
-                    return World.unpack(value, physics);
+                    return world.createEntity(value);
                 case "Color":
                     return Color.unpack(value);
             }
         }
         return value;
-    }) as World
+    })
+    return world;
 }
 
 function loadWorld(filename: string, start: (world: World) => void) {

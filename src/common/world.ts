@@ -24,9 +24,6 @@ class Entity extends Typeable implements DrawableMaker{
         this.body = body;
     }
     
-    static unpack({hitbox, avatar, movable = true}: {hitbox: Hitbox, avatar: Avatar, movable: boolean}, physics: IPhysics) {
-        return new Entity(avatar, physics.createBody(hitbox, new Point({}), movable));
-    }
     //лучше было переопределить toJson в Body, чтоб он возвращал {movable, что-ещё нужно для создания}
     //деструктурирующее присваивание позволяет парсить и более глубоко, так что можно было бы это отловить в 
     //Entity.unpack, либо передать как объект в createBody
@@ -36,38 +33,41 @@ class Entity extends Typeable implements DrawableMaker{
 }
 
 class World extends Typeable {
-    setCamera(camera: Camera) {
+    
+    setCamera(camera: Camera, user: Entity) {
         this.camera = camera
-        this.camera.setPosition(this.user.hitbox.position, new Point({x:this.user.hitbox.width/2, y:this.user.hitbox.height/2}));
+        this.camera.setPosition(user.hitbox.position, new Point({x:user.hitbox.width/2, y:user.hitbox.height/2}));
     }
-
+    
     draw(): void {
         this.camera.clear()
         this.drawables.forEach(mob => {
             mob.draw(this.camera);
         });
-        this.drawableUser.draw(this.camera);
     }
 
-    user: Entity;
     mobs: Array<Entity>;
     drawables = new Array<Drawable>();
-    drawableUser: Drawable;
     private camera!: Camera;
     physics: IPhysics;
+    controller: Controller;
+    materials: Map<string, physicalMaterial>;
 
-    constructor(user: Entity, physics: IPhysics) {
+    constructor(physics: IPhysics) {
         super("World");
-        this.user = user;
-        this.drawableUser = user.makeDrawable();
         this.mobs = new Array<Entity>();
         this.physics = physics;
+        this.materials = new Map();
+        this.controller = new Controller(this);
+
+        this.materials.set("duck", new physicalMaterial(0.9, 0.05, 30));
+        this.materials.set("stone", new physicalMaterial(0.9, 0.05, 170));
     }
 
     tick(dt: number){
         this.physics.tick(dt);
+        this.controller.tikc(dt);
         this.mobs.forEach(m => m.tick(dt));
-        this.user.tick(dt);
     }
 
     private pushEntity(entity: Entity) {
@@ -75,19 +75,17 @@ class World extends Typeable {
         this.pushDrawable(entity);
     }
 
-    pushRawEntity(avatar: Avatar, hitbox: Hitbox) {
-        this.pushEntity(new Entity(avatar, this.physics.createBody(hitbox, new Point({}), true)));
+    createEntity({hitbox, avatar, controllerType, material, movable = true}: {hitbox: Hitbox, avatar: Avatar, controllerType: string, material: string, movable: boolean}){
+        let entity = new Entity(avatar, this.physics.createBody(hitbox, new Point({}), this.materials.get(material) as physicalMaterial, movable));
+        this.controller.setControl(entity, controllerType);
+
+        this.pushEntity(entity);
+        return entity;
     }
 
     pushDrawable(drawable: Drawable|DrawableMaker) {
         if(!("draw" in drawable))
             drawable = drawable.makeDrawable();
         this.drawables.push(drawable);
-    }
-
-    static unpack({user, mobs}: {user: Entity, mobs: Array<Entity>}, physics: IPhysics) {
-        let w = new World(user, physics);            
-        mobs.forEach(mob => w.pushEntity(mob));
-        return w;
     }
 }
