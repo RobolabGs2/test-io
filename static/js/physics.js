@@ -47,6 +47,9 @@ class Body {
         else
             this.phisics.Update(this);
     }
+    toJSON() {
+        return { movable: this.movable, material: this.material, hitbox: this.hitbox };
+    }
 }
 
 "use strict";

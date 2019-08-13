@@ -8,9 +8,9 @@ console.log("Start!")
     })
 
     let canvas = document.getElementById('main') as HTMLCanvasElement;
-    let camera = new Camera(canvas);
-    let input = new InputDevices(camera);
-    let cursore = input.mouseCursore;
+    //let camera = new Camera(canvas);
+    //let input = new InputDevices(camera);
+    //let cursore = input.mouseCursore;
     let timerTick: number;
     let timerDraw: number;
     let currentWorld: World;
@@ -22,7 +22,7 @@ console.log("Start!")
             console.log(e);
         }
         currentWorld = world;
-        world.pushDrawable(cursore)
+        //world.pushDrawable(cursore)
 
         let tick = (dt: number) => {
             world.tick(dt / 1000);

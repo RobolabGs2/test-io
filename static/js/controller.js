@@ -77,10 +77,12 @@ class UserOperator {
         }).addPressAction(false, Actions.clone, () => {
             this.controller.world.createEntity({
                 avatar: new CompositeAvatar(textures[getRandomInt(0, textures.length - 1)]),
-                hitbox: new Hitbox(slave.hitbox.position.Sum(new Point({ x: 50, y: 0 })), 32, 32),
                 controllerType: "nothing",
-                material: "stone",
-                movable: true
+                body: {
+                    hitbox: new Hitbox(slave.hitbox.position.Sum(new Point({ x: 50, y: 0 })), 32, 32),
+                    material: "stone",
+                    movable: true
+                }
             });
         });
     }

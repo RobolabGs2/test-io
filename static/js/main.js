@@ -8,9 +8,9 @@ console.log("Start!");
         speed = speed_input.valueAsNumber;
     });
     let canvas = document.getElementById('main');
-    let camera = new Camera(canvas);
-    let input = new InputDevices(camera);
-    let cursore = input.mouseCursore;
+    //let camera = new Camera(canvas);
+    //let input = new InputDevices(camera);
+    //let cursore = input.mouseCursore;
     let timerTick;
     let timerDraw;
     let currentWorld;
@@ -23,7 +23,7 @@ console.log("Start!");
             console.log(e);
         }
         currentWorld = world;
-        world.pushDrawable(cursore);
+        //world.pushDrawable(cursore)
         let tick = (dt) => {
             world.tick(dt / 1000);
         };

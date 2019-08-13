@@ -22,7 +22,7 @@
             "presentation": {
                 "focus": false,
                 "group": "compile"
-            } 
+            }
         },
         {
             "type": "npm",
@@ -31,7 +31,7 @@
             "presentation": {
                 "focus": false,
                 "group": "compile"
-            } 
+            }
         },
         {
             "label": "ts:build",
@@ -43,7 +43,7 @@
             "presentation": {
                 "focus": false,
                 "group": "compile"
-            } ,
+            }
         },
         {
             "type": "npm",
@@ -52,7 +52,9 @@
             "presentation": {
                 "focus": false,
                 "group": "compile"
-            }
+            },
+            "group": "build",
+            "problemMatcher": []
         }
     ]
 }

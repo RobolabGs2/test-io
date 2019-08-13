@@ -10,6 +10,8 @@ interface IBody{
     setAcceleration(acceleration: Point): void;
     setVelocity(velocity: Point): void;
     addVelocity(velocity: Point): void;
+
+    toJSON(): {movable: boolean, material: physicalMaterial, hitbox: Hitbox};
 }
 
 class Body implements IBody{
@@ -76,5 +78,9 @@ class Body implements IBody{
             this.phisics.Update(col.b2);
         }else
             this.phisics.Update(this);
+    }
+
+    toJSON(): { movable: boolean, material: physicalMaterial, hitbox: Hitbox } {
+        return { movable: this.movable, material: this.material, hitbox: this.hitbox };
     }
 }

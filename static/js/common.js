@@ -105,6 +105,23 @@ class Queue {
 }
 
 "use strict";
+class ResourceManager {
+    constructor() {
+        this.resources = new Map();
+    }
+    set(name, resource) {
+        resource.toJSON = () => { return name; };
+        this.resources.set(name, resource);
+    }
+    get(name) {
+        let res = this.resources.get(name);
+        if (!res)
+            throw new Error(`Ресурс ${name} отсутствует!`);
+        return res;
+    }
+}
+
+"use strict";
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
@@ -114,11 +131,11 @@ function getRandomArbitary(min, max) {
 
 "use strict";
 class Entity extends Typeable {
-    constructor(avatar, body) {
+    constructor(avatar, body, controllerType) {
         super("Entity");
         this.avatar = avatar;
-        this.counter = 0;
         this.body = body;
+        this.controllerType = controllerType;
     }
     makeDrawable() {
         return { draw: this.avatar.bindContext(this.hitbox) };
@@ -127,12 +144,6 @@ class Entity extends Typeable {
         this.avatar.play(this.body.velocity.x / 50 * dt);
     }
     get hitbox() { return this.body.hitbox; }
-    //лучше было переопределить toJson в Body, чтоб он возвращал {movable, что-ещё нужно для создания}
-    //деструктурирующее присваивание позволяет парсить и более глубоко, так что можно было бы это отловить в 
-    //Entity.unpack, либо передать как объект в createBody
-    toJSON() {
-        return { hitbox: this.hitbox, avatar: this.avatar, movable: this.body.movable, _type: this._type };
-    }
 }
 class World extends Typeable {
     constructor(physics) {
@@ -140,7 +151,7 @@ class World extends Typeable {
         this.drawables = new Array();
         this.mobs = new Array();
         this.physics = physics;
-        this.materials = new Map();
+        this.materials = new ResourceManager();
         this.controller = new Controller(this);
         this.materials.set("duck", new physicalMaterial(0.9, 0.05, 30));
         this.materials.set("stone", new physicalMaterial(0.9, 0.05, 170));
@@ -164,8 +175,8 @@ class World extends Typeable {
         this.mobs.push(entity);
         this.pushDrawable(entity);
     }
-    createEntity({ hitbox, avatar, controllerType, material, movable = true }) {
-        let entity = new Entity(avatar, this.physics.createBody(hitbox, new Point({}), this.materials.get(material), movable));
+    createEntity({ avatar, controllerType, body: { hitbox, material, movable = true } }) {
+        let entity = new Entity(avatar, this.physics.createBody(hitbox, new Point({}), this.materials.get(material), movable), controllerType);
         this.controller.setControl(entity, controllerType);
         this.pushEntity(entity);
         return entity;
@@ -174,5 +185,8 @@ class World extends Typeable {
         if (!("draw" in drawable))
             drawable = drawable.makeDrawable();
         this.drawables.push(drawable);
+    }
+    toJSON() {
+        return this.mobs;
     }
 }
