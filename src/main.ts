@@ -6,10 +6,10 @@ console.log("Start!")
     speed_input.addEventListener("input", (ev) => {
         speed = speed_input.valueAsNumber
     })
-
+    let worldCreator = new WorldCreator();
     let canvas = document.getElementById('main') as HTMLCanvasElement;
-    //let camera = new Camera(canvas);
-    //let input = new InputDevices(camera);
+    let camera = new Camera(canvas);
+    let input = new InputDevices(camera);
     //let cursore = input.mouseCursore;
     let timerTick: number;
     let timerDraw: number;
@@ -38,7 +38,7 @@ console.log("Start!")
     }
 
 
-    loadWorld("test-world-anim.json", start)
+    worldCreator.loadWorld("world1", start)
 
     let sb = document.getElementById("save") as HTMLButtonElement;
     let lb = document.getElementById("load") as HTMLButtonElement;
@@ -46,13 +46,13 @@ console.log("Start!")
     let saveInput = document.getElementById("saveNum") as HTMLInputElement;
     sb.onclick = () => {
         if (currentWorld)
-            saveLocal(saveInput.value, currentWorld)
+        worldCreator.saveLocal(saveInput.value, currentWorld)
         sb.blur()
         canvas.focus()
     }
 
     lb.onclick = () => {
-        start(loadLocal(saveInput.value))
+        //start(worldCreator.loadLocal(saveInput.value))
         lb.blur()
         canvas.focus()
     }

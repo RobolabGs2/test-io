@@ -45,7 +45,7 @@ class World extends Typeable {
     drawables = new Array<Drawable>();
     private camera!: Camera;
     physics: IPhysics;
-    controller: Controller;
+    controller!: Controller;
     materials: ResourceManager<physicalMaterial>;
 
     constructor(physics: IPhysics) {
@@ -53,10 +53,11 @@ class World extends Typeable {
         this.mobs = new Array<Entity>();
         this.physics = physics;
         this.materials = new ResourceManager();
-        this.controller = new Controller(this);
+        //this.controller = controller;
+    }
 
-        this.materials.set("duck", new physicalMaterial(0.9, 0.05, 30));
-        this.materials.set("stone", new physicalMaterial(0.9, 0.05, 170));
+    setContorller(controller: Controller) {
+        this.controller = controller;
     }
 
     tick(dt: number){
@@ -72,7 +73,7 @@ class World extends Typeable {
 
     createEntity({avatar, controllerType, body:{hitbox, material, movable = true}}:
                 {avatar: Avatar, controllerType: string, body:{hitbox: Hitbox, material: string, movable: boolean}}){
-        let entity = new Entity(avatar, this.physics.createBody(hitbox, new Point({}), this.materials.get(material) as physicalMaterial, movable), controllerType);
+        let entity = new Entity(avatar, this.physics.createBody(hitbox, new Point({}), this.materials.get(material), movable), controllerType);
         this.controller.setControl(entity, controllerType);
 
         this.pushEntity(entity);
@@ -83,6 +84,10 @@ class World extends Typeable {
         if(!("draw" in drawable))
             drawable = drawable.makeDrawable();
         this.drawables.push(drawable);
+    }
+
+    pushMaterial(name: string, material: physicalMaterial) {
+        this.materials.set(name, material);
     }
 
     toJSON() {

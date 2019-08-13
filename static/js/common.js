@@ -25,49 +25,64 @@ class Typeable {
         this._type = type;
     }
 }
-function parseWorld(json) {
-    let physics = new Physics();
-    let world = new World(physics);
-    let avatarFactory = new AvatarFactory();
-    JSON.parse(json, (key, value) => {
-        let _type = value["_type"];
-        if (typeof _type === "string") {
-            if (key === "avatar") {
-                return avatarFactory.make(_type, value);
+class WorldCreator {
+    constructor() {
+        this.avatarFactory = new AvatarFactory();
+        //this.materials.set("duck", new physicalMaterial(0.9, 0.05, 30));
+        //this.materials.set("stone", new physicalMaterial(0.9, 0.05, 170));
+    }
+    loadJson(worldName, component) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', `./static/worlds/${worldName}/${component}.json`, false);
+        xhr.onreadystatechange = () => {
+            if (xhr.readyState === 4 && xhr.status !== 404) {
+                console.log(xhr.responseText);
             }
-            switch (_type) {
-                case "Point":
-                    return new Point(value);
-                case "Hitbox":
-                    return Hitbox.unpack(value);
-                case "Entity":
-                    return world.createEntity(value);
-                case "Color":
-                    return Color.unpack(value);
+        };
+        xhr.send();
+        return xhr.responseText;
+    }
+    loadWorld(worldName, start) {
+        const physics = new Physics();
+        const world = new World(physics);
+        world.setContorller(new Controller(world));
+        this.parseResource(this.loadJson(worldName, "material"), world.pushMaterial.bind(world));
+        let entity = this.parseEntity(this.loadJson(worldName, "entity"));
+        entity.forEach(world.createEntity.bind(world));
+        start(world);
+    }
+    parseResource(json, push) {
+        let resources = JSON.parse(json);
+        for (const name in resources) {
+            if (resources.hasOwnProperty(name)) {
+                push(name, resources[name]);
             }
         }
-        return value;
-    });
-    return world;
-}
-function loadWorld(filename, start) {
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', "./static/worlds/" + filename, false);
-    xhr.onreadystatechange = function () {
-        console.log(this.responseText);
-        if (this.readyState === 4 && this.status !== 404) {
-            start(parseWorld(this.responseText));
-        }
-    };
-    xhr.send();
-}
-function saveLocal(save, world) {
-    let str = JSON.stringify(world, null, "  ");
-    console.log(str);
-    localStorage.setItem(save, str);
-}
-function loadLocal(save) {
-    return parseWorld(localStorage.getItem(save));
+    }
+    parseEntity(json) {
+        return JSON.parse(json, (key, value) => {
+            let _type = value["_type"];
+            if (typeof _type === "string") {
+                if (key === "avatar") {
+                    return this.avatarFactory.make(_type, value);
+                }
+                switch (_type) {
+                    case "Point":
+                        return new Point(value);
+                    case "Hitbox":
+                        return Hitbox.unpack(value);
+                    case "Color":
+                        return Color.unpack(value);
+                }
+            }
+            return value;
+        });
+    }
+    saveLocal(save, world) {
+        let str = JSON.stringify(world, null, " ");
+        console.log(str);
+        localStorage.setItem(save, str);
+    }
 }
 
 "use strict";
@@ -152,9 +167,7 @@ class World extends Typeable {
         this.mobs = new Array();
         this.physics = physics;
         this.materials = new ResourceManager();
-        this.controller = new Controller(this);
-        this.materials.set("duck", new physicalMaterial(0.9, 0.05, 30));
-        this.materials.set("stone", new physicalMaterial(0.9, 0.05, 170));
+        //this.controller = controller;
     }
     setCamera(camera, user) {
         this.camera = camera;
@@ -165,6 +178,9 @@ class World extends Typeable {
         this.drawables.forEach(mob => {
             mob.draw(this.camera);
         });
+    }
+    setContorller(controller) {
+        this.controller = controller;
     }
     tick(dt) {
         this.physics.tick(dt);
@@ -185,6 +201,9 @@ class World extends Typeable {
         if (!("draw" in drawable))
             drawable = drawable.makeDrawable();
         this.drawables.push(drawable);
+    }
+    pushMaterial(name, material) {
+        this.materials.set(name, material);
     }
     toJSON() {
         return this.mobs;

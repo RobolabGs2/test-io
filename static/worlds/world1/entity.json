@@ -1,0 +1,160 @@
+[
+	{
+		"_type": "Entity",
+		"avatar": {
+			"_type": "AnimatedImageTexture",
+			"filename": "yana_duck_animated3.png",
+			"frameSize": 64
+		},
+		"controllerType": "user",
+		"body": {
+			"hitbox": {
+				"_type": "Hitbox",
+				"position": {
+					"_type": "Point",
+					"x": 10,
+					"y": 400
+				},
+				"width": 32,
+				"height": 32
+			},
+			"material": "duck"
+		}
+	},
+	{
+		"_type": "Entity",
+		"avatar": {
+			"_type": "FillRectangleTexture",
+			"color": {
+				"_type": "Color",
+				"A": 255,
+				"R": 0,
+				"G": 128,
+				"B": 0
+			}
+		},
+		"controllerType": "nothing",
+		"body": {
+			"hitbox": {
+				"_type": "Hitbox",
+				"position": {
+					"_type": "Point",
+					"x": 50,
+					"y": 20
+				},
+				"width": 32,
+				"height": 32
+			},
+			"material": "stone"
+		}
+	},
+	{
+		"_type": "Entity",
+		"avatar": {
+			"_type": "FillRectangleTexture",
+			"color": {
+				"_type": "Color",
+				"A": 255,
+				"R": 128,
+				"G": 128,
+				"B": 0
+			}
+		},
+		"controllerType": "bot",
+		"body": {
+			"hitbox": {
+				"_type": "Hitbox",
+				"position": {
+					"_type": "Point",
+					"x": 300,
+					"y": 200
+				},
+				"width": 32,
+				"height": 32
+			},
+			"material": "stone"
+		}
+	},
+	{
+		"_type": "Entity",
+		"avatar": {
+			"_type": "StrokeRectangleTexture",
+			"color": {
+				"_type": "Color",
+				"A": 255,
+				"R": 0,
+				"G": 128,
+				"B": 0
+			}
+		},
+		"controllerType": "nothing",
+		"body": {
+			"hitbox": {
+				"_type": "Hitbox",
+				"position": {
+					"_type": "Point",
+					"x": 300,
+					"y": 300
+				},
+				"width": 32,
+				"height": 32
+			},
+			"material": "stone"
+		}
+	},
+	{
+		"_type": "Entity",
+		"avatar": {
+			"_type": "StrokeRectangleTexture",
+			"color": {
+				"_type": "Color",
+				"A": 255,
+				"R": 255,
+				"G": 0,
+				"B": 128
+			}
+		},
+		"controllerType": "nothing",
+		"body": {
+			"hitbox": {
+				"_type": "Hitbox",
+				"position": {
+					"_type": "Point",
+					"x": 200,
+					"y": 300
+				},
+				"width": 32,
+				"height": 32
+			},
+			"material": "stone"
+		}
+	},
+	{
+		"_type": "Entity",
+		"avatar": {
+			"_type": "FillRectangleTexture",
+			"color": {
+				"_type": "Color",
+				"A": 255,
+				"R": 0,
+				"G": 128,
+				"B": 128
+			}
+		},
+		"controllerType": "nothing",
+		"body": {
+			"hitbox": {
+				"_type": "Hitbox",
+				"position": {
+					"_type": "Point",
+					"x": 1,
+					"y": 500
+				},
+				"width": 5100,
+				"height": 10
+			},
+			"material": "stone",
+			"movable": false
+		}
+	}
+]

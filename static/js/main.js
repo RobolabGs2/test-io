@@ -7,9 +7,10 @@ console.log("Start!");
     speed_input.addEventListener("input", (ev) => {
         speed = speed_input.valueAsNumber;
     });
+    let worldCreator = new WorldCreator();
     let canvas = document.getElementById('main');
-    //let camera = new Camera(canvas);
-    //let input = new InputDevices(camera);
+    let camera = new Camera(canvas);
+    let input = new InputDevices(camera);
     //let cursore = input.mouseCursore;
     let timerTick;
     let timerDraw;
@@ -35,18 +36,18 @@ console.log("Start!");
         });
         timerDraw = setInterval(world.draw.bind(world), 15);
     }
-    loadWorld("test-world-anim.json", start);
+    worldCreator.loadWorld("world1", start);
     let sb = document.getElementById("save");
     let lb = document.getElementById("load");
     let saveInput = document.getElementById("saveNum");
     sb.onclick = () => {
         if (currentWorld)
-            saveLocal(saveInput.value, currentWorld);
+            worldCreator.saveLocal(saveInput.value, currentWorld);
         sb.blur();
         canvas.focus();
     };
     lb.onclick = () => {
-        start(loadLocal(saveInput.value));
+        //start(worldCreator.loadLocal(saveInput.value))
         lb.blur();
         canvas.focus();
     };

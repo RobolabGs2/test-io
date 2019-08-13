@@ -6,7 +6,7 @@ class ResourceManager<Resource> {
         this.resources.set(name, resource);
     }
 
-    get(name: string) {
+    get(name: string): Resource {
         let res = this.resources.get(name);
         if(!res)
             throw new Error(`Ресурс ${name} отсутствует!`);
