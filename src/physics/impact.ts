@@ -1,32 +1,43 @@
 class impact{
 
+    private static mean(a: number, b: number){
+        return Math.sqrt(a * b);
+    }
+
     static hit(body1: Body, body2: Body, vector: Point){
         let m1 = body1.mass;
         let m2 = body2.mass;
 
         if(Math.abs(vector.x) >= Math.abs(vector.y)){
-            let vel = this.bounce(body1.velocity.x, body2.velocity.x, m1, m2, body1.movable, body2.movable);
+
+            let vel = this.bounce(body1.velocity.x, body2.velocity.x, m1, m2, body1.movable, body2.movable, 
+                this.mean(body1.material.elasticityCoefficient, body2.material.elasticityCoefficient));
             body1.velocity.x = vel.v;
             body2.velocity.x = vel.u;    
-            let fric = this.friction(body1.velocity.y, body2.velocity.y, m1, m2, body1.movable, body2.movable);
+
+            let fric = this.friction(body1.velocity.y, body2.velocity.y, m1, m2, body1.movable, body2.movable, 
+                this.mean(body1.material.frictionСoefficient, body2.material.frictionСoefficient));
             body1.velocity.y = fric.v;
             body2.velocity.y = fric.u;    
         }else{
-            let vel = this.jump(body1.velocity.y, body2.velocity.y, m1, m2, body1.movable, body2.movable,
-                    body1.jumpSpeed, body2.jumpSpeed);
+            
+            let vel = this.jump(body1.velocity.y, body2.velocity.y, m1, m2, body1.movable, body2.movable, 
+                this.mean(body1.material.elasticityCoefficient, body2.material.elasticityCoefficient),
+                body1.jumpSpeed, body2.jumpSpeed);
             
             body1.velocity.y = vel.v;
             body2.velocity.y = vel.u;   
             
-            let fric = this.run(body1.velocity.x, body2.velocity.x, m1, m2, body1.movable, body2.movable, body2.runSpeed - body1.runSpeed);
+            let fric = this.run(body1.velocity.x, body2.velocity.x, m1, m2, body1.movable, body2.movable, 
+                this.mean(body1.material.frictionСoefficient, body2.material.frictionСoefficient),
+                body2.runSpeed - body1.runSpeed);
             body1.velocity.x = fric.v;
             body2.velocity.x = fric.u;    
         }
     }
 
-    private static bounce(v: number, u: number, m1: number, m2: number, mov1: boolean, mov2: boolean): {v: number, u: number}{
+    private static bounce(v: number, u: number, m1: number, m2: number, mov1: boolean, mov2: boolean, k:number): {v: number, u: number}{
         
-        let k = 0.9;
         let u1 = u - v;
         let p = 20 * Math.min(m1, m2);
         let root = 1 - k + p * (m1 + m2) / (m1 * m2 * u1 * u1);
@@ -52,9 +63,8 @@ class impact{
         return {v: v, u: u};
     }
 
-    private static friction(v: number, u: number, m1: number, m2: number, mov1: boolean, mov2: boolean): {v: number, u: number}{
+    private static friction(v: number, u: number, m1: number, m2: number, mov1: boolean, mov2: boolean, k: number): {v: number, u: number}{
        
-        let k = 0.3;            
         let u1 = u - v;
 
         let root = 1 - k;
@@ -79,9 +89,8 @@ class impact{
         return {v: v, u: u};
     }
 
-    private static run(v: number, u: number, m1: number, m2: number, mov1: boolean, mov2: boolean, S: number): {v: number, u: number}{
+    private static run(v: number, u: number, m1: number, m2: number, mov1: boolean, mov2: boolean, k: number, S: number): {v: number, u: number}{
         
-        let k = 0.3;            
         let u1 = u - v;
 
         let root = 1 - k;
@@ -112,9 +121,8 @@ class impact{
         return {v: v, u: u};
     }
 
-    private static jump(v: number, u: number, m1: number, m2: number, mov1: boolean, mov2: boolean, jvel1: number, jvel2: number): {v: number, u: number}{
+    private static jump(v: number, u: number, m1: number, m2: number, mov1: boolean, mov2: boolean, k: number, jvel1: number, jvel2: number): {v: number, u: number}{
         
-        let k = 0.9;
         let u1 = u - v;
         let p = 20 * Math.min(m1, m2) + m1 * jvel1 * jvel1 + m2 * jvel2 * jvel2;
         let root = 1 - k + p * (m1 + m2) / (m1 * m2 * u1 * u1);

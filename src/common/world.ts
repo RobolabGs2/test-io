@@ -55,8 +55,8 @@ class World extends Typeable {
         this.materials = new ResourceManager();
         this.controller = new Controller(this);
 
-        this.materials.set("duck", new physicalMaterial(0.9, 0.05, 30));
-        this.materials.set("stone", new physicalMaterial(0.9, 0.05, 170));
+        this.materials.set("duck", new physicalMaterial(0.050, 1, 30));
+        this.materials.set("stone", new physicalMaterial(0.95, 0.90, 170));
     }
 
     tick(dt: number){
