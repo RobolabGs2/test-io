@@ -10,8 +10,8 @@ type WorldComponent = "entity" | "material"
 
 class WorldCreator {
     avatarFactory = new AvatarFactory();
-
-    constructor() {
+    
+    constructor(private camera: Camera, private input: InputDevices) {
     }
 
     loadJson(worldName: string, component: WorldComponent) {
@@ -28,11 +28,9 @@ class WorldCreator {
 
     loadWorld(worldName: string, start: (world: World) => void) {
         const physics: IPhysics = new Physics();
-        const world = new World(physics);
-        world.setContorller(new Controller(world));
+        const world = new World(physics, this.camera, world => new Controller(this.input, world));
         this.parseResource(this.loadJson(worldName, "material"), world.pushMaterial.bind(world));
-        let entity = this.parseEntity(this.loadJson(worldName, "entity"));
-        entity.forEach(world.createEntity.bind(world));
+        this.parseEntity(this.loadJson(worldName, "entity"), world.createEntity.bind(world));      
         start(world);
     }
 
@@ -45,7 +43,7 @@ class WorldCreator {
         }
     }
 
-    parseEntity(json: string) {
+    parseEntity(json: string, push: (entity: any) => void) {
         return JSON.parse(json, (key: string, value: any) => {
             let _type = value["_type"];
             if (typeof _type === "string") {
@@ -59,6 +57,9 @@ class WorldCreator {
                         return Hitbox.unpack(value);
                     case "Color":
                         return Color.unpack(value);
+                    case "Entity":
+                        push(value);
+                        break;
                 }
             }
             return value;

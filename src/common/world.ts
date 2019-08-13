@@ -29,9 +29,8 @@ class Entity extends Typeable implements DrawableMaker, Operable{
 
 class World extends Typeable {
     
-    setCamera(camera: Camera, user: Entity) {
-        this.camera = camera
-        this.camera.setPosition(user.hitbox.position, new Point({x:user.hitbox.width/2, y:user.hitbox.height/2}));
+    keepTrackOf(traceable: Entity) {
+        this.camera.setPosition(traceable.hitbox.position, new Point({x:traceable.hitbox.width/2, y:traceable.hitbox.height/2}));
     }
     
     draw(): void {
@@ -43,26 +42,21 @@ class World extends Typeable {
 
     mobs: Array<Entity>;
     drawables = new Array<Drawable>();
-    private camera!: Camera;
     physics: IPhysics;
-    controller!: Controller;
+    controller: Controller;
     materials: ResourceManager<physicalMaterial>;
 
-    constructor(physics: IPhysics) {
+    constructor(physics: IPhysics, private camera: Camera, controllerMaker: (world: World)=>Controller) {
         super("World");
         this.mobs = new Array<Entity>();
         this.physics = physics;
         this.materials = new ResourceManager();
-        //this.controller = controller;
-    }
-
-    setContorller(controller: Controller) {
-        this.controller = controller;
+        this.controller = controllerMaker(this);
     }
 
     tick(dt: number){
         this.physics.tick(dt);
-        this.controller.tikc(dt);
+        this.controller.tick(dt);
         this.mobs.forEach(m => m.tick(dt));
     }
 

@@ -26,10 +26,10 @@ class Typeable {
     }
 }
 class WorldCreator {
-    constructor() {
+    constructor(camera, input) {
+        this.camera = camera;
+        this.input = input;
         this.avatarFactory = new AvatarFactory();
-        //this.materials.set("duck", new physicalMaterial(0.9, 0.05, 30));
-        //this.materials.set("stone", new physicalMaterial(0.9, 0.05, 170));
     }
     loadJson(worldName, component) {
         var xhr = new XMLHttpRequest();
@@ -44,11 +44,9 @@ class WorldCreator {
     }
     loadWorld(worldName, start) {
         const physics = new Physics();
-        const world = new World(physics);
-        world.setContorller(new Controller(world));
+        const world = new World(physics, this.camera, world => new Controller(this.input, world));
         this.parseResource(this.loadJson(worldName, "material"), world.pushMaterial.bind(world));
-        let entity = this.parseEntity(this.loadJson(worldName, "entity"));
-        entity.forEach(world.createEntity.bind(world));
+        this.parseEntity(this.loadJson(worldName, "entity"), world.createEntity.bind(world));
         start(world);
     }
     parseResource(json, push) {
@@ -59,7 +57,7 @@ class WorldCreator {
             }
         }
     }
-    parseEntity(json) {
+    parseEntity(json, push) {
         return JSON.parse(json, (key, value) => {
             let _type = value["_type"];
             if (typeof _type === "string") {
@@ -73,6 +71,9 @@ class WorldCreator {
                         return Hitbox.unpack(value);
                     case "Color":
                         return Color.unpack(value);
+                    case "Entity":
+                        push(value);
+                        break;
                 }
             }
             return value;
@@ -161,17 +162,17 @@ class Entity extends Typeable {
     get hitbox() { return this.body.hitbox; }
 }
 class World extends Typeable {
-    constructor(physics) {
+    constructor(physics, camera, controllerMaker) {
         super("World");
+        this.camera = camera;
         this.drawables = new Array();
         this.mobs = new Array();
         this.physics = physics;
         this.materials = new ResourceManager();
-        //this.controller = controller;
+        this.controller = controllerMaker(this);
     }
-    setCamera(camera, user) {
-        this.camera = camera;
-        this.camera.setPosition(user.hitbox.position, new Point({ x: user.hitbox.width / 2, y: user.hitbox.height / 2 }));
+    keepTrackOf(traceable) {
+        this.camera.setPosition(traceable.hitbox.position, new Point({ x: traceable.hitbox.width / 2, y: traceable.hitbox.height / 2 }));
     }
     draw() {
         this.camera.clear();
@@ -179,12 +180,9 @@ class World extends Typeable {
             mob.draw(this.camera);
         });
     }
-    setContorller(controller) {
-        this.controller = controller;
-    }
     tick(dt) {
         this.physics.tick(dt);
-        this.controller.tikc(dt);
+        this.controller.tick(dt);
         this.mobs.forEach(m => m.tick(dt));
     }
     pushEntity(entity) {

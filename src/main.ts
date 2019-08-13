@@ -6,10 +6,10 @@ console.log("Start!")
     speed_input.addEventListener("input", (ev) => {
         speed = speed_input.valueAsNumber
     })
-    let worldCreator = new WorldCreator();
     let canvas = document.getElementById('main') as HTMLCanvasElement;
     let camera = new Camera(canvas);
     let input = new InputDevices(camera);
+    let worldCreator = new WorldCreator(camera, input);
     //let cursore = input.mouseCursore;
     let timerTick: number;
     let timerDraw: number;

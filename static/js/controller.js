@@ -1,13 +1,11 @@
 "use strict";
 class Controller {
-    constructor(world) {
-        let canvas = document.getElementById('main');
-        this.camera = new Camera(canvas);
-        this.input = new InputDevices(this.camera);
+    constructor(input, world) {
+        this.input = input;
         this.world = world;
         this.operators = new Array();
     }
-    tikc(dt) {
+    tick(dt) {
         this.input.tick(dt);
         this.operators.forEach((op) => { op.tick(dt); });
     }
@@ -53,7 +51,7 @@ class UserOperator {
             new StrokeRectangleTexture(new Color(126, 63, 32)),
             new ImageTexture("duck16x16.png")
         ];
-        this.controller.world.setCamera(this.controller.camera, slave);
+        this.controller.world.keepTrackOf(slave);
         this.controller.user = slave;
         let speed = 150;
         this.controller.input.addPressAction(true, Actions.left, () => {

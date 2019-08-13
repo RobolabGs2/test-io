@@ -38,7 +38,7 @@ class UserOperator implements Operator{
             new ImageTexture("duck16x16.png")
         ];
         
-        this.controller.world.setCamera(this.controller.camera, slave);
+        this.controller.world.keepTrackOf(slave);
         this.controller.user = slave;
         let speed = 150;
         this.controller.input.addPressAction(true, Actions.left, () => {
