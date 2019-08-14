@@ -13,6 +13,7 @@ class Body {
         this.runSpeed = 0;
         this.jumpSpeed = 0;
         this.material = material;
+        this.collisionEvents = new Array();
     }
     tick(dt) {
         this.hitbox.position.x += dt * this.velocity.x + dt * dt * this.Acceleration().x / 2;
@@ -20,6 +21,15 @@ class Body {
         this.velocity.x += this.Acceleration().x * dt;
         this.velocity.y += this.Acceleration().y * dt;
         this.collision.time -= dt;
+    }
+    addCollisionEvent(event) {
+        return this.collisionEvents.push(event) - 1;
+    }
+    removeCollisionEvent(num) {
+        delete this.collisionEvents[num];
+    }
+    collisionEvent(appendix) {
+        this.collisionEvents.forEach(e => e(appendix));
     }
     Acceleration() {
         if (this.movable)
@@ -297,6 +307,8 @@ class Physics {
             impact.hit(pair.b1, pair.b2, pair.vector);
             this.Update(pair.b1);
             this.Update(pair.b2);
+            pair.b1.collisionEvent(pair.b2.appendix);
+            pair.b2.collisionEvent(pair.b1.appendix);
             ++count;
         } while (dt > 0);
         //console.log(this.queue.list.length, count, this.queue.Better().collision.time);

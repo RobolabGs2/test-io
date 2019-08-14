@@ -27,6 +27,10 @@ class Controller{
                 this.operators.push(new BotOperator(this, entity));
                 return;
             }
+            case "random":{
+                this.operators.push(new RandomTextureOperator(this, entity));
+                return;
+            }
         }
     }
 }

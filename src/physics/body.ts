@@ -6,10 +6,14 @@ interface IBody{
     jumpSpeed: number;
     movable: boolean;
     material: physicalMaterial
+    appendix: any;
 
     setAcceleration(acceleration: Point): void;
     setVelocity(velocity: Point): void;
     addVelocity(velocity: Point): void;
+
+    addCollisionEvent(event: (appendix: any) => void): number;
+    removeCollisionEvent(num: number): void;
 
     toJSON(): {movable: boolean, material: physicalMaterial, hitbox: Hitbox};
 }
@@ -25,6 +29,8 @@ class Body implements IBody{
     runSpeed: number;
     jumpSpeed: number;
     material: physicalMaterial
+    appendix: any; 
+    collisionEvents: Array<(appendix: any) => void>;
 
     get mass() {return this.hitbox.height * this.hitbox.width * this.material.density};
 
@@ -39,6 +45,7 @@ class Body implements IBody{
         this.runSpeed = 0;
         this.jumpSpeed = 0;
         this.material = material;
+        this.collisionEvents = new Array();
     }
 
     tick(dt: number){
@@ -47,6 +54,18 @@ class Body implements IBody{
         this.velocity.x += this.Acceleration().x * dt;
         this.velocity.y += this.Acceleration().y * dt;
         this.collision.time -= dt;
+    }
+
+    addCollisionEvent(event: (appendix: any) => void){
+        return this.collisionEvents.push(event) - 1;
+    }
+
+    removeCollisionEvent(num: number){
+        delete this.collisionEvents[num];
+    }
+
+    collisionEvent(appendix: any){
+        this.collisionEvents.forEach(e => e(appendix));
     }
 
     Acceleration(): Point{

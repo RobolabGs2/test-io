@@ -39,6 +39,10 @@ class Physics implements IPhysics
 
             this.Update(pair.b1);
             this.Update(pair.b2);
+
+            pair.b1.collisionEvent(pair.b2.appendix);
+            pair.b2.collisionEvent(pair.b1.appendix);
+
             ++count;
         } while (dt > 0);
 

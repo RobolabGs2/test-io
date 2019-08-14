@@ -1,4 +1,5 @@
 interface Operator{
+    slave: Entity;
     tick(dt: number): void;
 }
 
@@ -62,7 +63,7 @@ class UserOperator implements Operator{
         }).addPressAction(false, Actions.clone, () => {
             this.controller.world.createEntity({
                 avatar: new CompositeAvatar(textures[getRandomInt(0, textures.length - 1)]),
-                controllerType: "nothing" ,
+                controllerType: "random" ,
                 body: {
                     hitbox: new Hitbox(slave.hitbox.position.Sum(new Point({ x: 50, y: 0 })), 32, 32),
                     material: "stone",
@@ -74,5 +75,30 @@ class UserOperator implements Operator{
 
     tick(dt: number){
         this.controller.input.tick(dt);
+    }
+}
+
+class RandomTextureOperator implements Operator{
+    
+    slave: Entity;
+    controller: Controller;
+
+    eventnum: number;
+
+    constructor(controller: Controller, slave: Entity){
+        this.slave = slave;
+        this.controller = controller;
+
+        this.slave.body.jumpSpeed = 300;
+        this.eventnum = slave.body.addCollisionEvent((
+            (_: any) => {
+                console.log("hello");
+                this.slave.body.jumpSpeed = 0;
+                this.slave.body.removeCollisionEvent(this.eventnum);
+            }
+        ).bind(this));
+    }
+
+    tick(dt: number){
     }
 }

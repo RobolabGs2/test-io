@@ -22,6 +22,10 @@ class Controller {
                 this.operators.push(new BotOperator(this, entity));
                 return;
             }
+            case "random": {
+                this.operators.push(new RandomTextureOperator(this, entity));
+                return;
+            }
         }
     }
 }
@@ -75,7 +79,7 @@ class UserOperator {
         }).addPressAction(false, Actions.clone, () => {
             this.controller.world.createEntity({
                 avatar: new CompositeAvatar(textures[getRandomInt(0, textures.length - 1)]),
-                controllerType: "nothing",
+                controllerType: "random",
                 body: {
                     hitbox: new Hitbox(slave.hitbox.position.Sum(new Point({ x: 50, y: 0 })), 32, 32),
                     material: "stone",
@@ -86,5 +90,19 @@ class UserOperator {
     }
     tick(dt) {
         this.controller.input.tick(dt);
+    }
+}
+class RandomTextureOperator {
+    constructor(controller, slave) {
+        this.slave = slave;
+        this.controller = controller;
+        this.slave.body.jumpSpeed = 300;
+        this.eventnum = slave.body.addCollisionEvent(((_) => {
+            console.log("hello");
+            this.slave.body.jumpSpeed = 0;
+            this.slave.body.removeCollisionEvent(this.eventnum);
+        }).bind(this));
+    }
+    tick(dt) {
     }
 }
