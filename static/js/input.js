@@ -171,7 +171,7 @@ class MouseCursore {
     constructor(position) {
         this.position = position;
         this.avatar = new BaseAvatar(new FillRectangleTexture(new Color(0, 255, 255, 0.8)));
-        this.draw = this.avatar.bindContext(new Hitbox(this.position, 10, 10));
+        this.draw = camera => this.avatar.drawHitbox(new Hitbox(this.position, 10, 10), camera);
     }
     draw(camera) {
     }

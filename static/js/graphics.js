@@ -19,16 +19,14 @@ class BaseAvatar extends Avatar {
     modification(context, hitbox) {
         return context;
     }
-    bindContext(hitbox) {
-        return camera => {
-            const context = camera.context;
-            context.save();
-            let uv = camera.xy2uv(hitbox.position);
-            context.translate(uv.x, uv.y);
-            let b = this.texture.draw(this.modification(context, hitbox), hitbox, this.tick);
-            context.restore();
-            return b;
-        };
+    drawHitbox(hitbox, camera) {
+        const context = camera.context;
+        context.save();
+        let uv = camera.xy2uv(hitbox.position);
+        context.translate(uv.x, uv.y);
+        let b = this.texture.draw(this.modification(context, hitbox), hitbox, this.tick);
+        context.restore();
+        return b;
     }
 }
 class ReflectedAvatar extends BaseAvatar {
@@ -45,14 +43,10 @@ class CompositeAvatar extends Avatar {
         this.normal = new BaseAvatar(texture);
         this.reflect = new ReflectedAvatar(texture);
     }
-    bindContext(hitbox) {
-        let normal = this.normal.bindContext(hitbox);
-        let reverse = this.reflect.bindContext(hitbox);
-        return (camera) => {
-            if (this.left)
-                return normal(camera);
-            return reverse(camera);
-        };
+    drawHitbox(hitbox, camera) {
+        if (this.left)
+            return this.normal.drawHitbox(hitbox, camera);
+        return this.reflect.drawHitbox(hitbox, camera);
     }
     play(dt) {
         this.left = dt >= 0;

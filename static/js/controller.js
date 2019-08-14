@@ -77,6 +77,7 @@ class UserOperator {
             slave.body.jumpSpeed = 0;
             return true;
         }).addPressAction(false, Actions.clone, () => {
+            this.slave.avatar = new CompositeAvatar(textures[getRandomInt(0, textures.length - 1)]);
             this.controller.world.createEntity({
                 avatar: new CompositeAvatar(textures[getRandomInt(0, textures.length - 1)]),
                 controllerType: "random",
@@ -101,7 +102,7 @@ class RandomTextureOperator {
             console.log("hello");
             this.slave.body.jumpSpeed = 0;
             this.slave.body.removeCollisionEvent(this.eventnum);
-        }).bind(this));
+        }));
     }
     tick(dt) {
     }

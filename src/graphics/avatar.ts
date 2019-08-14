@@ -12,7 +12,7 @@ abstract class Avatar {
     toJSON() {
         return this.texture;
     }
-    abstract bindContext(hitbox: Hitbox): (camera: Camera) => boolean;
+    abstract drawHitbox(hitbox: Hitbox, camera: Camera): boolean;
 }
 
 class BaseAvatar extends Avatar {
@@ -20,16 +20,14 @@ class BaseAvatar extends Avatar {
         return context;
     }
 
-    bindContext(hitbox: Hitbox): (camera: Camera) => boolean {
-        return camera => {
-            const context = camera.context;
-            context.save();
-            let uv = camera.xy2uv(hitbox.position)
-            context.translate(uv.x, uv.y)
-            let b = this.texture.draw(this.modification(context, hitbox), hitbox, this.tick);
-            context.restore();
-            return b;
-        };
+    drawHitbox(hitbox: Hitbox, camera: Camera) {
+        const context = camera.context;
+        context.save();
+        let uv = camera.xy2uv(hitbox.position)
+        context.translate(uv.x, uv.y)
+        let b = this.texture.draw(this.modification(context, hitbox), hitbox, this.tick);
+        context.restore();
+        return b;
     }
 }
 
@@ -43,14 +41,10 @@ class ReflectedAvatar extends BaseAvatar {
 
 class CompositeAvatar extends Avatar {
     
-    bindContext(hitbox: Hitbox): (camera: Camera) => boolean {
-        let normal = this.normal.bindContext(hitbox);
-        let reverse = this.reflect.bindContext(hitbox)
-        return (camera: Camera) => {
-            if(this.left)
-                return normal(camera)
-            return reverse(camera)
-        }
+    drawHitbox(hitbox: Hitbox, camera: Camera) {
+        if(this.left)
+            return this.normal.drawHitbox(hitbox, camera)
+        return this.reflect.drawHitbox(hitbox, camera)
     }
 
     left=true
