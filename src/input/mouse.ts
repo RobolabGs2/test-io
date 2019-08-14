@@ -83,8 +83,7 @@ class MouseCursore implements Drawable{
     avatar = new BaseAvatar(new FillRectangleTexture(new Color(0, 255, 255, 0.8)));
 
     constructor(private position: Point) {
-        this.draw = this.avatar.bindContext(new Hitbox(this.position, 10, 10));
-
+        this.draw = camera => this.avatar.drawHitbox(new Hitbox(this.position, 10, 10), camera);
     }
     draw(camera: Camera): void {
     }

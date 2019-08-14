@@ -7,6 +7,7 @@ abstract class Typeable {
 
 type Resource = "materials" | "textures"
 type WorldComponent = "entity" | "material"
+type json = string
 
 class WorldCreator {
     avatarFactory = new AvatarFactory();

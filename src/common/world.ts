@@ -10,10 +10,18 @@ interface Operable {
     controllerType: string;
 }
 
+class NotSerialasableDrawable implements Drawable{
+    draw: (camera: Camera) => void;
+    constructor(draw: (camera: Camera) => void) {
+        this.draw = draw;
+    }
+
+    toJSON(){ return undefined; }
+}
 
 class Entity extends Typeable implements DrawableMaker, Operable{
     makeDrawable(): Drawable {
-        return {draw: this.avatar.bindContext(this.hitbox)};
+        return new NotSerialasableDrawable((camera)=>this.avatar.drawHitbox(this.hitbox, camera));
     }
 
     tick(dt: number) {

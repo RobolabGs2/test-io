@@ -73,8 +73,10 @@ class UserOperator {
             slave.body.jumpSpeed = 0;
             return true;
         }).addPressAction(false, Actions.clone, () => {
+            let texture = textures[getRandomInt(0, textures.length - 1)];
+            this.slave.avatar = new CompositeAvatar(texture);
             this.controller.world.createEntity({
-                avatar: new CompositeAvatar(textures[getRandomInt(0, textures.length - 1)]),
+                avatar: new CompositeAvatar(texture),
                 controllerType: "nothing",
                 body: {
                     hitbox: new Hitbox(slave.hitbox.position.Sum(new Point({ x: 50, y: 0 })), 32, 32),

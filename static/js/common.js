@@ -146,6 +146,12 @@ function getRandomArbitary(min, max) {
 }
 
 "use strict";
+class NotSerialasableDrawable {
+    constructor(draw) {
+        this.draw = draw;
+    }
+    toJSON() { return undefined; }
+}
 class Entity extends Typeable {
     constructor(avatar, body, controllerType) {
         super("Entity");
@@ -154,7 +160,7 @@ class Entity extends Typeable {
         this.controllerType = controllerType;
     }
     makeDrawable() {
-        return { draw: this.avatar.bindContext(this.hitbox) };
+        return new NotSerialasableDrawable((camera) => this.avatar.drawHitbox(this.hitbox, camera));
     }
     tick(dt) {
         this.avatar.play(this.body.velocity.x / 50 * dt);
