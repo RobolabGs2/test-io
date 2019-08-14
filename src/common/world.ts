@@ -74,9 +74,11 @@ class World extends Typeable {
         this.pushDrawable(entity);
     }
 
-    createEntity({avatar, controllerType, body:{hitbox, material, movable = true}}:
-                {avatar: Avatar, controllerType: string, body:{hitbox: Hitbox, material: string, movable: boolean}}){
-        let entity = new Entity(avatar, this.physics.createBody(hitbox, new Point({}), this.materials.get(material), movable), controllerType);
+    createEntity({avatar, controllerType, body:{hitbox, material, movable = true, velocity}}:
+                {avatar: Avatar, controllerType: string, body:{hitbox: Hitbox, material: string, movable: boolean, velocity?: Point}}){
+        if(!velocity)
+                    velocity = new Point({}); 
+        let entity = new Entity(avatar, this.physics.createBody(hitbox, velocity, this.materials.get(material), movable), controllerType);
         this.controller.setControl(entity, controllerType);
 
         this.pushEntity(entity);

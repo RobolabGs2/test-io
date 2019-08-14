@@ -26,6 +26,10 @@ class Controller {
                 this.operators.push(new RandomTextureOperator(this, entity));
                 return;
             }
+            case "explosion": {
+                this.operators.push(new ExplosionOperator(this, entity));
+                return;
+            }
         }
     }
 }
@@ -89,20 +93,63 @@ class UserOperator {
         });
     }
     tick(dt) {
-        this.controller.input.tick(dt);
+        let textures = [
+            this.slave.avatar.texture,
+            new FillRectangleTexture(new Color(255, 255, 255, 12)),
+            new AnimatedFillRectangleTexture(new Color(255, 255, 255, 12)),
+            new StrokeRectangleTexture(new Color(126, 63, 32)),
+            new ImageTexture("duck16x16.png")
+        ];
+        if (!this.controller.input.mouse.clicks[0].empty) {
+            this.controller.input.mouse.clicks[0].flush().forEach(position => {
+                let pos = new Point({ x: this.slave.hitbox.width / 2, y: this.slave.hitbox.height / 2 }).Sum(this.slave.hitbox.position);
+                let vect = position.Sum(pos.Neg());
+                vect = vect.SMult(1 / vect.length());
+                let t = textures[getRandomInt(0, textures.length - 1)];
+                this.controller.world.createEntity({
+                    avatar: new CompositeAvatar(t),
+                    controllerType: "explosion",
+                    body: {
+                        hitbox: new Hitbox(this.slave.hitbox.position.Sum(vect.SMult(40)), 10, 10),
+                        material: "stone",
+                        movable: true,
+                        velocity: vect.SMult(200)
+                    }
+                });
+            });
+        }
     }
 }
 class RandomTextureOperator {
     constructor(controller, slave) {
         this.slave = slave;
         this.controller = controller;
-        this.slave.body.jumpSpeed = 300;
-        this.eventnum = slave.body.addCollisionEvent(((_) => {
-            console.log("hello");
-            this.slave.body.jumpSpeed = 0;
-            this.slave.body.removeCollisionEvent(this.eventnum);
-        }));
         slave.body.addCollisionEvent((entity => this.slave.avatar = new CompositeAvatar(entity.avatar.texture)));
+    }
+    tick(dt) {
+    }
+}
+class ExplosionOperator {
+    constructor(controller, slave) {
+        this.slave = slave;
+        this.controller = controller;
+        this.eventnum = slave.body.addCollisionEvent(((_) => {
+            this.slave.body.removeCollisionEvent(this.eventnum);
+            for (let i = 1; i < 6; ++i) {
+                let vect = new Point({ x: Math.sin(i / 6 * Math.PI + Math.PI / 2), y: -Math.cos(i / 6 * Math.PI - Math.PI / 2) });
+                let t = new FillRectangleTexture(new Color(255, 200, 20, 255));
+                this.controller.world.createEntity({
+                    avatar: new CompositeAvatar(t),
+                    controllerType: "nothing",
+                    body: {
+                        hitbox: new Hitbox(slave.hitbox.position.Sum(vect.SMult(30)), slave.body.hitbox.width, slave.body.hitbox.height),
+                        material: "stone",
+                        movable: true,
+                        velocity: vect.SMult(100)
+                    }
+                });
+            }
+        }));
     }
     tick(dt) {
     }

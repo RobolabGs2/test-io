@@ -31,6 +31,10 @@ class Controller{
                 this.operators.push(new RandomTextureOperator(this, entity));
                 return;
             }
+            case "explosion":{
+                this.operators.push(new ExplosionOperator(this, entity));
+                return;
+            }
         }
     }
 }
