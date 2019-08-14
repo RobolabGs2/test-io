@@ -1,7 +1,6 @@
 class Camera {
-    private _position: Point;
+    private _position: ReadonlyPoint;
     private size: Sizeable;
-    private offset = new Point({})
     public readonly context: CanvasRenderingContext2D
     constructor(public mainCanvas: HTMLCanvasElement, size?: Sizeable) {
         this.size = size ? size : {width: mainCanvas.clientWidth, height: mainCanvas.clientHeight};
@@ -13,9 +12,8 @@ class Camera {
         this.context.translate(this.position.x + this.size.width/2, this.position.y + this.size.height/2)
     }
 
-    setPosition(position: Point, offset = new Point({})) {
-        this._position = position;
-        this.offset = offset;
+    setPosition(position: ReadonlyPoint) {
+        this._position = new PointInHitbox(new ReadonlyHitbox(position, this.size.width/2, this.size.height/2));
     }
 
     _scale = 1;
@@ -30,7 +28,7 @@ class Camera {
     }
 
     get position() {
-        return new Point(this._position.Sum(this.offset));
+        return new Point(this._position);
     }
 
     xy2uv(xy: Point) {

@@ -3,6 +3,7 @@ class Avatar {
     constructor(moveRight, moveLeft) {
         this.moveRight = moveRight;
         this.moveLeft = moveLeft;
+        //protected
         this.tick = 0;
     }
     play(dt) {
@@ -35,7 +36,7 @@ class CompositeAvatar extends Avatar {
     drawHitbox(hitbox, camera) {
         switch (this.direction) {
             case Direction.left:
-                return camera.draw(hitbox.position, (context) => this.moveLeft.draw(context, hitbox, 1 - this.tick));
+                return camera.draw(hitbox.position, (context) => this.moveLeft.draw(context, hitbox, this.tick));
             case Direction.stop:
             case Direction.right:
                 return camera.draw(hitbox.position, (context) => this.moveRight.draw(context, hitbox, this.tick));
@@ -62,7 +63,6 @@ class AvatarFactory {
 class Camera {
     constructor(mainCanvas, size) {
         this.mainCanvas = mainCanvas;
-        this.offset = new Point({});
         this._scale = 1;
         this.size = size ? size : { width: mainCanvas.clientWidth, height: mainCanvas.clientHeight };
         console.log(`Camera width: ${this.size.width}, height: ${this.size.height}`);
@@ -72,9 +72,8 @@ class Camera {
         this._position = new Point({});
         this.context.translate(this.position.x + this.size.width / 2, this.position.y + this.size.height / 2);
     }
-    setPosition(position, offset = new Point({})) {
-        this._position = position;
-        this.offset = offset;
+    setPosition(position) {
+        this._position = new PointInHitbox(new ReadonlyHitbox(position, this.size.width / 2, this.size.height / 2));
     }
     scale(delta) {
         let new_scale = (this._scale + delta);
@@ -85,7 +84,7 @@ class Camera {
         this._scale = new_scale;
     }
     get position() {
-        return new Point(this._position.Sum(this.offset));
+        return new Point(this._position);
     }
     xy2uv(xy) {
         return xy.Sum(this.position.Neg());
@@ -133,16 +132,29 @@ class Camera {
 }
 
 "use strict";
-class ReflectModificator {
-    constructor(original) {
-        this.draw = (context, hitbox, progress) => {
-            context.translate(hitbox.width, 0);
-            context.scale(-1, 1);
-            return original.draw(context, hitbox, progress);
-        };
+class AbstractAnimatedTexture extends Typeable {
+}
+class ModificatorTexture extends AbstractAnimatedTexture {
+    constructor(original, _type) {
+        super(_type);
+        this.original = original;
+    }
+    draw(context, hitbox, progress) {
+        this.predraw(context, hitbox);
+        return this.original.draw(context, hitbox, this.recalcProgress(progress));
     }
 }
-class AbstractAnimatedTexture extends Typeable {
+class ReflectModificator extends ModificatorTexture {
+    recalcProgress(progress) {
+        return 1 - progress;
+    }
+    predraw(context, hitbox) {
+        context.translate(hitbox.width, 0);
+        context.scale(-1, 1);
+    }
+    constructor(original) {
+        super(original, "ReflectModificator");
+    }
 }
 class Color extends Typeable {
     constructor(R, G, B, A = 255, _type = "Color") {
@@ -257,8 +269,8 @@ class AnimatedImageTexture extends ImageTexture {
     }
     drawing(context, hitbox, progress) {
         const frameCount = this.bitmap.width / this.frameSize;
-        let dt = Math.floor(frameCount * progress);
-        context.drawImage(this.bitmap, (this.frameSize) * dt, 0, this.frameSize, this.frameSize, 0, 0, hitbox.width, hitbox.height);
+        let dt = Math.floor((frameCount - 1) * progress);
+        context.drawImage(this.bitmap, (this.frameSize) * dt, 0, this.frameSize, this.bitmap.height, 0, 0, hitbox.width, hitbox.height);
     }
 }
 function chooseExist(a, b) {

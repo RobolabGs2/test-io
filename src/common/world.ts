@@ -38,8 +38,8 @@ class Entity extends Typeable implements DrawableMaker, Operable{
 
 class World extends Typeable {
     
-    keepTrackOf(traceable: Entity) {
-        this.camera.setPosition(traceable.hitbox.position, new Point({x:traceable.hitbox.width/2, y:traceable.hitbox.height/2}));
+    keepTrackOf(point: ReadonlyPoint) {
+        this.camera.setPosition(point);
     }
     
     draw(): void {

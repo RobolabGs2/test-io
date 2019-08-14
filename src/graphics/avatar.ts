@@ -39,7 +39,7 @@ class CompositeAvatar extends Avatar{
         switch (this.direction) {
             case Direction.left:
                 return camera.draw(hitbox.position, 
-                    (context) => this.moveLeft.draw(context, hitbox, 1-this.tick))
+                    (context) => this.moveLeft.draw(context, hitbox, this.tick))
             case Direction.stop:
             case Direction.right:
                 return camera.draw(hitbox.position, 

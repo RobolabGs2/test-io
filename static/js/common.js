@@ -178,8 +178,8 @@ class World extends Typeable {
         this.materials = new ResourceManager();
         this.controller = controllerMaker(this);
     }
-    keepTrackOf(traceable) {
-        this.camera.setPosition(traceable.hitbox.position, new Point({ x: traceable.hitbox.width / 2, y: traceable.hitbox.height / 2 }));
+    keepTrackOf(point) {
+        this.camera.setPosition(point);
     }
     draw() {
         this.camera.clear();

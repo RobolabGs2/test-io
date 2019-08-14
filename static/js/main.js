@@ -27,6 +27,7 @@ console.log("Start!");
         //world.pushDrawable(cursore)
         let tick = (dt) => {
             world.tick(dt / 1000);
+            input.tick(dt);
         };
         let prev_time = Date.now();
         timerTick = setInterval(() => {

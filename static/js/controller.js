@@ -56,7 +56,7 @@ class UserOperator {
             new StrokeRectangleTexture(new Color(126, 63, 32)),
             new ImageTexture("duck16x16.png")
         ];
-        this.controller.world.keepTrackOf(slave);
+        this.controller.world.keepTrackOf(new FakePoint(slave.hitbox.position, new Point({ x: slave.hitbox.width / 2, y: slave.hitbox.height / 2 })));
         this.controller.user = slave;
         let speed = 150;
         this.controller.input.addPressAction(true, Actions.left, () => {
@@ -90,7 +90,6 @@ class UserOperator {
         });
     }
     tick(dt) {
-        this.controller.input.tick(dt);
     }
 }
 class RandomTextureOperator {

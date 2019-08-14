@@ -31,7 +31,6 @@ class UserOperator implements Operator{
     constructor(controller: Controller, slave: Entity){
         this.slave = slave;
         this.controller = controller;
-        
         let textures = [
             slave.avatar.moveLeft,
             new FillRectangleTexture(new Color(255, 255, 255, 12)),
@@ -40,7 +39,7 @@ class UserOperator implements Operator{
             new ImageTexture("duck16x16.png")
         ];
         
-        this.controller.world.keepTrackOf(slave);
+        this.controller.world.keepTrackOf(new FakePoint(slave.hitbox.position, new Point({x:slave.hitbox.width/2, y:slave.hitbox.height/2})));
         this.controller.user = slave;
         let speed = 150;
         this.controller.input.addPressAction(true, Actions.left, () => {
@@ -64,7 +63,7 @@ class UserOperator implements Operator{
         }).addPressAction(false, Actions.clone, () => {
             this.controller.world.createEntity({
                 avatar: new CompositeAvatar(textures[getRandomInt(0, textures.length - 1)]),
-                controllerType: "bot" ,
+                controllerType: "bot",
                 body: {
                     hitbox: new Hitbox(slave.hitbox.position.Sum(new Point({ x: 50, y: 0 })), 32, 32),
                     material: "stone",
@@ -74,7 +73,6 @@ class UserOperator implements Operator{
     }
 
     tick(dt: number){
-        this.controller.input.tick(dt);
     }
 }
 

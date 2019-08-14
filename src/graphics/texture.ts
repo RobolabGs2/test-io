@@ -1,22 +1,5 @@
-interface Sizeable {
-    width: number;
-    height: number;
-}
-
 interface AnimatedTexture {
     draw(context: CanvasRenderingContext2D, hitbox: Sizeable, progress: number): boolean;
-}
-
-class ReflectModificator implements AnimatedTexture {
-    draw: (context: CanvasRenderingContext2D, hitbox: Sizeable, progress: number) => boolean;
-    
-    constructor(original: AnimatedTexture) {
-        this.draw = (context: CanvasRenderingContext2D, hitbox: Sizeable, progress: number) => {
-            context.translate(hitbox.width, 0)
-            context.scale(-1, 1);
-            return original.draw(context, hitbox, progress);
-        }
-    }
 }
 
 interface Progressable<E> {
@@ -26,6 +9,36 @@ interface Progressable<E> {
 abstract class AbstractAnimatedTexture extends Typeable implements AnimatedTexture{
     abstract draw(context: CanvasRenderingContext2D, hitbox: Sizeable, progress: number): boolean;
 }
+
+abstract class ModificatorTexture extends AbstractAnimatedTexture  {
+    draw(context: CanvasRenderingContext2D, hitbox: Sizeable, progress: number) {
+        this.predraw(context, hitbox);
+        return this.original.draw(context, hitbox, this.recalcProgress(progress));
+    }
+    
+    protected abstract predraw(context: CanvasRenderingContext2D, hitbox: Sizeable): void;
+    protected abstract recalcProgress(progress: number): number;
+
+    constructor(private original: AnimatedTexture, _type: string) {
+        super(_type)
+    }
+}
+
+class ReflectModificator extends ModificatorTexture {
+    protected recalcProgress(progress: number): number {
+        return 1-progress;
+    }
+
+    protected predraw(context: CanvasRenderingContext2D, hitbox: Sizeable): void {
+        context.translate(hitbox.width, 0)
+        context.scale(-1, 1);
+    }
+    
+    constructor(original: AnimatedTexture) {
+        super(original, "ReflectModificator")
+    }
+}
+
 
 class Color extends Typeable {
     constructor(public R: number, public G: number, public B: number, public A = 255, _type = "Color") {
@@ -157,9 +170,9 @@ class AnimatedImageTexture extends ImageTexture {
 
     protected drawing(context: CanvasRenderingContext2D, hitbox: Sizeable, progress: number) {
         const frameCount = this.bitmap.width / this.frameSize;
-        let dt = Math.floor(frameCount * progress)
+        let dt = Math.floor((frameCount-1) * progress)
         context.drawImage(
-            this.bitmap, (this.frameSize) * dt, 0, this.frameSize, this.frameSize,
+            this.bitmap, (this.frameSize) * dt, 0, this.frameSize, this.bitmap.height,
             0, 0, hitbox.width, hitbox.height
         );
     }
