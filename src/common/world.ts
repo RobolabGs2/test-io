@@ -32,6 +32,7 @@ class Entity extends Typeable implements DrawableMaker, Operable{
 
     constructor(public avatar: Avatar, public body: IBody, public controllerType: string) {
         super("Entity");
+        this.body.appendix = this;
     }
 }
 

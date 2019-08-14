@@ -61,7 +61,6 @@ class UserOperator implements Operator{
             slave.body.jumpSpeed = 0;
             return true;
         }).addPressAction(false, Actions.clone, () => {
-            this.slave.avatar = new CompositeAvatar(textures[getRandomInt(0, textures.length - 1)])
             this.controller.world.createEntity({
                 avatar: new CompositeAvatar(textures[getRandomInt(0, textures.length - 1)]),
                 controllerType: "random" ,
@@ -97,6 +96,7 @@ class RandomTextureOperator implements Operator{
                 this.slave.body.removeCollisionEvent(this.eventnum);
             }
         ));
+        slave.body.addCollisionEvent((entity => this.slave.avatar = new CompositeAvatar(entity.avatar.texture)))
     }
 
     tick(dt: number){

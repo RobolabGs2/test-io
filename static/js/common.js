@@ -158,6 +158,7 @@ class Entity extends Typeable {
         this.avatar = avatar;
         this.body = body;
         this.controllerType = controllerType;
+        this.body.appendix = this;
     }
     makeDrawable() {
         return new NotSerialasableDrawable((camera) => this.avatar.drawHitbox(this.hitbox, camera));
