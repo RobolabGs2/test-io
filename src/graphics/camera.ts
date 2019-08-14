@@ -60,6 +60,15 @@ class Camera {
         return undefined;
     }
 
+    draw(where: Point, how: (context: CanvasRenderingContext2D) => boolean) {
+        this.context.save();
+        let uv = this.xy2uv(where);
+        this.context.translate(uv.x, uv.y);
+        let b = how(this.context);
+        this.context.restore();
+        return b;
+    }
+
     clear() {
         this.context.fillStyle = "#000"
         this.context.fillRect(

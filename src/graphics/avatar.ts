@@ -1,4 +1,12 @@
-abstract class Avatar {
+interface MoveAvatar {
+    move(dt: number, direction: Direction): void;
+    drawHitbox(hitbox: Hitbox, camera: Camera): boolean;
+    moveRight: AnimatedTexture;
+    moveLeft: AnimatedTexture;
+}
+
+abstract class Avatar implements MoveAvatar {
+    abstract move(dt: number, direction: Direction): void;
     protected tick = 0;
     play(dt: number): void {
         this.tick += dt;
@@ -7,60 +15,47 @@ abstract class Avatar {
         if (this.tick < 0)
             this.tick += 1
         }
-    constructor(public texture: AnimatedTexture) {
+    constructor(public moveRight: AnimatedTexture, public moveLeft: AnimatedTexture) {
     }
     toJSON() {
-        return this.texture;
+        return undefined //this.texture;
     }
     abstract drawHitbox(hitbox: Hitbox, camera: Camera): boolean;
 }
 
-class BaseAvatar extends Avatar {
-    protected modification(context: CanvasRenderingContext2D, hitbox: Hitbox): CanvasRenderingContext2D {
-        return context;
-    }
-
-    drawHitbox(hitbox: Hitbox, camera: Camera) {
-        const context = camera.context;
-        context.save();
-        let uv = camera.xy2uv(hitbox.position)
-        context.translate(uv.x, uv.y)
-        let b = this.texture.draw(this.modification(context, hitbox), hitbox, this.tick);
-        context.restore();
-        return b;
-    }
+enum Direction {
+    stop, left, right
 }
 
-class ReflectedAvatar extends BaseAvatar {
-    protected modification(context: CanvasRenderingContext2D, hitbox: Hitbox): CanvasRenderingContext2D {
-        context.translate(hitbox.width, 0)
-        context.scale(-1, 1);
-        return context;
-    }
+function speedToDirection(speed: number) {
+    if (speed === 0)
+        return Direction.stop;
+    return speed < 0 ? Direction.left : Direction.right
 }
 
-class CompositeAvatar extends Avatar {
+class CompositeAvatar extends Avatar{
     
     drawHitbox(hitbox: Hitbox, camera: Camera) {
-        if(this.left)
-            return this.normal.drawHitbox(hitbox, camera)
-        return this.reflect.drawHitbox(hitbox, camera)
+        switch (this.direction) {
+            case Direction.left:
+                return camera.draw(hitbox.position, 
+                    (context) => this.moveLeft.draw(context, hitbox, 1-this.tick))
+            case Direction.stop:
+            case Direction.right:
+                return camera.draw(hitbox.position, 
+                   (context) => this.moveRight.draw(context, hitbox, this.tick))
+        }
     }
 
-    left=true
+    direction = Direction.stop;
 
-    play(dt: number): void {
-        this.left = dt>=0;
-        this.normal.play(dt)
-        this.reflect.play(-dt)
+    move(dt: number, direction: Direction): void {
+        this.direction = direction == Direction.stop ? this.direction : direction;
+        this.play(dt);
     }
-
-    normal: BaseAvatar;
-    reflect: ReflectedAvatar;
-    constructor(texture: AnimatedTexture) {
-        super(texture)
-        this.normal = new BaseAvatar(texture)
-        this.reflect = new ReflectedAvatar(texture)
+  
+    constructor(moveRight: AnimatedTexture, moveLeft?: AnimatedTexture) {
+        super(moveRight, moveLeft ? moveLeft : new ReflectModificator(moveRight));
     }
 }
 
@@ -68,9 +63,9 @@ interface Factory<E> {
     make(type: string, src: any): E | false;
 }
 
-class AvatarFactory implements Factory<Avatar>{
+class AvatarFactory implements Factory<MoveAvatar>{
     textureFactory = new TextureFactory();
-    make(type: string, src: any): Avatar|false {
+    make(type: string, src: any): MoveAvatar|false {
         let t = this.textureFactory.make(type, src);
         if(t != false)
             return new CompositeAvatar(t as AnimatedTexture)

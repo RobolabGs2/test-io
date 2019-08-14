@@ -1,7 +1,8 @@
 "use strict";
 class Avatar {
-    constructor(texture) {
-        this.texture = texture;
+    constructor(moveRight, moveLeft) {
+        this.moveRight = moveRight;
+        this.moveLeft = moveLeft;
         this.tick = 0;
     }
     play(dt) {
@@ -12,46 +13,37 @@ class Avatar {
             this.tick += 1;
     }
     toJSON() {
-        return this.texture;
+        return undefined; //this.texture;
     }
 }
-class BaseAvatar extends Avatar {
-    modification(context, hitbox) {
-        return context;
-    }
-    drawHitbox(hitbox, camera) {
-        const context = camera.context;
-        context.save();
-        let uv = camera.xy2uv(hitbox.position);
-        context.translate(uv.x, uv.y);
-        let b = this.texture.draw(this.modification(context, hitbox), hitbox, this.tick);
-        context.restore();
-        return b;
-    }
-}
-class ReflectedAvatar extends BaseAvatar {
-    modification(context, hitbox) {
-        context.translate(hitbox.width, 0);
-        context.scale(-1, 1);
-        return context;
-    }
+var Direction;
+(function (Direction) {
+    Direction[Direction["stop"] = 0] = "stop";
+    Direction[Direction["left"] = 1] = "left";
+    Direction[Direction["right"] = 2] = "right";
+})(Direction || (Direction = {}));
+function speedToDirection(speed) {
+    if (speed === 0)
+        return Direction.stop;
+    return speed < 0 ? Direction.left : Direction.right;
 }
 class CompositeAvatar extends Avatar {
-    constructor(texture) {
-        super(texture);
-        this.left = true;
-        this.normal = new BaseAvatar(texture);
-        this.reflect = new ReflectedAvatar(texture);
+    constructor(moveRight, moveLeft) {
+        super(moveRight, moveLeft ? moveLeft : new ReflectModificator(moveRight));
+        this.direction = Direction.stop;
     }
     drawHitbox(hitbox, camera) {
-        if (this.left)
-            return this.normal.drawHitbox(hitbox, camera);
-        return this.reflect.drawHitbox(hitbox, camera);
+        switch (this.direction) {
+            case Direction.left:
+                return camera.draw(hitbox.position, (context) => this.moveLeft.draw(context, hitbox, 1 - this.tick));
+            case Direction.stop:
+            case Direction.right:
+                return camera.draw(hitbox.position, (context) => this.moveRight.draw(context, hitbox, this.tick));
+        }
     }
-    play(dt) {
-        this.left = dt >= 0;
-        this.normal.play(dt);
-        this.reflect.play(-dt);
+    move(dt, direction) {
+        this.direction = direction == Direction.stop ? this.direction : direction;
+        this.play(dt);
     }
 }
 class AvatarFactory {
@@ -117,6 +109,14 @@ class Camera {
     toJSON() {
         return undefined;
     }
+    draw(where, how) {
+        this.context.save();
+        let uv = this.xy2uv(where);
+        this.context.translate(uv.x, uv.y);
+        let b = how(this.context);
+        this.context.restore();
+        return b;
+    }
     clear() {
         this.context.fillStyle = "#000";
         this.context.fillRect(-this.size.width / 2 * this._scale, -this.size.height / 2 * this._scale, this.size.width * this._scale, this.size.height * this._scale);
@@ -133,7 +133,16 @@ class Camera {
 }
 
 "use strict";
-class AnimatedTexture extends Typeable {
+class ReflectModificator {
+    constructor(original) {
+        this.draw = (context, hitbox, progress) => {
+            context.translate(hitbox.width, 0);
+            context.scale(-1, 1);
+            return original.draw(context, hitbox, progress);
+        };
+    }
+}
+class AbstractAnimatedTexture extends Typeable {
 }
 class Color extends Typeable {
     constructor(R, G, B, A = 255, _type = "Color") {
@@ -171,7 +180,7 @@ class Gradient {
         return new Color(this.from.R + progress * this.dC.R, this.from.G + progress * this.dC.G, this.from.B + progress * this.dC.B);
     }
 }
-class ColoredTexture extends AnimatedTexture {
+class ColoredTexture extends AbstractAnimatedTexture {
     constructor(type, color) {
         super(type);
         this.color = color;
@@ -213,7 +222,7 @@ class StrokeRectangleTexture extends ColoredTexture {
         super("StrokeRectangleTexture", color);
     }
 }
-class ImageTexture extends AnimatedTexture {
+class ImageTexture extends AbstractAnimatedTexture {
     constructor(filename, type = "ImageTexture") {
         super(type);
         this.filename = filename;

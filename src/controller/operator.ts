@@ -12,6 +12,7 @@ class BotOperator implements Operator{
         this.slave = slave;
         this.controller = controller;
         this.slave.body.jumpSpeed = 100;
+        slave.body.addCollisionEvent((entity => this.slave.avatar.moveLeft = entity.avatar.moveLeft))
     }
 
     tick(dt: number){
@@ -32,7 +33,7 @@ class UserOperator implements Operator{
         this.controller = controller;
         
         let textures = [
-            slave.avatar.texture,
+            slave.avatar.moveLeft,
             new FillRectangleTexture(new Color(255, 255, 255, 12)),
             new AnimatedFillRectangleTexture(new Color(255, 255, 255, 12)),
             new StrokeRectangleTexture(new Color(126, 63, 32)),
@@ -63,7 +64,7 @@ class UserOperator implements Operator{
         }).addPressAction(false, Actions.clone, () => {
             this.controller.world.createEntity({
                 avatar: new CompositeAvatar(textures[getRandomInt(0, textures.length - 1)]),
-                controllerType: "random" ,
+                controllerType: "bot" ,
                 body: {
                     hitbox: new Hitbox(slave.hitbox.position.Sum(new Point({ x: 50, y: 0 })), 32, 32),
                     material: "stone",
@@ -96,7 +97,7 @@ class RandomTextureOperator implements Operator{
                 this.slave.body.removeCollisionEvent(this.eventnum);
             }
         ));
-        slave.body.addCollisionEvent((entity => this.slave.avatar = new CompositeAvatar(entity.avatar.texture)))
+        slave.body.addCollisionEvent((entity => this.slave.avatar.moveLeft = entity.avatar.moveLeft))
     }
 
     tick(dt: number){

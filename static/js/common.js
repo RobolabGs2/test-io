@@ -164,7 +164,7 @@ class Entity extends Typeable {
         return new NotSerialasableDrawable((camera) => this.avatar.drawHitbox(this.hitbox, camera));
     }
     tick(dt) {
-        this.avatar.play(this.body.velocity.x / 50 * dt);
+        this.avatar.move(this.body.velocity.x * dt / this.body.hitbox.width, speedToDirection(this.body.runSpeed));
     }
     get hitbox() { return this.body.hitbox; }
 }

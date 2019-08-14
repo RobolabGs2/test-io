@@ -7,11 +7,24 @@ interface AnimatedTexture {
     draw(context: CanvasRenderingContext2D, hitbox: Sizeable, progress: number): boolean;
 }
 
+class ReflectModificator implements AnimatedTexture {
+    draw: (context: CanvasRenderingContext2D, hitbox: Sizeable, progress: number) => boolean;
+    
+    constructor(original: AnimatedTexture) {
+        this.draw = (context: CanvasRenderingContext2D, hitbox: Sizeable, progress: number) => {
+            context.translate(hitbox.width, 0)
+            context.scale(-1, 1);
+            return original.draw(context, hitbox, progress);
+        }
+    }
+}
+
 interface Progressable<E> {
     progress(progress: number): E;
 }
 
-abstract class AnimatedTexture extends Typeable implements AnimatedTexture{
+abstract class AbstractAnimatedTexture extends Typeable implements AnimatedTexture{
+    abstract draw(context: CanvasRenderingContext2D, hitbox: Sizeable, progress: number): boolean;
 }
 
 class Color extends Typeable {
@@ -56,7 +69,7 @@ class Gradient implements AnimatedColor {
     }
 }
 
-abstract class ColoredTexture extends AnimatedTexture {
+abstract class ColoredTexture extends AbstractAnimatedTexture {
     constructor(type: string, protected color: Color) {
         super(type);
     }
@@ -104,7 +117,7 @@ class StrokeRectangleTexture extends ColoredTexture {
     }
 }
 
-class ImageTexture extends AnimatedTexture {
+class ImageTexture extends AbstractAnimatedTexture {
     bitmap!: ImageBitmap
 
     private loaded(): boolean {
