@@ -26,6 +26,7 @@ console.log("Start!")
 
         let tick = (dt: number) => {
             world.tick(dt / 1000);
+            input.tick(dt);
         };
         let prev_time = Date.now();
         timerTick = setInterval(() => {

@@ -40,6 +40,7 @@ class BotOperator {
         this.slave = slave;
         this.controller = controller;
         this.slave.body.jumpSpeed = 100;
+        slave.body.addCollisionEvent((entity => this.slave.avatar.moveLeft = entity.avatar.moveLeft));
     }
     tick(dt) {
         if (this.controller.user && this.controller.user.hitbox.x1 > this.slave.hitbox.x1)
@@ -53,13 +54,13 @@ class UserOperator {
         this.slave = slave;
         this.controller = controller;
         let textures = [
-            slave.avatar.texture,
+            slave.avatar.moveLeft,
             new FillRectangleTexture(new Color(255, 255, 255, 12)),
             new AnimatedFillRectangleTexture(new Color(255, 255, 255, 12)),
             new StrokeRectangleTexture(new Color(126, 63, 32)),
             new ImageTexture("duck16x16.png")
         ];
-        this.controller.world.keepTrackOf(slave);
+        this.controller.world.keepTrackOf(new FakePoint(slave.hitbox.position, new Point({ x: slave.hitbox.width / 2, y: slave.hitbox.height / 2 })));
         this.controller.user = slave;
         let speed = 150;
         this.controller.input.addPressAction(true, Actions.left, () => {
@@ -83,7 +84,7 @@ class UserOperator {
         }).addPressAction(false, Actions.clone, () => {
             this.controller.world.createEntity({
                 avatar: new CompositeAvatar(textures[getRandomInt(0, textures.length - 1)]),
-                controllerType: "random",
+                controllerType: "bot",
                 body: {
                     hitbox: new Hitbox(slave.hitbox.position.Sum(new Point({ x: 50, y: 0 })), 32, 32),
                     material: "stone",

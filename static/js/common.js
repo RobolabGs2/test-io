@@ -164,7 +164,7 @@ class Entity extends Typeable {
         return new NotSerialasableDrawable((camera) => this.avatar.drawHitbox(this.hitbox, camera));
     }
     tick(dt) {
-        this.avatar.play(this.body.velocity.x / 50 * dt);
+        this.avatar.move(this.body.velocity.x * dt / this.body.hitbox.width, speedToDirection(this.body.runSpeed));
     }
     get hitbox() { return this.body.hitbox; }
 }
@@ -178,8 +178,8 @@ class World extends Typeable {
         this.materials = new ResourceManager();
         this.controller = controllerMaker(this);
     }
-    keepTrackOf(traceable) {
-        this.camera.setPosition(traceable.hitbox.position, new Point({ x: traceable.hitbox.width / 2, y: traceable.hitbox.height / 2 }));
+    keepTrackOf(point) {
+        this.camera.setPosition(point);
     }
     draw() {
         this.camera.clear();

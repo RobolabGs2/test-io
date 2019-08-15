@@ -25,12 +25,12 @@ class Entity extends Typeable implements DrawableMaker, Operable{
     }
 
     tick(dt: number) {
-        this.avatar.play(this.body.velocity.x/50*dt)
+        this.avatar.move(this.body.velocity.x*dt/this.body.hitbox.width, speedToDirection(this.body.runSpeed))
     }
 
     get hitbox() {return this.body.hitbox}
 
-    constructor(public avatar: Avatar, public body: IBody, public controllerType: string) {
+    constructor(public avatar: MoveAvatar, public body: IBody, public controllerType: string) {
         super("Entity");
         this.body.appendix = this;
     }
@@ -38,8 +38,8 @@ class Entity extends Typeable implements DrawableMaker, Operable{
 
 class World extends Typeable {
     
-    keepTrackOf(traceable: Entity) {
-        this.camera.setPosition(traceable.hitbox.position, new Point({x:traceable.hitbox.width/2, y:traceable.hitbox.height/2}));
+    keepTrackOf(point: ReadonlyPoint) {
+        this.camera.setPosition(point);
     }
     
     draw(): void {
@@ -75,10 +75,11 @@ class World extends Typeable {
     }
 
     createEntity({avatar, controllerType, body:{hitbox, material, movable = true, velocity}}:
-                {avatar: Avatar, controllerType: string, body:{hitbox: Hitbox, material: string, movable: boolean, velocity?: Point}}){
+                {avatar: MoveAvatar, controllerType: string, body:{hitbox: Hitbox, material: string, movable: boolean, velocity?: Point}}){
         if(!velocity)
                     velocity = new Point({}); 
         let entity = new Entity(avatar, this.physics.createBody(hitbox, velocity, this.materials.get(material), movable), controllerType);
+
         this.controller.setControl(entity, controllerType);
 
         this.pushEntity(entity);
