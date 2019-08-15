@@ -1,11 +1,11 @@
 "use strict";
-class Avatar {
-    constructor(moveRight, moveLeft) {
-        this.moveRight = moveRight;
-        this.moveLeft = moveLeft;
-        //protected
-        this.tick = 0;
-    }
+var Direction;
+(function (Direction) {
+    Direction[Direction["stop"] = 0] = "stop";
+    Direction[Direction["left"] = 1] = "left";
+    Direction[Direction["right"] = 2] = "right";
+})(Direction || (Direction = {}));
+class AvatarState {
     play(dt) {
         this.tick += dt;
         if (this.tick > 1)
@@ -13,38 +13,76 @@ class Avatar {
         if (this.tick < 0)
             this.tick += 1;
     }
+    constructor({ tick = 0, direction = Direction.stop }) {
+        this.tick = tick;
+        this.direction = direction;
+    }
+}
+class Avatar {
+    constructor(moveRight, moveLeft) {
+        this.moveRight = moveRight;
+        this.moveLeft = moveLeft;
+        this.state = new AvatarState({});
+    }
     toJSON() {
         return undefined; //this.texture;
     }
 }
-var Direction;
-(function (Direction) {
-    Direction[Direction["stop"] = 0] = "stop";
-    Direction[Direction["left"] = 1] = "left";
-    Direction[Direction["right"] = 2] = "right";
-})(Direction || (Direction = {}));
 function speedToDirection(speed) {
     if (speed === 0)
         return Direction.stop;
     return speed < 0 ? Direction.left : Direction.right;
 }
 class CompositeAvatar extends Avatar {
-    constructor(moveRight, moveLeft) {
-        super(moveRight, moveLeft ? moveLeft : new ReflectModificator(moveRight));
-        this.direction = Direction.stop;
-    }
     drawHitbox(hitbox, camera) {
-        switch (this.direction) {
+        switch (this.state.direction) {
             case Direction.left:
-                return camera.draw(hitbox.position, (context) => this.moveLeft.draw(context, hitbox, this.tick));
+                return camera.draw(hitbox.position, (context) => this.moveLeft.draw(context, hitbox, this.state.tick));
             case Direction.stop:
             case Direction.right:
-                return camera.draw(hitbox.position, (context) => this.moveRight.draw(context, hitbox, this.tick));
+                return camera.draw(hitbox.position, (context) => this.moveRight.draw(context, hitbox, this.state.tick));
         }
     }
     move(dt, direction) {
-        this.direction = direction == Direction.stop ? this.direction : direction;
-        this.play(dt);
+        this.state.direction =
+            direction == Direction.stop ? this.state.direction : direction;
+        this.state.play(dt);
+    }
+    constructor(moveRight, moveLeft) {
+        super(moveRight, moveLeft ? moveLeft : new ReflectModificator(moveRight));
+    }
+}
+class CaudateAvatar {
+    constructor(main, tail, tailSize = 20) {
+        this.main = main;
+        this.tail = tail ? tail : new CompositeAvatar(main.moveRight, main.moveLeft);
+        this.history = new RingBuffer(tailSize);
+    }
+    move(dt, direction) {
+        this.main.move(dt, direction);
+    }
+    get moveRight() {
+        return this.main.moveRight;
+    }
+    get moveLeft() {
+        return this.main.moveLeft;
+    }
+    //counter = 0;
+    drawHitbox(hitbox, camera) {
+        this.history.forEach(history => {
+            this.tail.state = history.state;
+            this.tail.drawHitbox(history.hitbox, camera);
+        });
+        this.main.drawHitbox(hitbox, camera);
+        //this.counter++;
+        //if(this.counter > -1) {
+        this.history.put({
+            state: new AvatarState(this.main.state),
+            hitbox: new Hitbox(new Point(hitbox.position), hitbox.width, hitbox.height)
+        });
+        //this.counter = 0;
+        //}
+        return true;
     }
 }
 class AvatarFactory {
@@ -157,7 +195,7 @@ class ReflectModificator extends ModificatorTexture {
     }
 }
 class Color extends Typeable {
-    constructor(R, G, B, A = 255, _type = "Color") {
+    constructor(R, G, B, A = 1, _type = "Color") {
         super(_type);
         this.R = R;
         this.G = G;
@@ -223,7 +261,11 @@ class AnimatedFillRectangleTexture extends FillRectangleTexture {
         progress = progress * 2;
         if (progress > 1)
             progress = 2 - progress;
-        this.color = new Gradient(new Color(255, 128, 0), new Color(0, 128, 255)).progress(progress);
+        this.color = this.animated.progress(progress);
+    }
+    constructor(from = new Color(255, 128, 0), to = new Color(0, 128, 255)) {
+        super(from);
+        this.animated = new Gradient(from, to);
     }
 }
 class StrokeRectangleTexture extends ColoredTexture {

@@ -35,7 +35,7 @@ class Point extends Typeable implements ReadonlyPoint {
 }
 
 class FakePoint implements ReadonlyPoint {
-    constructor(private origin: Point, public offset: Point) {
+    constructor(private origin: ReadonlyPoint, public offset: ReadonlyPoint) {
     }
 
     get x() {
@@ -48,7 +48,7 @@ class FakePoint implements ReadonlyPoint {
 }
 
 class MiddlePoint implements ReadonlyPoint {
-    constructor(private first: Point, private second: Point) {
+    constructor(private first: ReadonlyPoint, private second: ReadonlyPoint) {
     }
 
     get x() {

@@ -88,11 +88,11 @@ class WorldCreator {
 
 "use strict";
 class Queue {
-    constructor() {
+    constructor(capacity = Number.MAX_SAFE_INTEGER) {
+        this.capacity = capacity;
         this.first = 1;
         this.last = 1;
         this.elems = new Array();
-        this.capacity = Number.MAX_SAFE_INTEGER;
         this._size = 0;
     }
     get size() {
@@ -105,8 +105,9 @@ class Queue {
         this.elems[this.last] = data;
         this.last = this.inc(this.last);
         this._size++;
-        if (this._size > this.capacity)
+        if (this._size >= this.capacity)
             throw new Error("Queue overflow");
+        this.dequeue();
     }
     dequeue() {
         let deletedData;
@@ -134,6 +135,37 @@ class ResourceManager {
         if (!res)
             throw new Error(`Ресурс ${name} отсутствует!`);
         return res;
+    }
+}
+
+"use strict";
+class RingBuffer {
+    constructor(size) {
+        this.end = 0;
+        this.buffer = new Array(size);
+    }
+    get first() {
+        return this.inc(this.end, 1);
+    }
+    get capacity() {
+        return this.buffer.length;
+    }
+    put(elem) {
+        this.buffer[this.end] = elem;
+        this.end = this.first;
+    }
+    forEach(action) {
+        if (this.buffer[this.end]) {
+            for (let i = this.first; i != this.end; i = this.inc(i, 1))
+                action(this.buffer[i]);
+            action(this.buffer[this.end]);
+            return;
+        }
+        for (let i = 0; i != this.end; ++i)
+            action(this.buffer[i]);
+    }
+    inc(a, d = 1) {
+        return (a + d) % this.capacity;
     }
 }
 

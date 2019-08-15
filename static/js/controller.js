@@ -40,7 +40,6 @@ class BotOperator {
         this.slave = slave;
         this.controller = controller;
         this.slave.body.jumpSpeed = 100;
-        slave.body.addCollisionEvent((entity => this.slave.avatar.moveLeft = entity.avatar.moveLeft));
     }
     tick(dt) {
         if (this.controller.user && this.controller.user.hitbox.x1 > this.slave.hitbox.x1)
@@ -54,7 +53,7 @@ class UserOperator {
         this.slave = slave;
         this.controller = controller;
         let textures = [
-            slave.avatar.moveLeft,
+            slave.avatar.moveRight,
             new FillRectangleTexture(new Color(255, 255, 255, 12)),
             new AnimatedFillRectangleTexture(new Color(255, 255, 255, 12)),
             new StrokeRectangleTexture(new Color(126, 63, 32)),
@@ -86,7 +85,7 @@ class UserOperator {
                 avatar: new CompositeAvatar(textures[getRandomInt(0, textures.length - 1)]),
                 controllerType: "bot",
                 body: {
-                    hitbox: new Hitbox(slave.hitbox.position.Sum(new Point({ x: 50, y: 0 })), 32, 32),
+                    hitbox: new Hitbox(slave.hitbox.position.Sum(new Point({ x: slave.hitbox.width + 10, y: 0 })), 32, 32),
                     material: "stone",
                     movable: true
                 }
@@ -95,11 +94,11 @@ class UserOperator {
     }
     tick(dt) {
         let textures = [
-            this.slave.avatar.texture,
-            new FillRectangleTexture(new Color(255, 255, 255, 12)),
-            new AnimatedFillRectangleTexture(new Color(255, 255, 255, 12)),
+            new AnimatedFillRectangleTexture(new Color(255, 255, 255)),
+            new AnimatedFillRectangleTexture(new Color(0, 255, 0), new Color(0, 0, 255)),
+            new AnimatedFillRectangleTexture(new Color(0, 255, 0), new Color(255, 0, 0)),
+            new AnimatedFillRectangleTexture(new Color(0, 255, 0), new Color(255, 0, 255)),
             new StrokeRectangleTexture(new Color(126, 63, 32)),
-            new ImageTexture("duck16x16.png")
         ];
         if (!this.controller.input.mouse.clicks[0].empty) {
             this.controller.input.mouse.clicks[0].flush().forEach(position => {
@@ -108,7 +107,7 @@ class UserOperator {
                 vect = vect.SMult(1 / vect.length());
                 let t = textures[getRandomInt(0, textures.length - 1)];
                 this.controller.world.createEntity({
-                    avatar: new CompositeAvatar(t),
+                    avatar: new CaudateAvatar(new CompositeAvatar(t)),
                     controllerType: "explosion",
                     body: {
                         hitbox: new Hitbox(this.slave.hitbox.position.Sum(vect.SMult(40)), 10, 10),
@@ -125,7 +124,6 @@ class RandomTextureOperator {
     constructor(controller, slave) {
         this.slave = slave;
         this.controller = controller;
-        slave.body.addCollisionEvent((entity => this.slave.avatar = new CompositeAvatar(entity.avatar.texture)));
     }
     tick(dt) {
     }
@@ -138,9 +136,10 @@ class ExplosionOperator {
             this.slave.body.removeCollisionEvent(this.eventnum);
             for (let i = 1; i < 6; ++i) {
                 let vect = new Point({ x: Math.sin(i / 6 * Math.PI + Math.PI / 2), y: -Math.cos(i / 6 * Math.PI - Math.PI / 2) });
-                let t = new FillRectangleTexture(new Color(255, 200, 20, 255));
+                let t1 = new FillRectangleTexture(new Color(255, 200, 20));
+                let t2 = new StrokeRectangleTexture(new Color(200, 20, 20, 0.25));
                 this.controller.world.createEntity({
-                    avatar: new CompositeAvatar(t),
+                    avatar: new CaudateAvatar(new CompositeAvatar(t1), new CompositeAvatar(t2)),
                     controllerType: "nothing",
                     body: {
                         hitbox: new Hitbox(slave.hitbox.position.Sum(vect.SMult(30)), slave.body.hitbox.width, slave.body.hitbox.height),

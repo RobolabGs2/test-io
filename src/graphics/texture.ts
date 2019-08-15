@@ -41,7 +41,7 @@ class ReflectModificator extends ModificatorTexture {
 
 
 class Color extends Typeable {
-    constructor(public R: number, public G: number, public B: number, public A = 255, _type = "Color") {
+    constructor(public R: number, public G: number, public B: number, public A = 1, _type = "Color") {
         super(_type);
     }
     
@@ -116,7 +116,14 @@ class AnimatedFillRectangleTexture extends FillRectangleTexture {
         progress = progress*2;
         if(progress>1)
             progress=2-progress
-        this.color = new Gradient(new Color(255, 128, 0), new Color(0, 128, 255)).progress(progress)
+        this.color = this.animated.progress(progress)
+    }
+
+    animated: AnimatedColor;
+
+    constructor(from = new Color(255, 128, 0), to = new Color(0, 128, 255)) {
+        super(from);
+        this.animated = new Gradient(from, to);
     }
 }
 
