@@ -180,7 +180,14 @@ function getRandomArbitary(min, max) {
 "use strict";
 class NotSerialasableDrawable {
     constructor(draw) {
+        this.ondie = new Array();
         this.draw = draw;
+    }
+    addDeathListener(listener) {
+        this.ondie.push(listener);
+    }
+    die() {
+        this.ondie.forEach(x => x(this));
     }
     toJSON() { return undefined; }
 }
@@ -190,13 +197,23 @@ class Entity extends Typeable {
         this.avatar = avatar;
         this.body = body;
         this.controllerType = controllerType;
+        this.ondie = new Array();
         this.body.appendix = this;
+        this.drawable = new NotSerialasableDrawable((camera) => this.avatar.drawHitbox(this.hitbox, camera));
+    }
+    addDeathListener(listener) {
+        this.ondie.push(listener);
     }
     makeDrawable() {
-        return new NotSerialasableDrawable((camera) => this.avatar.drawHitbox(this.hitbox, camera));
+        return this.drawable;
     }
     tick(dt) {
         this.avatar.move(this.body.velocity.x * dt / this.body.hitbox.width, speedToDirection(this.body.runSpeed));
+    }
+    die() {
+        console.log(`DIE`);
+        this.drawable.die();
+        this.ondie.forEach(x => x(this));
     }
     get hitbox() { return this.body.hitbox; }
 }
@@ -204,8 +221,8 @@ class World extends Typeable {
     constructor(physics, camera, controllerMaker) {
         super("World");
         this.camera = camera;
-        this.drawables = new Array();
-        this.mobs = new Array();
+        this.drawables = new Set();
+        this.mobs = new Set();
         this.physics = physics;
         this.materials = new ResourceManager();
         this.controller = controllerMaker(this);
@@ -225,7 +242,8 @@ class World extends Typeable {
         this.mobs.forEach(m => m.tick(dt));
     }
     pushEntity(entity) {
-        this.mobs.push(entity);
+        this.mobs.add(entity);
+        entity.addDeathListener(entity => this.mobs.delete(entity));
         this.pushDrawable(entity);
     }
     createEntity({ avatar, controllerType, body: { hitbox, material, movable = true, velocity } }) {
@@ -239,7 +257,8 @@ class World extends Typeable {
     pushDrawable(drawable) {
         if (!("draw" in drawable))
             drawable = drawable.makeDrawable();
-        this.drawables.push(drawable);
+        this.drawables.add(drawable);
+        drawable.addDeathListener((drawable) => this.drawables.delete(drawable));
     }
     pushMaterial(name, material) {
         this.materials.set(name, material);

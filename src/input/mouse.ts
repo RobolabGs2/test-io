@@ -57,7 +57,7 @@ class Mouse {
     }
 
     getCursore() {
-        return new MouseCursore(this.position);
+        //return new MouseCursore(this.position);
     }
 
     private setPositionByEvent(event: MouseEvent) {
@@ -79,7 +79,7 @@ class Mouse {
     }
 }
 
-class MouseCursore implements Drawable{
+/*class MouseCursore implements Drawable{
     avatar = new CompositeAvatar(new FillRectangleTexture(new Color(0, 255, 255, 0.8)));
 
     constructor(private position: Point) {
@@ -91,4 +91,4 @@ class MouseCursore implements Drawable{
     set texture(texture: AnimatedTexture) {
         this.avatar.moveRight = texture;
     }
-}
+}*/

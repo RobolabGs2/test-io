@@ -149,7 +149,7 @@ class Mouse {
         return this.buttons[2];
     }
     getCursore() {
-        return new MouseCursore(this.position);
+        //return new MouseCursore(this.position);
     }
     setPositionByEvent(event) {
         let newPosition = new Point({ x: event.offsetX, y: event.offsetY });
@@ -167,15 +167,16 @@ class Mouse {
             this.clicks[button].push(position);
     }
 }
-class MouseCursore {
-    constructor(position) {
-        this.position = position;
-        this.avatar = new CompositeAvatar(new FillRectangleTexture(new Color(0, 255, 255, 0.8)));
+/*class MouseCursore implements Drawable{
+    avatar = new CompositeAvatar(new FillRectangleTexture(new Color(0, 255, 255, 0.8)));
+
+    constructor(private position: Point) {
         this.draw = camera => this.avatar.drawHitbox(new Hitbox(this.position, 10, 10), camera);
     }
-    draw(camera) {
+    draw(camera: Camera): void {
     }
-    set texture(texture) {
+    
+    set texture(texture: AnimatedTexture) {
         this.avatar.moveRight = texture;
     }
-}
+}*/ 
