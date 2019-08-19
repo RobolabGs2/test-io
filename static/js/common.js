@@ -43,7 +43,7 @@ class WorldCreator {
         return xhr.responseText;
     }
     loadWorld(worldName, start) {
-        const physics = new Physics();
+        const physics = new ChunkPhysics();
         const world = new World(physics, this.camera, world => new Controller(this.input, world));
         this.parseResource(this.loadJson(worldName, "material"), world.pushMaterial.bind(world));
         this.parseEntity(this.loadJson(worldName, "entity"), world.createEntity.bind(world));

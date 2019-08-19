@@ -1,10 +1,21 @@
+
+interface ImpactBody{
+    
+    velocity: Point;
+    movable: boolean;
+    runSpeed: number;
+    jumpSpeed: number;
+    material: physicalMaterial
+    mass: number;
+}
+
 class impact{
 
     private static mean(a: number, b: number){
         return Math.sqrt(a * b);
     }
 
-    static hit(body1: Body, body2: Body, vector: Point){
+    static hit(body1: ImpactBody, body2: ImpactBody, vector: Point){
         let m1 = body1.mass;
         let m2 = body2.mass;
 

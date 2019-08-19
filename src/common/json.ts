@@ -28,7 +28,7 @@ class WorldCreator {
     }
 
     loadWorld(worldName: string, start: (world: World) => void) {
-        const physics: IPhysics = new Physics();
+        const physics: IPhysics = new ChunkPhysics();
         const world = new World(physics, this.camera, world => new Controller(this.input, world));
         this.parseResource(this.loadJson(worldName, "material"), world.pushMaterial.bind(world));
         this.parseEntity(this.loadJson(worldName, "entity"), world.createEntity.bind(world));      

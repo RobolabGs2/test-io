@@ -1,13 +1,19 @@
+interface Tagable{
+    tag: number;
+    readonly time: number;
+}
 
-class PriorityQueue{
+class PriorityQueue<T extends Tagable>{
     
-    list: Array<Body>;
+    list: Array<T>;
+
+    get size(){ return this.list.length; };
 
     constructor(){
-        this.list = new Array<Body>();
+        this.list = new Array<T>();
     }
 
-    Add(body: Body){
+    Add(body: T){
         body.tag = this.list.length;
         this.list.push(body);
         this.Up(body.tag);
@@ -15,7 +21,7 @@ class PriorityQueue{
 
     private Up(i: number){
         let prev = this.Prev(i);
-        while (i > 0 && this.list[i].collision.time < this.list[prev].collision.time)
+        while (i > 0 && this.list[i].time < this.list[prev].time)
         {
             this.Swap(i, prev);
             i = prev;
@@ -39,6 +45,30 @@ class PriorityQueue{
         return i < this.list.length;
     }
 
+    Remove(i: number){
+        if(i ==  this.list.length - 1){
+            this.list.pop();
+            return;    
+        }
+        this.Swap(i, this.list.length - 1);
+        this.list.pop();
+        this.Relocate(i);
+    }
+
+    clear(){
+        this.list = new Array<T>();
+    }
+
+    popTop(){
+        if(this.list.length == 1){
+            this.list.pop();
+            return;    
+        }
+        this.Swap(0, this.list.length - 1);
+        this.list.pop();
+        this.Heapify(0);
+    }
+
     private Swap(i: number, j: number){
         let buf = this.list[i];
         this.list[i] = this.list[j];
@@ -56,9 +86,9 @@ class PriorityQueue{
         let left = this.Left(i);
         let right = this.Right(i);
 
-        if (this.Valid(left) && this.list[left].collision.time < this.list[min].collision.time)
+        if (this.Valid(left) && this.list[left].time < this.list[min].time)
             min = left;
-        if (this.Valid(right) && this.list[right].collision.time < this.list[min].collision.time)
+        if (this.Valid(right) && this.list[right].time < this.list[min].time)
             min = right;
         if (min == i)
             return;
