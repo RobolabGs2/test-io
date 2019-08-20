@@ -705,12 +705,12 @@ class ChunkPhysics {
                 dt = -1;
                 continue;
             }
-            currentTime = pair.time;
-            let delta = pair.time - 1e-9;
+            let delta = Math.max(pair.time - 1e-11, pair.b1.addTime, pair.b2.addTime);
+            currentTime = delta;
             pair.b1.tick(delta - pair.b1.addTime);
-            pair.b1.addTime = pair.time;
+            pair.b1.addTime = delta;
             pair.b2.tick(delta - pair.b2.addTime);
-            pair.b2.addTime = pair.time;
+            pair.b2.addTime = delta;
             impact.hit(pair.b1, pair.b2, pair.vector);
             this.table.Update(pair.b1, dt - pair.time);
             this.table.Update(pair.b2, dt - pair.time);

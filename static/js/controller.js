@@ -110,7 +110,7 @@ class UserOperator {
                     avatar: new CaudateAvatar(new CompositeAvatar(t)),
                     controllerType: "explosion",
                     body: {
-                        hitbox: new Hitbox(this.slave.hitbox.position.Sum(vect.SMult(40)), 10, 10),
+                        hitbox: new Hitbox(pos.Sum(vect.SMult(40)).Sum(new Point({ x: -5, y: -5 })), 10, 10),
                         material: "stone",
                         movable: true,
                         velocity: vect.SMult(200)

@@ -126,7 +126,7 @@ class ChunkPhysics implements IPhysics
 
     tick(dt: number){
         if(dt > 0.1)  dt = 0.1;
-
+        
         this.table.Refresh(dt);
         let queue = new PriorityQueue<ChunkBody>();
 
@@ -135,7 +135,7 @@ class ChunkPhysics implements IPhysics
         let currentTime = 0;
         let count = 0;
         do
-        {
+        {            
             let pair: CollisionPair<ChunkBody>;
 
             if(queue.size > 0 && queue.Better().time != Infinity)
@@ -144,7 +144,7 @@ class ChunkPhysics implements IPhysics
             }
             else
                 pair = new CollisionPair<ChunkBody>(this.objects[0]);
-            
+
             let contact = pair.time <= dt;
 
             if (!contact)
@@ -161,14 +161,14 @@ class ChunkPhysics implements IPhysics
                 continue;
             }
             
-            currentTime = pair.time;
 
-            let delta = pair.time - 1e-9;
+            let delta = Math.max(pair.time - 1e-11, pair.b1.addTime, pair.b2.addTime);
+            currentTime = delta;
 
             pair.b1.tick(delta - pair.b1.addTime);
-            pair.b1.addTime = pair.time;
+            pair.b1.addTime = delta;
             pair.b2.tick(delta - pair.b2.addTime);
-            pair.b2.addTime = pair.time;
+            pair.b2.addTime = delta;
      
             impact.hit(pair.b1, pair.b2, pair.vector);
 
