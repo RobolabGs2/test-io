@@ -1,18 +1,17 @@
-enum Actions {
+const enum Actions {
     wtf, jump, left, right, up, down, clone, zoom, unzoom, COUNT  
 }
 
+
 type PressingAction = (dt: number) => boolean;
-type DownAction = () => void;
-type UpAction = () => void;
+type PressAction = (pressed: boolean) => void;
 type ClickAction = (position: Point) => void;
 
 class InputDevices {
     public mouse: Mouse;
     private keyboard: Keyboard;
     pressingActions = new Map<Actions, PressingAction>()
-    upActions = new Map<Actions, UpAction>()
-    downActions = new Map<Actions, DownAction>()
+    pressActions = new Map<Actions, PressAction>()
     action2key = new Array<string>(Actions.COUNT);
 
     get mousePosition() {
@@ -28,11 +27,8 @@ class InputDevices {
         return this;
     }
 
-    addPressAction(press: boolean, action: Actions, consumer: DownAction|UpAction) {
-        if(press)
-            this.downActions.set(action, consumer);
-        else
-            this.upActions.set(action, consumer);
+    addPressAction(action: Actions, consumer: PressAction) {
+            this.pressActions.set(action, consumer);
         return this;
     }
 
@@ -46,24 +42,24 @@ class InputDevices {
         this.keyboard.getBuferOfKeys(true).forEach(
             (key: string) => {
                 let action = this.action2key.indexOf(key);
-                if(this.downActions.has(action))
-                    (this.downActions.get(action) as DownAction)();
+                if(this.pressActions.has(action))
+                    (this.pressActions.get(action) as PressAction)(true);
             }
         );
-        let wheel = this.mouse.whell;
-        if(this.downActions.has(Actions.zoom))
+        let wheel = this.mouse.whell;/*
+        if(this.pressActions.has(Actions.zoom))
             for(let i = 0; i<wheel/100; ++i)
-                (this.downActions.get(Actions.zoom) as DownAction)()
-        if(this.downActions.has(Actions.unzoom))
+                (this.pressActions.get(Actions.zoom) as PressAction)()
+        if(this.pressActions.has(Actions.unzoom))
             for(let i = 0; i<-wheel/100; ++i)
-                (this.downActions.get(Actions.unzoom) as DownAction)()
-            
+                (this.pressActions.get(Actions.unzoom) as PressAction)()
+            */
 
         this.keyboard.getBuferOfKeys(false).forEach(
             (key: string) => {
                 let action = this.action2key.indexOf(key);
-                if(this.upActions.has(action))
-                    (this.upActions.get(action) as DownAction)();
+                if(this.pressActions.has(action))
+                    (this.pressActions.get(action) as PressAction)(false);
             }
         );
     }

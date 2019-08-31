@@ -13,11 +13,9 @@ console.log("Start!");
     let worldCreator = new WorldCreator(camera, input);
     //let cursore = input.mouseCursore;
     let timerTick;
-    let timerDraw;
     let currentWorld;
     function start(world) {
         try {
-            clearInterval(timerDraw);
             clearInterval(timerTick);
         }
         catch (e) {
@@ -35,8 +33,13 @@ console.log("Start!");
             tick(time - prev_time);
             prev_time = time;
         });
-        timerDraw = setInterval(world.draw.bind(world), 15);
     }
+    let drawing = () => {
+        if (currentWorld)
+            currentWorld.draw();
+        requestAnimationFrame(drawing);
+    };
+    requestAnimationFrame(drawing);
     worldCreator.loadWorld("world1", start);
     let sb = document.getElementById("save");
     let lb = document.getElementById("load");
