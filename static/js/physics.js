@@ -60,6 +60,8 @@ class Body {
         else
             this.phisics.Update(this);
     }
+    release() {
+    }
     toJSON() {
         return { movable: this.movable, material: this.material, hitbox: this.hitbox };
     }
@@ -127,6 +129,9 @@ class ChunkBody {
     }
     addVelocity(velocity) {
         this.velocity = this.velocity.Sum(velocity);
+    }
+    release() {
+        this.phisics.releaseBody(this);
     }
     toJSON() {
         return { movable: this.movable, material: this.material, hitbox: this.hitbox };
@@ -764,6 +769,11 @@ class ChunkPhysics {
             queue.Add(v2);
         else
             queue.Relocate(v2.tag);
+    }
+    releaseBody(body) {
+        let idx = this.objects.findIndex((b) => b == body);
+        this.objects.splice(idx, 1);
+        this.table.Remove(body);
     }
     createBody(hitbox, velocity, material, movable = true) {
         let body = new ChunkBody(hitbox, velocity, this, material, movable);

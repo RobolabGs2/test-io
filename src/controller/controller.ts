@@ -10,31 +10,50 @@ class Controller{
     }
 
     tick(dt: number){
+
         this.input.tick(dt);
         this.operators.forEach((op) => {op.tick(dt)});
     }   
 
+    releaseOperator(op: Operator){
+
+        let idx = this.operators.findIndex((o: Operator) => o == op);
+        this.operators.splice(idx, 1);
+    }
+
     setControl(entity: Entity, type: string){
+        
+        let operator: Operator;
         switch(type){
             case "nothing":{
                 return;
             }
             case "user":{
-                this.operators.push(new UserOperator(this, entity));
-                return;
+                operator = new UserOperator(this, entity);
+                break;
             }
             case "bot":{
-                this.operators.push(new BotOperator(this, entity));
-                return;
+                operator = new BotOperator(this, entity);
+                break;
             }
             case "random":{
-                this.operators.push(new RandomTextureOperator(this, entity));
-                return;
+                operator = new RandomTextureOperator(this, entity);
+                break;
             }
             case "explosion":{
-                this.operators.push(new ExplosionOperator(this, entity));
+                operator = new ExplosionOperator(this, entity);
+                break;
+            }
+            case "bullet":{
+                operator = new BulletOperator(this, entity);
+                break;
+            }
+            default:{
                 return;
             }
         }
+        
+        entity.addDeathListener((_) =>  this.releaseOperator(operator));
+        this.operators.push(operator);
     }
 }

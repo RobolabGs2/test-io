@@ -131,7 +131,7 @@ class ChunkPhysics implements IPhysics
         let queue = new PriorityQueue<ChunkBody>();
 
         this.table.forEachCollisions((v1, v2) => this.calcPair(v1, v2, dt, 0, queue));
-
+        
         let currentTime = 0;
         let count = 0;
         do
@@ -235,6 +235,13 @@ class ChunkPhysics implements IPhysics
             queue.Add(v2);
         else
             queue.Relocate(v2.tag);
+    }
+
+    releaseBody(body: ChunkBody){
+
+        let idx = this.objects.findIndex((b: ChunkBody) => b == body);
+        this.objects.splice(idx, 1);
+        this.table.Remove(body);
     }
 
     createBody(hitbox: Hitbox, velocity: Point, material: physicalMaterial, movable: boolean = true): IBody{

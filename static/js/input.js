@@ -6,6 +6,7 @@ class InputDevices {
         this.action2key = new Array(9 /* COUNT */);
         this.mouse = new Mouse(camera);
         this.keyboard = new Keyboard();
+        //todo render in html
         this.action2key[1 /* jump */] = "Space";
         this.action2key[3 /* right */] = "KeyD";
         this.action2key[2 /* left */] = "KeyA";

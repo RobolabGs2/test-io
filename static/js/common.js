@@ -213,6 +213,7 @@ class Entity extends Typeable {
     die() {
         this.drawable.die();
         this.ondie.forEach(x => x(this));
+        this.body.release();
     }
     get hitbox() { return this.body.hitbox; }
 }

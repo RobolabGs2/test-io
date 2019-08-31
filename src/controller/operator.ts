@@ -125,7 +125,7 @@ class ExplosionOperator implements Operator{
             (_: any) => {
                 this.slave.body.removeCollisionEvent(this.eventnum);
                 //todo die
-                //this.slave.die();
+                this.slave.die();
                 //_.die();
                 for(let i = 1; i < 6; ++i){
                     let vect = new Point({x: Math.sin(i / 6 * Math.PI + Math.PI / 2), y: -Math.cos(i / 6 * Math.PI - Math.PI / 2)});
@@ -134,7 +134,7 @@ class ExplosionOperator implements Operator{
                     let t2 = new StrokeRectangleTexture(new Color(200, 20, 20, 0.25));
                     this.controller.world.createEntity({
                         avatar: new CaudateAvatar(new CompositeAvatar(t1), new CompositeAvatar(t2)),
-                        controllerType: "nothing" ,  
+                        controllerType: "bullet" ,  
                         body: {
                             hitbox: new Hitbox(slave.hitbox.position.Sum(vect.SMult(30)), slave.body.hitbox.width, slave.body.hitbox.height),
                             material: "stone",
@@ -149,5 +149,26 @@ class ExplosionOperator implements Operator{
     }
 
     tick(dt: number){
+    }
+}
+
+class BulletOperator implements Operator{
+    
+    slave: Entity;
+    controller: Controller;
+
+    time: number;
+
+    constructor(controller: Controller, slave: Entity){
+        
+        this.slave = slave;
+        this.controller = controller;
+        this.time = 0;
+    }
+
+    tick(dt: number){
+        this.time += dt;
+        if(this.time >= 2)
+            this.slave.die();
     }
 }

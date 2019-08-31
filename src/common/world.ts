@@ -55,6 +55,7 @@ class Entity extends Typeable implements DrawableMaker, Operable, Deadly {
     die(){
         this.drawable.die();
         this.ondie.forEach(x=>x(this));
+        this.body.release();
     }
 
     get hitbox() {return this.body.hitbox}

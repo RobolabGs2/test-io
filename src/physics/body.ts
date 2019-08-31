@@ -1,4 +1,5 @@
 interface IBody{
+
     readonly hitbox: Hitbox;
     readonly velocity: Point;
     readonly mass: number;
@@ -14,11 +15,13 @@ interface IBody{
 
     addCollisionEvent(event: (appendix: any) => void): number;
     removeCollisionEvent(num: number): void;
+    release(): void;
 
     toJSON(): {movable: boolean, material: physicalMaterial, hitbox: Hitbox};
 }
 
 class Body implements IBody{
+
     hitbox: Hitbox;
     velocity: Point;
     movable: boolean;
@@ -102,11 +105,16 @@ class Body implements IBody{
             this.phisics.Update(this);
     }
 
+    release(){
+
+    }
+
     toJSON(): { movable: boolean, material: physicalMaterial, hitbox: Hitbox } {
         return { movable: this.movable, material: this.material, hitbox: this.hitbox };
     }
 }
 class ChunkBodyCollision{
+    
     collision: CollisionPair<ChunkBody>;
     body: ChunkBody;
 
@@ -193,6 +201,11 @@ class ChunkBody implements IBody{
 
     addVelocity(velocity: Point){
         this.velocity = this.velocity.Sum(velocity);
+    }
+
+    release(){
+
+        this.phisics.releaseBody(this);
     }
 
     toJSON(): { movable: boolean, material: physicalMaterial, hitbox: Hitbox } {

@@ -9,28 +9,42 @@ class Controller {
         this.input.tick(dt);
         this.operators.forEach((op) => { op.tick(dt); });
     }
+    releaseOperator(op) {
+        let idx = this.operators.findIndex((o) => o == op);
+        this.operators.splice(idx, 1);
+    }
     setControl(entity, type) {
+        let operator;
         switch (type) {
             case "nothing": {
                 return;
             }
             case "user": {
-                this.operators.push(new UserOperator(this, entity));
-                return;
+                operator = new UserOperator(this, entity);
+                break;
             }
             case "bot": {
-                this.operators.push(new BotOperator(this, entity));
-                return;
+                operator = new BotOperator(this, entity);
+                break;
             }
             case "random": {
-                this.operators.push(new RandomTextureOperator(this, entity));
-                return;
+                operator = new RandomTextureOperator(this, entity);
+                break;
             }
             case "explosion": {
-                this.operators.push(new ExplosionOperator(this, entity));
+                operator = new ExplosionOperator(this, entity);
+                break;
+            }
+            case "bullet": {
+                operator = new BulletOperator(this, entity);
+                break;
+            }
+            default: {
                 return;
             }
         }
+        entity.addDeathListener((_) => this.releaseOperator(operator));
+        this.operators.push(operator);
     }
 }
 
@@ -128,7 +142,7 @@ class ExplosionOperator {
         this.eventnum = slave.body.addCollisionEvent(((_) => {
             this.slave.body.removeCollisionEvent(this.eventnum);
             //todo die
-            //this.slave.die();
+            this.slave.die();
             //_.die();
             for (let i = 1; i < 6; ++i) {
                 let vect = new Point({ x: Math.sin(i / 6 * Math.PI + Math.PI / 2), y: -Math.cos(i / 6 * Math.PI - Math.PI / 2) });
@@ -136,7 +150,7 @@ class ExplosionOperator {
                 let t2 = new StrokeRectangleTexture(new Color(200, 20, 20, 0.25));
                 this.controller.world.createEntity({
                     avatar: new CaudateAvatar(new CompositeAvatar(t1), new CompositeAvatar(t2)),
-                    controllerType: "nothing",
+                    controllerType: "bullet",
                     body: {
                         hitbox: new Hitbox(slave.hitbox.position.Sum(vect.SMult(30)), slave.body.hitbox.width, slave.body.hitbox.height),
                         material: "stone",
@@ -148,5 +162,17 @@ class ExplosionOperator {
         }));
     }
     tick(dt) {
+    }
+}
+class BulletOperator {
+    constructor(controller, slave) {
+        this.slave = slave;
+        this.controller = controller;
+        this.time = 0;
+    }
+    tick(dt) {
+        this.time += dt;
+        if (this.time >= 2)
+            this.slave.die();
     }
 }
