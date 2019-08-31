@@ -67,6 +67,7 @@ class InputDevices {
     constructor(camera: Camera) {
         this.mouse = new Mouse(camera);
         this.keyboard = new Keyboard();
+        //todo render in html
         this.action2key[Actions.jump] = "Space";
         this.action2key[Actions.right] = "KeyD";
         this.action2key[Actions.left] = "KeyA";

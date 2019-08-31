@@ -1,11 +1,12 @@
 console.log("Start!")
 {
+    /*
     let speed = 150; //px/second todo move to user or physics?
     let speed_input = document.getElementById("speed") as HTMLInputElement;
     speed_input.valueAsNumber = speed;
     speed_input.addEventListener("input", (ev) => {
         speed = speed_input.valueAsNumber
-    })
+    })*/
     let canvas = document.getElementById('main') as HTMLCanvasElement;
     let camera = new Camera(canvas);
     let input = new InputDevices(camera);
@@ -45,7 +46,7 @@ console.log("Start!")
 
 
     worldCreator.loadWorld("world1", start)
-
+    /* todo
     let sb = document.getElementById("save") as HTMLButtonElement;
     let lb = document.getElementById("load") as HTMLButtonElement;
 
@@ -61,5 +62,5 @@ console.log("Start!")
         //start(worldCreator.loadLocal(saveInput.value))
         lb.blur()
         canvas.focus()
-    }
+    }*/
 }

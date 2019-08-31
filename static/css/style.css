@@ -24,3 +24,16 @@ body {
     height: 100vh;
     border: 0;
 }
+
+.disable {
+    display: none;
+}
+
+.control {
+    display: flex;
+    flex-direction: column;
+}
+
+.control > span {
+    padding: 2px;
+}

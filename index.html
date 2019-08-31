@@ -12,16 +12,27 @@
         <script src="./static/js/graphics.js"></script>
     <body>
         <header>
-            <section>
+            <section class="disable">
                 Speed:<input type="number" id="speed"/>
             </section>
-            <section>
+            <section class="disable">
                 <button id="save">Save</button>
                 <button id="load">Load</button>
                 <input type="number" id="saveNum" value="1"/>
             </section>
-            <section>
-                WASD and Space, F, Mouse Wheel, LBM
+            <section class="control">
+                <span>
+                    A|D - left|right
+                </span>
+                <span>
+                    Space - jump
+                </span>
+                <span>
+                    F - spawn mob
+                </span>
+                <span>
+                    LMB - fire
+                </span>
             </section>
         </header>
         <canvas id="main"></canvas>
