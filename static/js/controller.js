@@ -139,11 +139,12 @@ class ExplosionOperator {
     constructor(controller, slave) {
         this.slave = slave;
         this.controller = controller;
-        this.eventnum = slave.body.addCollisionEvent(((_) => {
+        this.eventnum = slave.body.addCollisionEvent(((appendix) => {
             this.slave.body.removeCollisionEvent(this.eventnum);
-            //todo die
             this.slave.die();
-            //_.die();
+            let target = appendix;
+            if (target.controllerType == "bot")
+                target.die();
             for (let i = 1; i < 6; ++i) {
                 let vect = new Point({ x: Math.sin(i / 6 * Math.PI + Math.PI / 2), y: -Math.cos(i / 6 * Math.PI - Math.PI / 2) });
                 let t1 = new FillRectangleTexture(new Color(255, 200, 20));
