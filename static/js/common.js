@@ -211,7 +211,6 @@ class Entity extends Typeable {
         this.avatar.move(this.body.velocity.x * dt / this.body.hitbox.width, speedToDirection(this.body.runSpeed));
     }
     die() {
-        console.log(`DIE`);
         this.drawable.die();
         this.ondie.forEach(x => x(this));
     }

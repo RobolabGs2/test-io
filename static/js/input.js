@@ -1,30 +1,16 @@
 "use strict";
-var Actions;
-(function (Actions) {
-    Actions[Actions["wtf"] = 0] = "wtf";
-    Actions[Actions["jump"] = 1] = "jump";
-    Actions[Actions["left"] = 2] = "left";
-    Actions[Actions["right"] = 3] = "right";
-    Actions[Actions["up"] = 4] = "up";
-    Actions[Actions["down"] = 5] = "down";
-    Actions[Actions["clone"] = 6] = "clone";
-    Actions[Actions["zoom"] = 7] = "zoom";
-    Actions[Actions["unzoom"] = 8] = "unzoom";
-    Actions[Actions["COUNT"] = 9] = "COUNT";
-})(Actions || (Actions = {}));
 class InputDevices {
     constructor(camera) {
         this.pressingActions = new Map();
-        this.upActions = new Map();
-        this.downActions = new Map();
-        this.action2key = new Array(Actions.COUNT);
+        this.pressActions = new Map();
+        this.action2key = new Array(9 /* COUNT */);
         this.mouse = new Mouse(camera);
         this.keyboard = new Keyboard();
-        this.action2key[Actions.jump] = "Space";
-        this.action2key[Actions.right] = "KeyD";
-        this.action2key[Actions.left] = "KeyA";
-        this.action2key[Actions.down] = "KeyS";
-        this.action2key[Actions.clone] = "KeyF";
+        this.action2key[1 /* jump */] = "Space";
+        this.action2key[3 /* right */] = "KeyD";
+        this.action2key[2 /* left */] = "KeyA";
+        this.action2key[5 /* down */] = "KeyS";
+        this.action2key[6 /* clone */] = "KeyF";
     }
     get mousePosition() {
         return this.mouse.position;
@@ -36,11 +22,8 @@ class InputDevices {
         this.pressingActions.set(action, consumer);
         return this;
     }
-    addPressAction(press, action, consumer) {
-        if (press)
-            this.downActions.set(action, consumer);
-        else
-            this.upActions.set(action, consumer);
+    addPressAction(action, consumer) {
+        this.pressActions.set(action, consumer);
         return this;
     }
     tick(dt) {
@@ -50,20 +33,21 @@ class InputDevices {
         });
         this.keyboard.getBuferOfKeys(true).forEach((key) => {
             let action = this.action2key.indexOf(key);
-            if (this.downActions.has(action))
-                this.downActions.get(action)();
+            if (this.pressActions.has(action))
+                this.pressActions.get(action)(true);
         });
-        let wheel = this.mouse.whell;
-        if (this.downActions.has(Actions.zoom))
-            for (let i = 0; i < wheel / 100; ++i)
-                this.downActions.get(Actions.zoom)();
-        if (this.downActions.has(Actions.unzoom))
-            for (let i = 0; i < -wheel / 100; ++i)
-                this.downActions.get(Actions.unzoom)();
+        let wheel = this.mouse.whell; /*
+        if(this.pressActions.has(Actions.zoom))
+            for(let i = 0; i<wheel/100; ++i)
+                (this.pressActions.get(Actions.zoom) as PressAction)()
+        if(this.pressActions.has(Actions.unzoom))
+            for(let i = 0; i<-wheel/100; ++i)
+                (this.pressActions.get(Actions.unzoom) as PressAction)()
+            */
         this.keyboard.getBuferOfKeys(false).forEach((key) => {
             let action = this.action2key.indexOf(key);
-            if (this.upActions.has(action))
-                this.upActions.get(action)();
+            if (this.pressActions.has(action))
+                this.pressActions.get(action)(false);
         });
     }
 }

@@ -62,25 +62,18 @@ class UserOperator {
         this.controller.world.keepTrackOf(new FakePoint(slave.hitbox.position, new Point({ x: slave.hitbox.width / 2, y: slave.hitbox.height / 2 })));
         this.controller.user = slave;
         let speed = 150;
-        this.controller.input.addPressAction(true, Actions.left, () => {
-            slave.body.runSpeed = -speed;
+        this.controller.input.addPressAction(2 /* left */, (pressed) => {
+            slave.body.runSpeed = pressed ? -speed : 0;
             return true;
-        }).addPressAction(false, Actions.left, () => {
-            slave.body.runSpeed = 0;
+        }).addPressAction(3 /* right */, (pressed) => {
+            slave.body.runSpeed = pressed ? speed : 0;
             return true;
-        }).addPressAction(true, Actions.right, () => {
-            slave.body.runSpeed = speed;
+        }).addPressAction(1 /* jump */, (pressed) => {
+            slave.body.jumpSpeed = pressed ? 150 : 0;
             return true;
-        }).addPressAction(false, Actions.right, () => {
-            slave.body.runSpeed = 0;
-            return true;
-        }).addPressAction(true, Actions.jump, () => {
-            slave.body.jumpSpeed = 150;
-            return true;
-        }).addPressAction(false, Actions.jump, () => {
-            slave.body.jumpSpeed = 0;
-            return true;
-        }).addPressAction(false, Actions.clone, () => {
+        }).addPressAction(6 /* clone */, (pressed) => {
+            if (pressed)
+                return;
             this.controller.world.createEntity({
                 avatar: new CompositeAvatar(textures[getRandomInt(0, textures.length - 1)]),
                 controllerType: "bot",
