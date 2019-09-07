@@ -39,13 +39,17 @@ class InputDevices {
                    this.keyboard.keys.set(key, (this.pressingActions.get(action) as PressingAction)(dt));
             }
         );
-        this.keyboard.getBuferOfKeys(true).forEach(
-            (key: string) => {
-                let action = this.action2key.indexOf(key);
-                if(this.pressActions.has(action))
-                    (this.pressActions.get(action) as PressAction)(true);
-            }
-        );
+
+        enumValues(KeyState).forEach(keyState => {
+            this.keyboard.getBufferOfKeys(keyState).forEach(
+                (key: string) => {
+                    let action = this.action2key.indexOf(key);
+                    if(this.pressActions.has(action))
+                        (this.pressActions.get(action) as PressAction)(keyState === KeyState.Down);
+                }
+            );
+        })
+        
         let wheel = this.mouse.whell;/*
         if(this.pressActions.has(Actions.zoom))
             for(let i = 0; i<wheel/100; ++i)
@@ -54,14 +58,6 @@ class InputDevices {
             for(let i = 0; i<-wheel/100; ++i)
                 (this.pressActions.get(Actions.unzoom) as PressAction)()
             */
-
-        this.keyboard.getBuferOfKeys(false).forEach(
-            (key: string) => {
-                let action = this.action2key.indexOf(key);
-                if(this.pressActions.has(action))
-                    (this.pressActions.get(action) as PressAction)(false);
-            }
-        );
     }
 
     constructor(camera: Camera) {

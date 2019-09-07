@@ -32,10 +32,12 @@ class InputDevices {
             if (this.keyboard.keys.get(key) && this.pressingActions.has(action))
                 this.keyboard.keys.set(key, this.pressingActions.get(action)(dt));
         });
-        this.keyboard.getBuferOfKeys(true).forEach((key) => {
-            let action = this.action2key.indexOf(key);
-            if (this.pressActions.has(action))
-                this.pressActions.get(action)(true);
+        enumValues(KeyState).forEach(keyState => {
+            this.keyboard.getBufferOfKeys(keyState).forEach((key) => {
+                let action = this.action2key.indexOf(key);
+                if (this.pressActions.has(action))
+                    this.pressActions.get(action)(keyState === KeyState.Down);
+            });
         });
         let wheel = this.mouse.whell; /*
         if(this.pressActions.has(Actions.zoom))
@@ -45,38 +47,35 @@ class InputDevices {
             for(let i = 0; i<-wheel/100; ++i)
                 (this.pressActions.get(Actions.unzoom) as PressAction)()
             */
-        this.keyboard.getBuferOfKeys(false).forEach((key) => {
-            let action = this.action2key.indexOf(key);
-            if (this.pressActions.has(action))
-                this.pressActions.get(action)(false);
-        });
     }
 }
 
 "use strict";
-function b2i(b) {
-    return b ? 1 : 0;
-}
-function i2b(i) {
-    return i != 0;
-}
+var KeyState;
+(function (KeyState) {
+    KeyState[KeyState["Down"] = 1] = "Down";
+    KeyState[KeyState["Up"] = 0] = "Up";
+})(KeyState || (KeyState = {}));
 class Keyboard {
     constructor() {
         this.keys = new Map();
-        this.buffer = new Array(new Buffer(), new Buffer());
-        window.addEventListener("keydown", (ev) => {
-            this.set(ev.code, true);
-        });
-        window.addEventListener("keyup", (ev) => {
-            this.set(ev.code, false);
-        });
+        this.buffers = new Array(new Buffer(), new Buffer());
+        window.addEventListener("keydown", this.createEventListener(KeyState.Down));
+        window.addEventListener("keyup", this.createEventListener(KeyState.Up));
     }
     set(code, state) {
-        this.keys.set(code, state);
-        this.buffer[b2i(state)].push(code);
+        this.keys.set(code, state === KeyState.Down);
+        this.buffers[state].push(code);
     }
-    getBuferOfKeys(press) {
-        return this.buffer[b2i(press)].flush();
+    createEventListener(keyState) {
+        return (ev) => {
+            this.set(ev.code, keyState);
+            if (ev.code.startsWith('Key'))
+                ev.preventDefault();
+        };
+    }
+    getBufferOfKeys(press) {
+        return this.buffers[press].flush();
     }
 }
 

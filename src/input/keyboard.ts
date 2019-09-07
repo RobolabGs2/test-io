@@ -1,29 +1,31 @@
-function b2i(b: boolean) {
-    return b ? 1:0;
-}
-
-function i2b(i: number) {
-    return i!=0;
+enum KeyState {
+    Down = 1,
+    Up = 0
 }
 
 class Keyboard {
     keys = new Map<string, boolean>()
-    buffer = new Array<Buffer<string>>(new Buffer<string>(), new Buffer<string>());
-    set(code: string, state: boolean) { 
-        this.keys.set(code, state)
-        this.buffer[b2i(state)].push(code);
+    buffers = new Array<Buffer<string>>(new Buffer<string>(), new Buffer<string>());
+
+    private set(code: string, state: KeyState) {
+        this.keys.set(code, state === KeyState.Down);
+        this.buffers[state].push(code);
     }
 
-    getBuferOfKeys(press: boolean) {
-        return this.buffer[b2i(press)].flush();
+    private createEventListener(keyState: KeyState) {
+        return (ev:KeyboardEvent)=>{
+            this.set(ev.code, keyState);
+            if(ev.code.startsWith('Key'))
+                ev.preventDefault();
+        }
+    }
+
+    getBufferOfKeys(press: KeyState) {
+        return this.buffers[press].flush();
     }
 
     constructor() {
-        window.addEventListener("keydown", (ev:KeyboardEvent)=>{
-            this.set(ev.code, true);
-        });
-        window.addEventListener("keyup", (ev:KeyboardEvent)=>{
-            this.set(ev.code, false);
-        });
+        window.addEventListener("keydown", this.createEventListener(KeyState.Down));
+        window.addEventListener("keyup", this.createEventListener(KeyState.Up));
     }
 }

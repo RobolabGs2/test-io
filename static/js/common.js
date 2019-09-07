@@ -176,6 +176,9 @@ function getRandomInt(min, max) {
 function getRandomArbitary(min, max) {
     return Math.random() * (max - min) + min;
 }
+function enumValues(en) {
+    return Object.keys(en).filter(k => typeof en[k] === "number").map(k => en[k]);
+}
 
 "use strict";
 class NotSerialasableDrawable {
