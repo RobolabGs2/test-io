@@ -1,17 +1,52 @@
 "use strict";
+var Actions;
+(function (Actions) {
+    Actions[Actions["wtf"] = 0] = "wtf";
+    Actions[Actions["jump"] = 1] = "jump";
+    Actions[Actions["left"] = 2] = "left";
+    Actions[Actions["right"] = 3] = "right";
+    Actions[Actions["up"] = 4] = "up";
+    Actions[Actions["down"] = 5] = "down";
+    Actions[Actions["clone"] = 6] = "clone";
+    Actions[Actions["zoom"] = 7] = "zoom";
+    Actions[Actions["unzoom"] = 8] = "unzoom";
+    Actions[Actions["COUNT"] = 9] = "COUNT";
+})(Actions || (Actions = {}));
 class InputDevices {
     constructor(camera) {
         this.pressingActions = new Map();
         this.pressActions = new Map();
-        this.action2key = new Array(9 /* COUNT */);
+        this.action2key = new Array(Actions.COUNT);
         this.mouse = new Mouse(camera);
         this.keyboard = new Keyboard();
-        //todo render in html
-        this.action2key[1 /* jump */] = "Space";
-        this.action2key[3 /* right */] = "KeyD";
-        this.action2key[2 /* left */] = "KeyA";
-        this.action2key[5 /* down */] = "KeyS";
-        this.action2key[6 /* clone */] = "KeyF";
+        let html = document.createElement('div');
+        html.classList.add('keyboard');
+        html.innerHTML = `<header>${"Keyboard_1"}</header>`;
+        let keys = document.createElement('section');
+        keys.classList.add('keys');
+        html.appendChild(keys);
+        this.action2key[Actions.jump] = "Space";
+        this.action2key[Actions.right] = "KeyD";
+        this.action2key[Actions.left] = "KeyA";
+        this.action2key[Actions.clone] = "KeyF";
+        this.action2key.forEach((keyCode, action) => {
+            let key = document.createElement('div');
+            key.classList.add('key');
+            key.textContent = Actions[action]; //keyCode;
+            key.addEventListener('mousedown', (ev) => {
+                ev.preventDefault();
+                this.keyboard.set(keyCode, KeyState.Down);
+            });
+            key.addEventListener('mouseup', (ev) => {
+                ev.preventDefault();
+                this.keyboard.set(keyCode, KeyState.Up);
+            });
+            keys.appendChild(key);
+        });
+        let keyboardsPanel = document.getElementById('keyboard');
+        if (keyboardsPanel === null)
+            throw new Error("Keyboard panel not found!");
+        keyboardsPanel.appendChild(html);
     }
     get mousePosition() {
         return this.mouse.position;

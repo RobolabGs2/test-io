@@ -1,4 +1,4 @@
-const enum Actions {
+enum Actions {
     wtf, jump, left, right, up, down, clone, zoom, unzoom, COUNT  
 }
 
@@ -36,7 +36,7 @@ class InputDevices {
         this.action2key.forEach(
             (key: string, action: Actions) => {
                 if(this.keyboard.keys.get(key) && this.pressingActions.has(action))
-                   this.keyboard.keys.set(key, (this.pressingActions.get(action) as PressingAction)(dt));
+                    this.keyboard.keys.set(key, (this.pressingActions.get(action) as PressingAction)(dt));
             }
         );
 
@@ -63,11 +63,33 @@ class InputDevices {
     constructor(camera: Camera) {
         this.mouse = new Mouse(camera);
         this.keyboard = new Keyboard();
-        //todo render in html
+        let html = document.createElement('div');
+        html.classList.add('keyboard');
+        html.innerHTML = `<header>${"Keyboard_1"}</header>`;
+        let keys = document.createElement('section');
+        keys.classList.add('keys');
+        html.appendChild(keys);
         this.action2key[Actions.jump] = "Space";
         this.action2key[Actions.right] = "KeyD";
         this.action2key[Actions.left] = "KeyA";
-        this.action2key[Actions.down] = "KeyS";
         this.action2key[Actions.clone] = "KeyF";
+        this.action2key.forEach((keyCode, action) => {
+            let key = document.createElement('div');
+            key.classList.add('key');
+            key.textContent = Actions[action]//keyCode;
+            key.addEventListener('mousedown', (ev) => {
+                ev.preventDefault();
+                this.keyboard.set(keyCode, KeyState.Down);
+            });
+            key.addEventListener('mouseup', (ev) => {
+                ev.preventDefault();
+                this.keyboard.set(keyCode, KeyState.Up);
+            });
+            keys.appendChild(key);
+        });
+        let keyboardsPanel = document.getElementById('keyboard') as HTMLElement;
+        if(keyboardsPanel === null)
+            throw new Error("Keyboard panel not found!");
+        keyboardsPanel.appendChild(html);
     }
 }

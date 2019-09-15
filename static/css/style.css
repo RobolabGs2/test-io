@@ -3,13 +3,17 @@
     padding: 0;
 }
 
-header {
-    background-color: rgba(120, 220, 120, 0.45);
+:root {
+    --background: rgba(120, 220, 120, 0.45);
+}
+
+body > header {
+    background-color: var(--background);
     position: absolute;
     border: 2px solid whitesmoke;
 }
 
-section {
+body > header > section {
     margin: 5px;
     color: white;
 }
@@ -36,4 +40,30 @@ body {
 
 .control > span {
     padding: 2px;
+}
+
+#keyboard {
+    position: absolute;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.603);
+    display: flex;
+    flex-direction: row;
+}
+
+.keys {
+    background-color: ghostwhite;
+    display: flex;
+}
+
+.keyboard > header {
+    font-style: italic;
+    text-align: center;
+}
+
+.keys > .key {
+    border: 2px solid greenyellow;
+    background-color: var(--background);
+    text-align: center;
+    margin: 4px;
+    padding: 4px;
 }

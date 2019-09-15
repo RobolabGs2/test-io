@@ -76,16 +76,16 @@ class UserOperator {
         this.controller.world.keepTrackOf(new FakePoint(slave.hitbox.position, new Point({ x: slave.hitbox.width / 2, y: slave.hitbox.height / 2 })));
         this.controller.user = slave;
         let speed = 150;
-        this.controller.input.addPressAction(2 /* left */, (pressed) => {
+        this.controller.input.addPressAction(Actions.left, (pressed) => {
             slave.body.runSpeed = pressed ? -speed : 0;
             return true;
-        }).addPressAction(3 /* right */, (pressed) => {
+        }).addPressAction(Actions.right, (pressed) => {
             slave.body.runSpeed = pressed ? speed : 0;
             return true;
-        }).addPressAction(1 /* jump */, (pressed) => {
+        }).addPressAction(Actions.jump, (pressed) => {
             slave.body.jumpSpeed = pressed ? 150 : 0;
             return true;
-        }).addPressAction(6 /* clone */, (pressed) => {
+        }).addPressAction(Actions.clone, (pressed) => {
             if (pressed)
                 return;
             this.controller.world.createEntity({

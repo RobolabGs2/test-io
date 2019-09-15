@@ -7,7 +7,7 @@ class Keyboard {
     keys = new Map<string, boolean>()
     buffers = new Array<Buffer<string>>(new Buffer<string>(), new Buffer<string>());
 
-    private set(code: string, state: KeyState) {
+    public set(code: string, state: KeyState) {
         this.keys.set(code, state === KeyState.Down);
         this.buffers[state].push(code);
     }
