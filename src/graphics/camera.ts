@@ -3,7 +3,7 @@ class Camera {
     private size: Sizeable;
     public readonly context: CanvasRenderingContext2D
     constructor(public mainCanvas: HTMLCanvasElement, size?: Sizeable) {
-        this.size = size ? size : {width: mainCanvas.clientWidth, height: mainCanvas.clientHeight};
+        this.size = size ? size : {width: document.body.clientWidth, height: document.body.clientHeight};
         console.log(`Camera width: ${this.size.width}, height: ${this.size.height}`);
         this.mainCanvas.width = this.size.width;
         this.mainCanvas.height = this.size.height;
