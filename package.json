@@ -8,10 +8,10 @@
     "private": true,
     "scripts": {
         "watch": "npm-watch",
-        "concat": "node tools/concat.js ./compile ./static/js",
+        "concat": "node tools/magic-concat.js ./src ./compile ./static/js",
         "clearCompileJs": "node tools/rmdir.js ./compile",
         "clearStaticJs": "node tools/rmdir.js ./static/js",
-        "build": "npm run clearCompileJs && tsc -build && npm run clearStaticJs && npm run concat",
+        "build": "tsc -build && npm run clearStaticJs && npm run concat",
         "server": "node tools/server.js"
     },
     "watch": {

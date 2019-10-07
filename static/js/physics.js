@@ -1,4 +1,24 @@
 "use strict";
+class CollisionPair {
+    constructor(b1, b2, time, vector) {
+        if (b2 && time && vector) {
+            this.b1 = b1;
+            this.b2 = b2;
+            this.time = time;
+            this.vector = vector;
+        }
+        else {
+            this.b1 = b1;
+            this.b2 = b1;
+            this.time = Infinity;
+            this.vector = new Point({});
+        }
+        this.tag1 = -1;
+        this.tag2 = -1;
+    }
+}
+
+"use strict";
 class Body {
     get time() { return this.collision.time; }
     ;
@@ -451,26 +471,6 @@ class Collision {
     }
     static CheckLines(x1, x2, a1, a2) {
         return !(x2 < a1 || a2 < x1);
-    }
-}
-
-"use strict";
-class CollisionPair {
-    constructor(b1, b2, time, vector) {
-        if (b2 && time && vector) {
-            this.b1 = b1;
-            this.b2 = b2;
-            this.time = time;
-            this.vector = vector;
-        }
-        else {
-            this.b1 = b1;
-            this.b2 = b1;
-            this.time = Infinity;
-            this.vector = new Point({});
-        }
-        this.tag1 = -1;
-        this.tag2 = -1;
     }
 }
 
