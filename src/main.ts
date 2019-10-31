@@ -9,7 +9,7 @@ console.log("Start!")
     })*/
     let canvas = document.getElementById('main') as HTMLCanvasElement;
     let camera = new Camera(canvas);
-    let input = new InputDevices(camera);
+    let input = new InputDevicesManager(camera);
     let worldCreator = new WorldCreator(camera, input);
     //let cursore = input.mouseCursore;
     let timerTick: number;

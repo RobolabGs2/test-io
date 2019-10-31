@@ -4,7 +4,7 @@ class Controller{
     user?: Entity;
     operators: Array<Operator>;
 
-    constructor(public input: InputDevices, world: World){
+    constructor(private input: InputDevicesManager, world: World){
         this.world = world;
         this.operators = new Array<Operator>();
     }
@@ -29,7 +29,7 @@ class Controller{
                 return;
             }
             case "user":{
-                operator = new UserOperator(this, entity);
+                operator = new UserOperator(this, entity, this.input.getInputDevice());
                 break;
             }
             case "bot":{

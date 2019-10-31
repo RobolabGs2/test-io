@@ -12,10 +12,22 @@ var Actions;
     Actions[Actions["right"] = 8] = "right";
     Actions[Actions["COUNT"] = 9] = "COUNT";
 })(Actions || (Actions = {}));
-class InputDevices {
+var MouseButtons;
+(function (MouseButtons) {
+    MouseButtons[MouseButtons["left"] = 0] = "left";
+    MouseButtons[MouseButtons["center"] = 1] = "center";
+    MouseButtons[MouseButtons["right"] = 2] = "right";
+    MouseButtons[MouseButtons["COUNT"] = 3] = "COUNT";
+})(MouseButtons || (MouseButtons = {}));
+
+"use strict";
+// TODO: create InputDevice as class
+class InputDevicesManager {
     constructor(camera) {
+        // TODO: multiaction
         this.pressingActions = new Map();
         this.pressActions = new Map();
+        this.clickActions = new Array(MouseButtons.COUNT);
         this.action2key = new Array(Actions.COUNT);
         this.mouse = new Mouse(camera);
         this.keyboard = new Keyboard();
@@ -33,6 +45,7 @@ class InputDevices {
             let key = document.createElement('div');
             key.classList.add('key');
             key.textContent = Actions[action]; //keyCode;
+            // TODO: refactor
             key.addEventListener('mousedown', (ev) => {
                 ev.preventDefault();
                 this.keyboard.set(keyCode, KeyState.Down);
@@ -56,11 +69,15 @@ class InputDevices {
             throw new Error("Keyboard panel not found!");
         keyboardsPanel.appendChild(html);
     }
-    get mousePosition() {
-        return this.mouse.position;
+    getInputDevice() {
+        return this;
     }
     get mouseCursore() {
         return this.mouse.getCursore();
+    }
+    addClickAction(button, consumer) {
+        this.clickActions[button] = consumer;
+        return this;
     }
     addPressingAction(action, consumer) {
         this.pressingActions.set(action, consumer);
@@ -82,6 +99,10 @@ class InputDevices {
                     this.pressActions.get(action)(keyState === KeyState.Down);
             });
         });
+        for (let i = 0; i < MouseButtons.COUNT; ++i) {
+            if (this.clickActions[i])
+                this.mouse.clicks[i].flush().forEach(this.clickActions[i]);
+        }
         let wheel = this.mouse.whell; /*
         if(this.pressActions.has(Actions.zoom))
             for(let i = 0; i<wheel/100; ++i)

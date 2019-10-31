@@ -12,7 +12,7 @@ type json = string
 class WorldCreator {
     avatarFactory = new AvatarFactory();
     
-    constructor(private camera: Camera, private input: InputDevices) {
+    constructor(private camera: Camera, private input: InputDevicesManager) {
     }
 
     loadJson(worldName: string, component: WorldComponent) {

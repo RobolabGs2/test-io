@@ -20,7 +20,7 @@ class Controller {
                 return;
             }
             case "user": {
-                operator = new UserOperator(this, entity);
+                operator = new UserOperator(this, entity, this.input.getInputDevice());
                 break;
             }
             case "bot": {
@@ -63,7 +63,7 @@ class BotOperator {
     }
 }
 class UserOperator {
-    constructor(controller, slave) {
+    constructor(controller, slave, gamepad) {
         this.slave = slave;
         this.controller = controller;
         let textures = [
@@ -76,7 +76,7 @@ class UserOperator {
         this.controller.world.keepTrackOf(new FakePoint(slave.hitbox.position, new Point({ x: slave.hitbox.width / 2, y: slave.hitbox.height / 2 })));
         this.controller.user = slave;
         let speed = 150;
-        this.controller.input.addPressAction(Actions.left, (pressed) => {
+        gamepad.addPressAction(Actions.left, (pressed) => {
             slave.body.runSpeed = pressed ? -speed : 0;
             return true;
         }).addPressAction(Actions.right, (pressed) => {
@@ -97,6 +97,21 @@ class UserOperator {
                     movable: true
                 }
             });
+        }).addClickAction(MouseButtons.left, position => {
+            let pos = new Point({ x: this.slave.hitbox.width / 2, y: this.slave.hitbox.height / 2 }).Sum(this.slave.hitbox.position);
+            let vect = position.Sum(pos.Neg());
+            vect = vect.SMult(1 / vect.length());
+            let t = textures[getRandomInt(0, textures.length - 1)];
+            this.controller.world.createEntity({
+                avatar: new CaudateAvatar(new CompositeAvatar(t)),
+                controllerType: "explosion",
+                body: {
+                    hitbox: new Hitbox(pos.Sum(vect.SMult(40)).Sum(new Point({ x: -5, y: -5 })), 10, 10),
+                    material: "stone",
+                    movable: true,
+                    velocity: vect.SMult(200)
+                }
+            });
         });
     }
     tick(dt) {
@@ -107,24 +122,6 @@ class UserOperator {
             new AnimatedFillRectangleTexture(new Color(0, 255, 0), new Color(255, 0, 255)),
             new StrokeRectangleTexture(new Color(126, 63, 32)),
         ];
-        if (!this.controller.input.mouse.clicks[0].empty) {
-            this.controller.input.mouse.clicks[0].flush().forEach(position => {
-                let pos = new Point({ x: this.slave.hitbox.width / 2, y: this.slave.hitbox.height / 2 }).Sum(this.slave.hitbox.position);
-                let vect = position.Sum(pos.Neg());
-                vect = vect.SMult(1 / vect.length());
-                let t = textures[getRandomInt(0, textures.length - 1)];
-                this.controller.world.createEntity({
-                    avatar: new CaudateAvatar(new CompositeAvatar(t)),
-                    controllerType: "explosion",
-                    body: {
-                        hitbox: new Hitbox(pos.Sum(vect.SMult(40)).Sum(new Point({ x: -5, y: -5 })), 10, 10),
-                        material: "stone",
-                        movable: true,
-                        velocity: vect.SMult(200)
-                    }
-                });
-            });
-        }
     }
 }
 class RandomTextureOperator {

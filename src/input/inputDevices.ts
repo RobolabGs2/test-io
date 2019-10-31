@@ -1,41 +1,41 @@
-enum Actions {
-    wtf, jump, up, down, clone, zoom, unzoom, left, right, COUNT  
-}
-
-
-type PressingAction = (dt: number) => boolean;
-type PressAction = (pressed: boolean) => void;
-type ClickAction = (position: Point) => void;
-
-class InputDevices {
+// TODO: create InputDevice as class
+class InputDevicesManager implements InputDevice {
     public mouse: Mouse;
     private keyboard: Keyboard;
+    // TODO: multiaction
     pressingActions = new Map<Actions, PressingAction>()
     pressActions = new Map<Actions, PressAction>()
+    clickActions = new Array<ClickAction>(MouseButtons.COUNT)
     action2key = new Array<string>(Actions.COUNT);
 
-    get mousePosition() {
-        return this.mouse.position;
+    getInputDevice(): InputDevice {
+        return this;
     }
 
     get mouseCursore() {
         return this.mouse.getCursore();
     }
 
+    addClickAction(button: MouseButtons, consumer: ClickAction) {
+        this.clickActions[button] = consumer
+        return this
+    }
+
+
     addPressingAction(action: Actions, consumer: PressingAction) {
         this.pressingActions.set(action, consumer);
-        return this;    
+        return this;
     }
 
     addPressAction(action: Actions, consumer: PressAction) {
-            this.pressActions.set(action, consumer);
+        this.pressActions.set(action, consumer);
         return this;
     }
 
     tick(dt: number) {
         this.action2key.forEach(
             (key: string, action: Actions) => {
-                if(this.keyboard.keys.get(key) && this.pressingActions.has(action))
+                if (this.keyboard.keys.get(key) && this.pressingActions.has(action))
                     this.keyboard.keys.set(key, (this.pressingActions.get(action) as PressingAction)(dt));
             }
         );
@@ -44,12 +44,17 @@ class InputDevices {
             this.keyboard.getBufferOfKeys(keyState).forEach(
                 (key: string) => {
                     let action = this.action2key.indexOf(key);
-                    if(this.pressActions.has(action))
+                    if (this.pressActions.has(action))
                         (this.pressActions.get(action) as PressAction)(keyState === KeyState.Down);
                 }
             );
         })
-        
+
+        for (let i = 0; i < MouseButtons.COUNT; ++i) {
+            if (this.clickActions[i])
+                this.mouse.clicks[i].flush().forEach(this.clickActions[i])
+        }
+
         let wheel = this.mouse.whell;/*
         if(this.pressActions.has(Actions.zoom))
             for(let i = 0; i<wheel/100; ++i)
@@ -77,6 +82,7 @@ class InputDevices {
             let key = document.createElement('div');
             key.classList.add('key');
             key.textContent = Actions[action]//keyCode;
+            // TODO: refactor
             key.addEventListener('mousedown', (ev) => {
                 ev.preventDefault();
                 this.keyboard.set(keyCode, KeyState.Down);
@@ -96,7 +102,7 @@ class InputDevices {
             keys.appendChild(key);
         });
         let keyboardsPanel = document.getElementById('keyboard') as HTMLElement;
-        if(keyboardsPanel === null)
+        if (keyboardsPanel === null)
             throw new Error("Keyboard panel not found!");
         keyboardsPanel.appendChild(html);
     }
