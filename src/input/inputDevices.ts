@@ -1,5 +1,5 @@
 enum Actions {
-    wtf, jump, left, right, up, down, clone, zoom, unzoom, COUNT  
+    wtf, jump, up, down, clone, zoom, unzoom, left, right, COUNT  
 }
 
 
@@ -24,7 +24,7 @@ class InputDevices {
 
     addPressingAction(action: Actions, consumer: PressingAction) {
         this.pressingActions.set(action, consumer);
-        return this;
+        return this;    
     }
 
     addPressAction(action: Actions, consumer: PressAction) {
@@ -65,7 +65,7 @@ class InputDevices {
         this.keyboard = new Keyboard();
         let html = document.createElement('div');
         html.classList.add('keyboard');
-        html.innerHTML = `<header>${"Keyboard_1"}</header>`;
+        html.innerHTML = `<header>${"Keyboard"}</header>`;
         let keys = document.createElement('section');
         keys.classList.add('keys');
         html.appendChild(keys);
@@ -81,7 +81,15 @@ class InputDevices {
                 ev.preventDefault();
                 this.keyboard.set(keyCode, KeyState.Down);
             });
+            key.addEventListener('touchstart', (ev) => {
+                ev.preventDefault();
+                this.keyboard.set(keyCode, KeyState.Down);
+            });
             key.addEventListener('mouseup', (ev) => {
+                ev.preventDefault();
+                this.keyboard.set(keyCode, KeyState.Up);
+            });
+            key.addEventListener('touchend', (ev) => {
                 ev.preventDefault();
                 this.keyboard.set(keyCode, KeyState.Up);
             });

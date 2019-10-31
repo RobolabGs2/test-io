@@ -3,13 +3,13 @@ var Actions;
 (function (Actions) {
     Actions[Actions["wtf"] = 0] = "wtf";
     Actions[Actions["jump"] = 1] = "jump";
-    Actions[Actions["left"] = 2] = "left";
-    Actions[Actions["right"] = 3] = "right";
-    Actions[Actions["up"] = 4] = "up";
-    Actions[Actions["down"] = 5] = "down";
-    Actions[Actions["clone"] = 6] = "clone";
-    Actions[Actions["zoom"] = 7] = "zoom";
-    Actions[Actions["unzoom"] = 8] = "unzoom";
+    Actions[Actions["up"] = 2] = "up";
+    Actions[Actions["down"] = 3] = "down";
+    Actions[Actions["clone"] = 4] = "clone";
+    Actions[Actions["zoom"] = 5] = "zoom";
+    Actions[Actions["unzoom"] = 6] = "unzoom";
+    Actions[Actions["left"] = 7] = "left";
+    Actions[Actions["right"] = 8] = "right";
     Actions[Actions["COUNT"] = 9] = "COUNT";
 })(Actions || (Actions = {}));
 class InputDevices {
@@ -21,7 +21,7 @@ class InputDevices {
         this.keyboard = new Keyboard();
         let html = document.createElement('div');
         html.classList.add('keyboard');
-        html.innerHTML = `<header>${"Keyboard_1"}</header>`;
+        html.innerHTML = `<header>${"Keyboard"}</header>`;
         let keys = document.createElement('section');
         keys.classList.add('keys');
         html.appendChild(keys);
@@ -37,7 +37,15 @@ class InputDevices {
                 ev.preventDefault();
                 this.keyboard.set(keyCode, KeyState.Down);
             });
+            key.addEventListener('touchstart', (ev) => {
+                ev.preventDefault();
+                this.keyboard.set(keyCode, KeyState.Down);
+            });
             key.addEventListener('mouseup', (ev) => {
+                ev.preventDefault();
+                this.keyboard.set(keyCode, KeyState.Up);
+            });
+            key.addEventListener('touchend', (ev) => {
                 ev.preventDefault();
                 this.keyboard.set(keyCode, KeyState.Up);
             });
