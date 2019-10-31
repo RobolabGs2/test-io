@@ -6,10 +6,10 @@ var Actions;
     Actions[Actions["up"] = 2] = "up";
     Actions[Actions["down"] = 3] = "down";
     Actions[Actions["clone"] = 4] = "clone";
-    Actions[Actions["zoom"] = 5] = "zoom";
-    Actions[Actions["unzoom"] = 6] = "unzoom";
-    Actions[Actions["left"] = 7] = "left";
-    Actions[Actions["right"] = 8] = "right";
+    Actions[Actions["left"] = 5] = "left";
+    Actions[Actions["right"] = 6] = "right";
+    Actions[Actions["zoom"] = 7] = "zoom";
+    Actions[Actions["unzoom"] = 8] = "unzoom";
     Actions[Actions["COUNT"] = 9] = "COUNT";
 })(Actions || (Actions = {}));
 var MouseButtons;
@@ -29,7 +29,18 @@ class InputDevicesManager {
         this.pressActions = new Map();
         this.clickActions = new Array(MouseButtons.COUNT);
         this.action2key = new Array(Actions.COUNT);
+        this.scroll2action = new Array(2); //[0] - up, [1] - down
         this.mouse = new Mouse(camera);
+        this.addPressAction(Actions.zoom, pressed => {
+            if (pressed) {
+                camera.scale(-0.1);
+                console.debug(pressed);
+            }
+        });
+        this.addPressAction(Actions.unzoom, pressed => {
+            if (pressed)
+                camera.scale(0.1);
+        });
         this.keyboard = new Keyboard();
         let html = document.createElement('div');
         html.classList.add('keyboard');
@@ -41,6 +52,10 @@ class InputDevicesManager {
         this.action2key[Actions.right] = "KeyD";
         this.action2key[Actions.left] = "KeyA";
         this.action2key[Actions.clone] = "KeyF";
+        this.action2key[Actions.zoom] = "Equal";
+        this.action2key[Actions.unzoom] = "Minus";
+        this.scroll2action[0] = Actions.zoom;
+        this.scroll2action[1] = Actions.unzoom;
         this.action2key.forEach((keyCode, action) => {
             let key = document.createElement('div');
             key.classList.add('key');
@@ -99,18 +114,27 @@ class InputDevicesManager {
                     this.pressActions.get(action)(keyState === KeyState.Down);
             });
         });
+        let wheel = this.mouse.whell / 100;
+        const upScroolAction = this.scroll2action[1];
+        const downScroolAction = this.scroll2action[0];
+        if (this.pressActions.has(upScroolAction)) {
+            for (let i = 0; i < wheel; ++i) {
+                const actionConsumer = this.pressActions.get(upScroolAction);
+                actionConsumer(true);
+                actionConsumer(false);
+            }
+        }
+        if (this.pressActions.has(downScroolAction)) {
+            for (let i = 0; i < -wheel; ++i) {
+                const actionConsumer = this.pressActions.get(downScroolAction);
+                actionConsumer(true);
+                actionConsumer(false);
+            }
+        }
         for (let i = 0; i < MouseButtons.COUNT; ++i) {
             if (this.clickActions[i])
                 this.mouse.clicks[i].flush().forEach(this.clickActions[i]);
         }
-        let wheel = this.mouse.whell; /*
-        if(this.pressActions.has(Actions.zoom))
-            for(let i = 0; i<wheel/100; ++i)
-                (this.pressActions.get(Actions.zoom) as PressAction)()
-        if(this.pressActions.has(Actions.unzoom))
-            for(let i = 0; i<-wheel/100; ++i)
-                (this.pressActions.get(Actions.unzoom) as PressAction)()
-            */
     }
 }
 

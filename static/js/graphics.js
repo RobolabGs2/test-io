@@ -98,6 +98,26 @@ class AvatarFactory {
 }
 
 "use strict";
+//TODO refactor
+class ScaleableHitbox {
+    constructor(position, _width, _height) {
+        this.position = position;
+        this._width = _width;
+        this._height = _height;
+        this.scale = 1;
+    }
+    get width() {
+        return this._width * this.scale;
+    }
+    get height() {
+        return this._height * this.scale;
+    }
+    get x1() { return this.position.x; }
+    get x2() { return this.position.x + this.width; }
+    get y1() { return this.position.y; }
+    get y2() { return this.position.y + this.height; }
+    center() { return new Point({ x: ((this.position.x + this.width / 2)), y: ((this.position.y + this.height / 2)) }); }
+}
 class Camera {
     constructor(mainCanvas, size) {
         this.mainCanvas = mainCanvas;
@@ -109,9 +129,10 @@ class Camera {
         this.context = this.mainCanvas.getContext("2d");
         this._position = new Point({});
         this.context.translate(this.position.x + this.size.width / 2, this.position.y + this.size.height / 2);
+        this.hitbox = new ScaleableHitbox(new Point({ x: 1, y: 1 }), this.size.width / 2, this.size.height / 2);
     }
     setPosition(position) {
-        this._position = new PointInHitbox(new ReadonlyHitbox(position, this.size.width / 2, this.size.height / 2));
+        this._position = new PointInHitbox(this.hitbox = new ScaleableHitbox(position, this.size.width / 2, this.size.height / 2));
     }
     scale(delta) {
         let new_scale = (this._scale + delta);
@@ -120,6 +141,7 @@ class Camera {
             return;
         this.context.scale(newLocal, newLocal);
         this._scale = new_scale;
+        this.hitbox.scale = new_scale;
     }
     get position() {
         return new Point(this._position);

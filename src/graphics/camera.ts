@@ -1,6 +1,27 @@
+//TODO refactor
+class ScaleableHitbox implements ReadonlyHitbox {
+    scale = 1;
+    get width() {
+        return this._width*this.scale
+    }
+    get height() {
+        return this._height*this.scale
+    }
+    get x1() {return this.position.x}
+    get x2() {return this.position.x + this.width}
+    get y1() {return this.position.y}
+    get y2() {return this.position.y + this.height}
+    constructor(public readonly position: ReadonlyPoint, private _width: number, private _height: number) {}
+
+    center() {return new Point({x:((this.position.x + this.width/2)), y:((this.position.y + this.height/2))})}
+}
+
+
 class Camera {
     private _position: ReadonlyPoint;
+    private _scale = 1;
     private size: Sizeable;
+    private hitbox: ScaleableHitbox;
     public readonly context: CanvasRenderingContext2D
     constructor(public mainCanvas: HTMLCanvasElement, size?: Sizeable) {
         this.size = size ? size : {width: document.body.clientWidth, height: document.body.clientHeight};
@@ -10,13 +31,13 @@ class Camera {
         this.context = this.mainCanvas.getContext("2d") as CanvasRenderingContext2D;
         this._position =  new Point({});
         this.context.translate(this.position.x + this.size.width/2, this.position.y + this.size.height/2)
+        this.hitbox = new ScaleableHitbox(new Point({x:1, y:1}), this.size.width/2, this.size.height/2);
     }
 
     setPosition(position: ReadonlyPoint) {
-        this._position = new PointInHitbox(new ReadonlyHitbox(position, this.size.width/2, this.size.height/2));
+        this._position = new PointInHitbox(this.hitbox = new ScaleableHitbox(position, this.size.width/2, this.size.height/2));
     }
 
-    _scale = 1;
 
     scale(delta: number) {
         let new_scale = (this._scale+delta)
@@ -25,6 +46,7 @@ class Camera {
             return
         this.context.scale(newLocal, newLocal);
         this._scale = new_scale
+        this.hitbox.scale = new_scale
     }
 
     get position() {

@@ -1,5 +1,5 @@
 enum Actions {
-    wtf, jump, up, down, clone, zoom, unzoom, left, right, COUNT  
+    wtf, jump, up, down, clone, left, right, zoom, unzoom, COUNT  
 }
 
 enum MouseButtons {

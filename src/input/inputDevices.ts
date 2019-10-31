@@ -7,6 +7,7 @@ class InputDevicesManager implements InputDevice {
     pressActions = new Map<Actions, PressAction>()
     clickActions = new Array<ClickAction>(MouseButtons.COUNT)
     action2key = new Array<string>(Actions.COUNT);
+    scroll2action = new Array<Actions>(2); //[0] - up, [1] - down
 
     getInputDevice(): InputDevice {
         return this;
@@ -50,23 +51,42 @@ class InputDevicesManager implements InputDevice {
             );
         })
 
+        let wheel = this.mouse.whell/100;
+        const upScroolAction = this.scroll2action[1];
+        const downScroolAction = this.scroll2action[0];
+        if(this.pressActions.has(upScroolAction)) {
+            for(let i = 0; i<wheel; ++i) {
+                const actionConsumer = this.pressActions.get(upScroolAction) as PressAction;
+                actionConsumer(true);
+                actionConsumer(false);
+            }
+        }
+        if(this.pressActions.has(downScroolAction)) {
+            for(let i = 0; i<-wheel; ++i) {
+                const actionConsumer = this.pressActions.get(downScroolAction) as PressAction;
+                actionConsumer(true);
+                actionConsumer(false);
+            }
+        }
+
         for (let i = 0; i < MouseButtons.COUNT; ++i) {
             if (this.clickActions[i])
                 this.mouse.clicks[i].flush().forEach(this.clickActions[i])
         }
-
-        let wheel = this.mouse.whell;/*
-        if(this.pressActions.has(Actions.zoom))
-            for(let i = 0; i<wheel/100; ++i)
-                (this.pressActions.get(Actions.zoom) as PressAction)()
-        if(this.pressActions.has(Actions.unzoom))
-            for(let i = 0; i<-wheel/100; ++i)
-                (this.pressActions.get(Actions.unzoom) as PressAction)()
-            */
     }
 
     constructor(camera: Camera) {
         this.mouse = new Mouse(camera);
+        this.addPressAction(Actions.zoom, pressed => {
+            if (pressed) {
+                camera.scale(-0.1)
+                console.debug(pressed)
+            }
+        })
+        this.addPressAction(Actions.unzoom, pressed => {
+            if (pressed)
+                camera.scale(0.1)
+        })
         this.keyboard = new Keyboard();
         let html = document.createElement('div');
         html.classList.add('keyboard');
@@ -78,6 +98,10 @@ class InputDevicesManager implements InputDevice {
         this.action2key[Actions.right] = "KeyD";
         this.action2key[Actions.left] = "KeyA";
         this.action2key[Actions.clone] = "KeyF";
+        this.action2key[Actions.zoom] = "Equal";
+        this.action2key[Actions.unzoom] = "Minus";
+        this.scroll2action[0] = Actions.zoom;
+        this.scroll2action[1] = Actions.unzoom;
         this.action2key.forEach((keyCode, action) => {
             let key = document.createElement('div');
             key.classList.add('key');
