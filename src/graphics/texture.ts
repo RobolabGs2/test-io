@@ -166,7 +166,7 @@ class ImageTexture extends AbstractAnimatedTexture {
                 this.onload(bitmap);
             });
         }
-        img.src = "./static/img/" + filename;
+        img.src = "./img/" + filename;
     }
 }
 

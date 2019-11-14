@@ -27,6 +27,9 @@ const mapSrc2Compile = (x) => x.replace(new RegExp(src+'(.*)\.ts'), compile+'$1.
 const items = fs.readdirSync(src);
 const main = []
 
+if (!fs.existsSync(to))
+    fs.mkdirSync(to)
+
 const now = new Date()
 console.info(`[\x1b[35m${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}\x1b[37m]`)
 console.group()

@@ -1,0 +1,14 @@
+language: node_js
+node_js:
+  - 10.16
+script: npm run build
+
+deploy:
+  provider: pages
+  skip_cleanup: true
+  github_token: $GITHUB_TOKEN
+  keep_history: true
+  local_dir: static
+  on:
+    repo: RobolabGs2/test-io
+    branch: master

@@ -17,7 +17,7 @@ class WorldCreator {
 
     loadJson(worldName: string, component: WorldComponent) {
         var xhr = new XMLHttpRequest();
-        xhr.open('GET', `./static/worlds/${worldName}/${component}.json`, false);
+        xhr.open('GET', `./worlds/${worldName}/${component}.json`, false);
         xhr.onreadystatechange = () => {
             if (xhr.readyState === 4 && xhr.status !== 404) {
                 console.log(xhr.responseText)

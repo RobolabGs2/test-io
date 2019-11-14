@@ -7,18 +7,22 @@ if (process.argv.length <= 2) {
 }
 
 const path = process.argv[2];
-try{
-    fsHelper.dfs(path, 
-        (file)=>{
-            fs.unlinkSync(file);
-            console.info(`\x1b[31m${file}\x1b[37m`)
-        },
-        (dir) => {
-            if(dir === path)
-                return
-            fs.rmdirSync(dir)
-            console.info(`\x1b[31m${dir}\x1b[37m`)
-        });
-} catch(e) {
-    console.info(e.message);
-}
+fs.exists(path, (exists) => {
+    if (exists) {
+        try {
+            fsHelper.dfs(path,
+                (file) => {
+                    fs.unlinkSync(file);
+                    console.info(`\x1b[31m${file}\x1b[37m`)
+                },
+                (dir) => {
+                    if (dir === path)
+                        return
+                    fs.rmdirSync(dir)
+                    console.info(`\x1b[31m${dir}\x1b[37m`)
+                });
+        } catch (e) {
+            console.info(e.message);
+        }
+    }
+})
