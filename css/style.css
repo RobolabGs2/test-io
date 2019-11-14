@@ -1,0 +1,79 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --background: rgba(120, 220, 120, 0.45);
+}
+
+body > header {
+    background-color: var(--background);
+    position: absolute;
+    border: 2px solid whitesmoke;
+}
+
+body > header > section {
+    margin: 5px;
+    color: white;
+}
+
+canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+body {
+    height: 100vh;
+    border: 0;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.disable {
+    display: none;
+}
+
+.control {
+    display: flex;
+    flex-direction: column;
+}
+
+.control > span {
+    padding: 2px;
+}
+
+#keyboard {
+    position: absolute;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.603);
+    display: flex;
+    flex-direction: row;
+}
+
+.keys {
+    background-color: ghostwhite;
+    display: flex;
+    width: 12em;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    padding: 0 0.3em 0.3em 0.3em;
+}
+
+.keyboard > header {
+    font-style: italic;
+    text-align: center;
+}
+
+.keys > .key {
+    border: 2px solid greenyellow;
+    background-color: var(--background);
+    text-align: center;
+    width: 45%;
+    margin-top: 0.3em;
+    height: 4em;
+}

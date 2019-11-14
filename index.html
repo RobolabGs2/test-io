@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <link rel="stylesheet" type="text/css" href="./css/style.css" media="screen" />
+        <meta charset="UTF-8">
+        <title>Duck paint</title></head>
+        <script src="./js/common.js"></script>
+        <script src="./js/controller.js"></script>
+        <script src="./js/geometry.js"></script>
+        <script src="./js/physics.js"></script>
+        <script src="./js/input.js"></script>
+        <script src="./js/graphics.js"></script>
+    <body>
+        <header>
+            <section class="disable">
+                Speed:<input type="number" id="speed"/>
+            </section>
+            <section class="disable">
+                <button id="save">Save</button>
+                <button id="load">Load</button>
+                <input type="number" id="saveNum" value="1"/>
+            </section>
+            <section class="control">
+                <span>
+                    A|D - left|right
+                </span>
+                <span>
+                    Space - jump
+                </span>
+                <span>
+                    F - spawn mob
+                </span>
+                <span>
+                    LMB - fire
+                </span>
+            </section>
+        </header>
+        <section id="keyboard">
+        </section>
+        <section id="camera">
+            <canvas id="main"></canvas>
+        </section>
+    </body>
+    <script src="./js/main.js"></script>
+</html>

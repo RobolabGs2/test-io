@@ -1,0 +1,12 @@
+{
+    "duck": {
+        "frictionСoefficient": 0.050,
+        "elasticityCoefficient": 1,
+        "density": 30
+    },
+    "stone": {
+        "frictionСoefficient": 0.95,
+        "elasticityCoefficient": 0.90,
+        "density": 170
+    }
+}

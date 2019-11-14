@@ -1,0 +1,138 @@
+{
+	"_type": "World",
+	"user": {
+		"_type": "Entity",
+		"hitbox": {
+			"_type": "Hitbox",
+			"position": {
+				"_type": "Point",
+				"x": 10,
+				"y": 20
+			},
+			"width": 32,
+			"height": 32
+		},
+		"avatar": {
+			"_type": "AnimatedAvatar",
+			"filename": "yana_duck_animated2.png"
+		}
+	},
+	"mobs": [
+		{
+			"_type": "Entity",
+			"hitbox": {
+				"_type": "Hitbox",
+				"position": {
+					"_type": "Point",
+					"x": 50,
+					"y": 20
+				},
+				"width": 32,
+				"height": 32
+			},
+			"avatar": {
+				"_type": "RectangleAvatar",
+				"color": {
+					"_type": "Color",
+					"A": 255,
+					"R": 0,
+					"G": 128,
+					"B": 0
+				}
+			}
+		},
+		{
+			"_type": "Entity",
+			"hitbox": {
+				"_type": "Hitbox",
+				"position": {
+					"_type": "Point",
+					"x": 300,
+					"y": 200
+				},
+				"width": 32,
+				"height": 32
+			},
+			"avatar": {
+				"_type": "RectangleAvatar",
+				"color": {
+					"_type": "Color",
+					"A": 255,
+					"R": 128,
+					"G": 128,
+					"B": 0
+				}
+			}
+		},
+		{
+			"_type": "Entity",
+			"hitbox": {
+				"_type": "Hitbox",
+				"position": {
+					"_type": "Point",
+					"x": 300,
+					"y": 300
+				},
+				"width": 32,
+				"height": 32
+			},
+			"avatar": {
+				"_type": "StrokeRectangleAvatar",
+				"color": {
+					"_type": "Color",
+					"A": 255,
+					"R": 0,
+					"G": 128,
+					"B": 0
+				}
+			}
+		},
+		{
+			"_type": "Entity",
+			"hitbox": {
+				"_type": "Hitbox",
+				"position": {
+					"_type": "Point",
+					"x": 200,
+					"y": 300
+				},
+				"width": 32,
+				"height": 32
+			},
+			"avatar": {
+				"_type": "StrokeRectangleAvatar",
+				"color": {
+					"_type": "Color",
+					"A": 255,
+					"R": 255,
+					"G": 0,
+					"B": 128
+				}
+			}
+		},
+		{
+			"_type": "Entity",
+			"hitbox": {
+				"_type": "Hitbox",
+				"position": {
+					"_type": "Point",
+					"x": 1,
+					"y": 400
+				},
+				"width": 510,
+				"height": 10
+			},
+			"avatar": {
+				"_type": "RectangleAvatar",
+				"color": {
+					"_type": "Color",
+					"A": 255,
+					"R": 0,
+					"G": 128,
+					"B": 128
+				}
+            },
+            "movable": false
+		}
+	]
+}
