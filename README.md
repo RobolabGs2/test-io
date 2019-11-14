@@ -1,11 +1,19 @@
 # test-io
+[![Build Status](https://travis-ci.org/RobolabGs2/test-io.svg?branch=master)](https://travis-ci.org/RobolabGs2/test-io)
 
-Полезная штука: https://marketplace.visualstudio.com/items?itemName=Flixs.vs-code-http-server-and-html-preview
+## What is it
+Open-source game written as pet-project just for fun and learning TypeScript.
 
-NodeJs v10.16.1 и npm: https://nodejs.org/en/download/
+## Development
+[NodeJs v10.16.1 & npm](https://nodejs.org/en/download/)
 
-После установки в директории проекта `npm install`, после чего в Terminal/Run Task... заработают задачи:
+After checking out the repo, run `npm install`
 
- - `tsc:watch` и `tsc:build` - компилировать все файлы из `src/` в `compile/`.
- - `concat:watch` и `concat:build` - откомпилированные файлы из `compile/` конкатинирует в `static/js/`
+### npm tasks
+|Task|Description|
+|-|-|
+|`npm run build`|compile ts->js and concatenate into `static/js`|
+|`npm run server`|run server on `localhost:3000` with files from `static` folder|
+|`tsc -watch`|watcher for ts->js compile|
+|`npm run watch`|watcher for concatenate compiled files to `static/`|
 
